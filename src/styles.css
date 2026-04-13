@@ -1,0 +1,6210 @@
+/* =======================================================
+   THEME TOKENS (dark elegant)
+   ======================================================= */
+   :root{
+    /* brand + accents */
+    --brand-h: 215; /* blue hue */
+    --brand-600: hsl(var(--brand-h) 85% 60%);
+    --brand-500: hsl(var(--brand-h) 90% 66%);
+    --brand-400: hsl(var(--brand-h) 95% 72%);
+    --accent:    hsl(195 100% 64%);
+  
+    /* neutrals */
+    --text-1: hsl(210 30% 96%);
+    --text-2: hsl(215 20% 78%);
+    --text-3: hsl(215 14% 64%);
+  
+    /* surfaces */
+    --bg-1: #0b1220; /* page */
+    --bg-2: #0e1628; /* deep band */
+    --bg-3: #121a2c; /* cards/nav */
+    --panel: color-mix(in oklab, var(--bg-3), white 4%);
+  
+    /* lines, rings */
+    --line: hsl(220 25% 24% / .6);
+    --ring: hsl(200 100% 70%);
+  
+    /* geometry */
+    --radius: 16px;
+    --radius-lg: 20px;
+  
+    /* elevation */
+    --shadow-1: 0 6px 20px rgba(0,0,0,.35);
+    --shadow-2: 0 14px 36px rgba(0,0,0,.45);
+  
+    /* layout */
+    --nav-h: 72px;
+  }
+  
+  /* =======================================================
+     GLOBAL
+     ======================================================= */
+  html { scroll-behavior: smooth; }
+  section { scroll-margin-top: var(--nav-h); }
+  
+  body{
+    margin: 0;
+    color: var(--text-1);
+    background:
+      radial-gradient(80% 60% at 15% 10%, #3b82f61f, transparent 60%),
+      radial-gradient(70% 55% at 85% 15%, #22d3ee18, transparent 60%),
+      radial-gradient(90% 70% at 80% 85%, #a78bfa14, transparent 65%),
+      linear-gradient(180deg, var(--bg-2), var(--bg-1));
+    background-attachment: fixed;
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  
+  h1,h2,h3 { letter-spacing: -.02em; margin: 0 0 .4em; }
+  h1 { font-size: clamp(28px, 4vw, 44px); font-weight: 800; }
+  h2 { font-size: clamp(22px, 3vw, 28px); font-weight: 800; }
+  p  { color: var(--text-2); line-height: 1.7; margin: 0 0 1rem; }
+  
+  a { color: var(--brand-400); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  
+  :focus-visible{
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+  
+  /* containers */
+  .section { width: min(1100px, 92vw); margin: 0 auto; padding: clamp(48px, 6vw, 80px) 0; }
+  
+  /* sitewide: kill underlines safely where you used link-like buttons */
+  a, a:link, a:visited, a:hover, a:focus { text-decoration: none; }
+  
+  /* =======================================================
+     NAVBAR (fixed + auto-hide + hover hotzone)
+     ======================================================= */
+  .nav-header{
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: var(--nav-h);
+    z-index: 60;
+    background: color-mix(in oklab, var(--bg-1), white 6% / 70%);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+    transform: translateY(0);
+    opacity: 1;
+    transition: transform .24s ease, opacity .18s ease;
+  }
+  .nav-header.is-hidden{
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+  
+  /* spacer so layout doesn't jump under fixed nav */
+  .nav-spacer{ height: var(--nav-h); }
+  
+  /* invisible hover area at top to reveal navbar */
+  .nav-hotzone{
+    position: fixed; top: 0; left: 0; right: 0;
+    height: var(--nav-h);
+    z-index: 59;
+    background: transparent;
+    pointer-events: auto;
+  }
+  
+  .nav-inner{
+    width: 100%;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr; /* brand | links | right */
+    align-items: center;
+    gap: 12px;
+    padding: 12px clamp(24px, 4vw, 48px);
+  }
+  .nav-inner > * { min-width: 0; }
+  
+  .brand-link { text-decoration: none; justify-self: start; }
+  .brand-name{
+    color: var(--text-1);
+    font-weight: 900;
+    font-size: clamp(24px, 3vw, 32px);
+    display: inline-block;
+    transition: transform .18s ease, text-shadow .18s ease, color .18s ease;
+  }
+  .brand-name:hover, .brand-name:focus-visible{
+    transform: translateY(-1px) scale(1.06);
+    text-shadow: 0 6px 22px rgba(0,0,0,.25);
+  }
+  
+  /* centered links (desktop) */
+  .nav-center{
+    justify-self: center;
+    display: none;
+    gap: 12px;
+    white-space: nowrap;
+  }
+  @media (min-width: 840px){ .nav-center{ display: inline-flex; } }
+  
+  .nav-link{
+    appearance: none; border: 0; background: transparent; cursor: pointer;
+    color: var(--text-2); font-weight: 700;
+    padding: 8px 10px; border-radius: 10px;
+  }
+  .nav-link:hover{ background: rgba(255,255,255,.06); color: var(--text-1); }
+  .nav-link.active{ color: var(--text-1); background: rgba(126,163,255,.18); }
+  
+  .nav-right{ justify-self: end; display: flex; gap: 10px; }
+  
+  /* contact pill */
+  .contact-link{
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-weight: 700;
+    color: var(--text-1);
+  }
+  .contact-link:hover{
+    background: var(--brand-500);
+    border-color: var(--brand-500);
+    color: #05101f;
+  }
+  
+  /* mobile drawer */
+  .drawer{ position: fixed; inset: 0; background: rgba(0,0,0,.4); display: none; }
+  .drawer.open{ display: block; }
+  .sheet{
+    position: absolute; right: 0; top: 0; height: 100%; width: min(78%, 360px);
+    background: var(--bg-3); color: var(--text-1);
+    padding: 16px; box-shadow: -10px 0 30px rgba(0,0,0,.25);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .sheet-link{
+    appearance: none; background: transparent; border: 0; text-align: left;
+    padding: 12px 10px; color: var(--text-2); border-radius: 10px; font-weight: 700;
+  }
+  .sheet-link:hover, .sheet-link.active{ background: rgba(255,255,255,.06); color: var(--text-1); }
+  
+  /* =======================================================
+     HERO (centered content + animated aurora)
+     ======================================================= */
+  .hero-image{
+    position: relative;
+    min-height: calc(100vh - var(--nav-h));
+    display: grid;
+    place-items: center;
+    text-align: center;
+    overflow: hidden;
+    padding-bottom: var(--hero-marquee-h, 0px); /* reserve if marquee used */
+  }
+  .hero-image::before{
+    content:"";
+    position: absolute; inset: -20%;
+    background:
+      conic-gradient(from 0deg at 30% 40%, #22d3ee33, transparent 60%),
+      conic-gradient(from 180deg at 70% 60%, #a78bfa33, transparent 60%),
+      radial-gradient(1200px 600px at 50% 50%, #0b1220 0%, #080c14 100%);
+    filter: blur(60px) saturate(120%);
+    animation: aurora 14s linear infinite alternate;
+    z-index: 0; pointer-events: none;
+  }
+  @keyframes aurora{
+    0%{ transform: translate3d(-3%,-2%,0) scale(1) rotate(0); }
+    100%{ transform: translate3d(3%,2%,0) scale(1.03) rotate(2deg); }
+  }
+  .hero-overlay{ position: absolute; inset: 0; background: radial-gradient(1200px 400px at 50% -200px, rgba(0,0,0,.25), rgba(0,0,0,.55)); pointer-events: none; z-index: 1; }
+  
+  .hero-content{ position: relative; z-index: 2; width: min(1100px, 92vw); margin: 0 auto; padding: 0 16px; }
+  .hero-content h1{ margin: 0 0 6px; font-size: clamp(32px, 6vw, 56px); line-height: 1.05; color: #fff; }
+  .hero-content p { margin: 0; font-size: clamp(14px, 2.2vw, 18px); opacity: .95; }
+  
+  .hero-heading { text-align: center; line-height: 1.12; letter-spacing: -.02em; }
+  .hero-line   { display: block; }
+  .hero-line-1 { font-size: clamp(28px, 6.2vw, 64px); }
+  .hero-line-2 { margin-top: .35em; font-size: clamp(20px, 4.4vw, 44px); white-space: nowrap; overflow: hidden; }
+  
+  .hero-cta{ position: static; margin-top: clamp(18px, 4vh, 40px); z-index: 10; }
+  .hero-overlay{ pointer-events: none; } /* keep CTAs clickable */
+  
+  /* Optional bottom marquee bar; set --hero-marquee-h to desired height */
+  .hero-marquee{
+    position: absolute; left: 0; right: 0; bottom: var(--hero-marquee-offset, 0px);
+    height: var(--hero-marquee-h, 0px);
+    z-index: 6;
+    padding: 10px 0;
+    backdrop-filter: blur(6px) saturate(1.05);
+    background:
+      linear-gradient(to top, rgba(6,10,20,.55), rgba(6,10,20,0)),
+      linear-gradient(to bottom, rgba(6,10,20,.66), rgba(6,10,20,.2));
+    border-top: 1px solid rgba(168,190,255,.08);
+  }
+  
+  /* =======================================================
+     TECH MARQUEE
+     ======================================================= */
+  .marquee-section{
+    background: var(--bg-1);
+    border-block: 1px solid rgba(255,255,255,.06);
+    padding: 18px 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .marquee{ position: relative; overflow: hidden; }
+  .marquee::before,.marquee::after{
+    content:""; position: absolute; top: 0; width: clamp(90px, 12vw, 180px); height: 100%;
+    z-index: 2; pointer-events: none;
+  }
+  .marquee::before{ left: 0;  background: linear-gradient(to right, var(--bg-1), transparent); }
+  .marquee::after { right: 0; background: linear-gradient(to left,  var(--bg-1), transparent); }
+  
+  .marquee-track{
+    display: flex; gap: clamp(28px,4vw,64px); width: max-content;
+    animation: marquee 16s linear infinite;
+  }
+  @keyframes marquee{ from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  /* keep moving on hover */
+  .marquee:hover .marquee-track{ animation-play-state: running !important; }
+  
+  .marquee-item{ display: inline-flex; align-items: center; gap: 10px; color: #cbd5e1; font-weight: 700; }
+  .marquee-item img{
+    width: 28px; height: 28px; object-fit: contain;
+    filter: invert(90%) sepia(3%) saturate(200%) hue-rotate(180deg) brightness(95%);
+  }
+  
+  /* =======================================================
+     PHOTOS
+     ======================================================= */
+  .photos-sec{ padding-block: clamp(16px,5vw,56px) 64px; }
+  .photos-wrap{ width: min(1100px,92vw); margin: 0 auto; }
+  .photos-title{ font-size: clamp(28px,4vw,44px); font-weight: 800; margin: 0 0 10px; text-wrap: balance; }
+  .photos-blurb{
+    width: 100%; margin: 0 0 16px; line-height: 1.75; font-size: clamp(16px,1.7vw,18px);
+    color: #cdd6e6; text-wrap: pretty; border-bottom: 1px solid rgba(255,255,255,.08); padding-bottom: 12px;
+  }
+  
+  /* big hero image frame */
+  .hero-frame{
+    position: relative; display: grid; place-items: center; margin: 16px 0 22px;
+    border-radius: 20px; padding: 10px; background: rgba(255,255,255,.04); box-shadow: var(--shadow-1);
+  }
+  .hero-frame.has-bg::before{
+    content:""; position: absolute; inset: 0; background-image: var(--hero-img); background-size: cover; background-position: center;
+    filter: blur(22px); transform: scale(1.12); z-index: 0;
+  }
+  .hero-frame.has-bg::after{
+    content:""; position: absolute; inset: 0; background: radial-gradient(80% 60% at 50% 50%, rgba(0,0,0,.12), rgba(0,0,0,.5)); z-index: 1;
+  }
+  .hero-img{ position: relative; z-index: 2; max-width: min(92vw,1100px); max-height: 70vh; object-fit: contain; display: block; }
+  
+  .hero-caption{
+    position: absolute; z-index: 3; left: 14px; right: 14px; bottom: 14px;
+    padding: 10px 12px; border-radius: 12px; color: #e8ecf5; font-size: 14px;
+    background: linear-gradient(180deg, rgba(0,0,0,.45), rgba(0,0,0,.65));
+    backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,.12);
+  }
+  
+  .hero-nav{
+    position: absolute; z-index: 3; top: 50%; transform: translateY(-50%);
+    width: 40px; height: 40px; border-radius: 999px; border: 0; background: rgba(0,0,0,.35);
+    color: #fff; font-size: 28px; display: grid; place-items: center; cursor: pointer;
+  }
+  .hero-nav.left{ left: 12px; } .hero-nav.right{ right: 12px; }
+  .hero-nav:hover{ background: rgba(0,0,0,.55); }
+  
+  /* thumbs grid */
+  .photo-grid{ display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); }
+  .photo-tile{
+    aspect-ratio: 4/3; border-radius: 16px; overflow: hidden;
+    background: rgba(255,255,255,.04); outline: 1px solid rgba(255,255,255,.06); box-shadow: var(--shadow-1);
+    content-visibility: auto; contain-intrinsic-size: 220px 150px;
+  }
+  .photo-tile img{ width: 100%; height: 100%; object-fit: cover; display: block; transform: translateZ(0); }
+  .photo-tile:hover img{ transform: scale(1.04); }
+  .photo-tile.active{ outline: 2px solid #8ab4ff; outline-offset: 2px; }
+  
+  @media (max-width:640px){
+    .hero-caption{ position: static; margin-top: 8px; background: transparent; border: 0; backdrop-filter: none; padding: 0 2px; }
+  }
+  
+  /* =======================================================
+     PROJECTS (tabs + cards)
+     ======================================================= */
+  .projects-sec{ padding-block: 24px 64px; background: transparent; }
+  .projects-wrap{ width: min(1100px,92vw); margin: 0 auto; }
+  .projects-title{ font-size: clamp(28px,4vw,40px); font-weight: 800; margin: 0 0 8px; }
+  
+  .tabs-row{
+    position: relative; display: flex; gap: 8px; align-items: center;
+    padding: 6px 2px 10px; border-bottom: 1px solid rgba(255,255,255,.08); margin-bottom: 14px;
+  }
+  .tab{
+    appearance: none; border: 0; background: transparent; color: #cdd6e6;
+    padding: 8px 12px; border-radius: 10px; font-weight: 700; cursor: pointer;
+  }
+  .tab:hover{ background: rgba(255,255,255,.06); }
+  .tab.is-active{ color: #fff; }
+  .tab-count{ margin-left: 8px; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: rgba(255,255,255,.10); color: #d7e4ff; }
+  .tab-underline{ position: absolute; bottom: -1px; height: 2px; background: linear-gradient(90deg,var(--accent),var(--brand-500)); border-radius: 2px; transition: transform .2s,width .2s; }
+  
+  .cards-grid{ display: grid; grid-template-columns: repeat(12,1fr); gap: 14px; }
+  @media (max-width:640px){ .cards-grid{ grid-template-columns: repeat(6,1fr); } }
+  
+  .p-card{
+    grid-column: span 6; display: grid; grid-template-rows: 180px auto; border-radius: var(--radius);
+    overflow: hidden; background: rgba(255,255,255,.04); box-shadow: var(--shadow-1);
+    transition: transform .18s ease, box-shadow .18s ease;
+  }
+  @media (min-width:960px){ .p-card{ grid-column: span 4; } }
+  .p-card:hover{ transform: translateY(-2px); box-shadow: var(--shadow-2); }
+  
+  .p-media img{ width: 100%; height: 100%; object-fit: cover; display: block; }
+  .p-body{ padding: 10px 12px 12px; }
+  .p-title{ font-size: 15px; font-weight: 700; margin: 0 0 4px; }
+  .p-blurb{ font-size: 13px; color: #b9c3d7; margin: 0 0 8px; }
+  .p-tags{ display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+  .tag{ font-size: 11px; padding: 3px 8px; border-radius: 999px; background: rgba(148,163,184,.18); color: #dbe3f3; }
+  .p-links{ display: flex; gap: 12px; }
+  .link{ color: #b3c7ff; }
+  .link:hover{ text-decoration: underline; }
+  
+  /* =======================================================
+     EXPERIENCE (rail)
+     ======================================================= */
+  .section-dark{
+    position: relative; background: var(--bg-1);
+    background-image:
+      radial-gradient(900px 320px at 50% -120px, rgba(130,150,255,.18), rgba(130,150,255,0)),
+      linear-gradient(#070a17, #050816);
+  }
+  .section-dark .container{ width: min(1100px,92vw); margin: 0 auto; padding: clamp(64px,8vw,104px) 16px; color: #dbe3f0; }
+  .section-dark + .section-dark{ margin-top: -1px; }
+  
+  .exp-sec{ background: transparent; padding: 0; }
+  .exp-wrap{ width: min(1100px,92vw); margin: 0 auto; }
+  .exp-title{ margin: 0 0 20px; font-size: clamp(28px,4.6vw,48px); font-weight: 900; color: #e5e7eb; }
+  
+  .exp-card{
+    position: relative; border-radius: 22px; background: rgba(10,14,24,.9);
+    border: 1px solid rgba(148,163,184,.12); box-shadow: var(--shadow-2);
+    padding: clamp(20px,3.6vw,36px); overflow: hidden;
+  }
+  .exp-list{
+    --rail-left: 32px; margin: 0; padding: 0 0 0 calc(var(--rail-left) + 36px);
+    list-style: none; position: relative;
+  }
+  .exp-list::before{
+    content:""; position: absolute; left: var(--rail-left); top: 0; bottom: 0; width: 2px;
+    background: linear-gradient(180deg, rgba(148,163,184,.18), rgba(148,163,184,.06));
+  }
+  .exp-item{
+    position: relative; display: flex; align-items: flex-start; gap: 16px; padding: 22px 0;
+    border-top: 1px dashed rgba(148,163,184,.12);
+  }
+  .exp-item:first-child{ border-top: 0; }
+  .exp-dot{
+    position: absolute; left: calc(var(--rail-left) - 6px); top: 32px; width: 12px; height: 12px;
+    border-radius: 999px; background: var(--brand-500); box-shadow: 0 0 0 6px rgba(14,165,233,.16);
+  }
+  .exp-logo{
+    width: 44px; height: 44px; border-radius: 12px; background: #0b1221;
+    border: 1px solid rgba(148,163,184,.18); object-fit: contain; padding: 6px;
+  }
+  .exp-content{ flex: 1; min-width: 0; color: #cbd5e1; }
+  .exp-head{ display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .exp-company{ margin: 0; font-weight: 800; color: #e2e8f0; }
+  .exp-role{ margin-top: 2px; font-weight: 700; color: #a7b8d6; }
+  .exp-dates{ color: #7c8aa5; font-size: .95rem; }
+  .exp-summary{ margin: 10px 0 0; line-height: 1.55; color: #c7cfdb; }
+  
+  @media (max-width:640px){
+    .exp-list{ --rail-left: 24px; padding-left: calc(var(--rail-left) + 28px); }
+  }
+  
+  /* =======================================================
+     ABOUT / CREATE
+     ======================================================= */
+  .aboutv2-title{
+    margin: 0 0 22px; font-size: clamp(28px,4.6vw,48px); font-weight: 900; color: #e5e7eb;
+  }
+  .aboutv2-grad{ background: linear-gradient(90deg,#b388ff,#82a0ff,#8bd5ff); -webkit-background-clip:text; background-clip:text; color: transparent; }
+  .aboutv2-grid{
+    display: grid; gap: clamp(14px,2vw,22px);
+    grid-template-columns: 2fr 1.2fr; grid-auto-rows: minmax(180px,auto);
+  }
+  @media (max-width:940px){ .aboutv2-grid{ grid-template-columns: 1fr; } }
+  
+  .about-card{
+    position: relative; border-radius: 22px; background: var(--panel);
+    border: 1px solid rgba(148,163,184,.12);
+    box-shadow: 0 14px 60px rgba(0,0,0,.35);
+    padding: clamp(16px,2.4vw,24px);
+    overflow: hidden; color: #d7dfeb;
+    transition: transform .35s cubic-bezier(.2,.8,.2,1), box-shadow .35s cubic-bezier(.2,.8,.2,1);
+  }
+  .about-card:hover, .about-card:focus-visible{
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 18px 40px rgba(0,0,0,.35);
+  }
+  .about-card.hero{ grid-row: span 2; min-height: clamp(340px, 60vh, 620px); padding: 0; }
+  .hero-cover{ position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: saturate(1.1) contrast(1.05); }
+  .about-card .card-title{ font-weight: 900; font-size: clamp(18px, 2.2vw, 28px); margin: 0 0 8px; }
+  .about-card .card-text{ color:#c7cfdb; }
+  
+  /* Create section */
+  .create-sec{
+    background:
+      radial-gradient(1200px 600px at 0% -10%, rgba(101,126,255,.08), transparent 60%),
+      radial-gradient(900px 500px at 100% -20%, rgba(154,84,255,.08), transparent 60%),
+      #070b14;
+    padding: clamp(56px,8vw,96px) 0;
+    color: #e9edf5;
+  }
+  .create-wrap{ width: min(1100px,92%); margin: 0 auto; }
+  .create-grid{
+    display: grid; gap: clamp(16px, 2vw, 24px);
+    grid-template-columns: 1fr; /* mobile */
+  }
+  @media (min-width: 640px){  .create-grid{ grid-template-columns: repeat(2, minmax(260px,1fr)); } }
+  @media (min-width: 1024px){ .create-grid{ grid-template-columns: repeat(3, minmax(280px,1fr)); } }
+  
+  .create-card{
+    position: relative; display: flex; flex-direction: column; gap: 12px;
+    padding: clamp(20px, 2.2vw, 28px);
+    border-radius: 20px;
+    background:
+      radial-gradient(120% 120% at 0 0, rgba(149,114,252,.12), transparent 60%),
+      rgba(16,18,27,.78);
+    border: 1px solid rgba(255,255,255,.08);
+    box-shadow: var(--shadow-1);
+    color: #e9edf5;
+    height: 100%;
+  }
+  
+  /* no underlines inside create */
+  .create-sec a{ text-decoration: none !important; }
+  
+  /* =======================================================
+     BUTTONS
+     ======================================================= */
+  .btn{
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 10px 16px; border-radius: 999px; color: var(--text-1); font-weight: 700;
+    outline: 1px solid rgba(255,255,255,.25); background: transparent;
+    transition: transform .15s, outline-color .2s, background .2s;
+    text-decoration: none;
+  }
+  .btn:hover{ transform: translateY(-1px); outline-color: rgba(255,255,255,.45); background: rgba(255,255,255,.06); }
+  
+  .btn-primary{
+    color:#0b0f1a;
+    background: linear-gradient(90deg, #4f86ff, #a870ff);
+    outline: none;
+    box-shadow: 0 8px 24px rgba(110,168,255,.35);
+  }
+  .btn-primary:hover{ filter: brightness(1.05); }
+  
+  /* resume button */
+  .btn.resume-btn{
+    padding: 12px 20px; border-radius: 999px; border: 2px solid rgba(255,255,255,.32);
+    background: rgba(255,255,255,.12); color: #fff; font-weight: 800; letter-spacing: .2px;
+    backdrop-filter: blur(6px); box-shadow: 0 6px 24px rgba(0,0,0,.30);
+    transition: background .18s ease, border-color .18s ease, transform .12s ease, box-shadow .18s ease;
+  }
+  .btn.resume-btn:hover{
+    background: #0ea5e9; border-color: #0ea5e9; transform: translateY(-1px);
+    box-shadow: 0 10px 28px rgba(14,165,233,.35);
+  }
+  
+  /* =======================================================
+     CONTACT (compact, unified)
+     ======================================================= */
+  .contact-sec{ padding: clamp(48px, 7vw, 100px) 0; background: transparent; }
+  .contact-wrap{ width: min(980px, 92vw); margin: 0 auto; background: rgba(255,255,255,.06);
+    backdrop-filter: blur(12px); border-radius: 22px; box-shadow: 0 22px 60px rgba(0,0,0,.36), inset 0 0 0 1px rgba(255,255,255,.14);
+    padding: clamp(22px, 4.6vw, 36px);
+  }
+  .contact-title{ font-size: clamp(28px, 4.6vw, 42px); margin: 0 0 6px; color: #e9edf5; }
+  .contact-sub{ color: #cbd5e1; margin: 0 0 14px; }
+  .contact-grid{ display: grid; gap: clamp(16px, 3vw, 24px); grid-template-columns: 1fr 1fr; margin-top: clamp(16px, 3.6vw, 28px); }
+  @media (max-width:900px){ .contact-grid{ grid-template-columns: 1fr; } }
+  
+  .contact-card{
+    background: rgba(255,255,255,.07);
+    border-radius: 18px;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.12);
+    padding: clamp(16px, 3.4vw, 22px);
+    transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s;
+    color:#d7dfeb;
+  }
+  .contact-card:hover{ transform: translateY(-4px); box-shadow: 0 16px 34px rgba(0,0,0,.32); }
+  .contact-card .card-title{ margin: 0 0 8px; font-size: clamp(18px, 2.2vw, 22px); font-weight: 800; }
+  .contact-card .card-text{ color:#c7cfdb; }
+  
+  .contact-form .field{ display: flex; flex-direction: column; gap: 6px; margin: 10px 0; }
+  .contact-form .field > span{ font-size: 13px; color: #aab2c5; }
+  .contact-form input,
+  .contact-form textarea{
+    background: rgba(255,255,255,.03);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #e9edf5; outline: none;
+  }
+  .contact-form input:focus,
+  .contact-form textarea:focus{
+    border-color: #7dd3fc; box-shadow: 0 0 0 3px rgba(125,211,252,.15);
+  }
+  .form-actions{ display: flex; gap: 10px; margin-top: 6px; }
+  
+  .social-row{ display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+  .social-row .link{ color: #cfe2ff; }
+  .social-row .link:hover{ text-decoration: underline; }
+  
+  /* =======================================================
+     UTILITIES
+     ======================================================= */
+  .card{ background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow-1); }
+  .hide-mobile{ display: none; }
+  @media (min-width: 840px){ .hide-mobile{ display: initial; } }
+  
+  /* =======================================================
+     PHOTOWALL (perf-safe)
+     ======================================================= */
+  .photo-grid{ display: grid; grid-template-columns: repeat(auto-fill, minmax(220px,1fr)); gap: 12px; }
+  .photo-tile{
+    border-radius: 12px; overflow: hidden;
+    content-visibility: auto; contain-intrinsic-size: 220px 150px;
+  }
+  .photo-tile img{ display: block; width: 100%; height: 100%; object-fit: cover; transform: translateZ(0); }
+  
+  /* =======================================================
+     OPTIONAL: custom cursor hooks (minimal)
+     ======================================================= */
+  .custom-cursor{ position: fixed; left: 0; top: 0; width: 12px; height: 12px; border-radius: 50%;
+    background: #fff; border: 0; pointer-events: none; z-index: 2147483647; opacity: 0; box-shadow: 0 0 0 1px rgba(0,0,0,.12), 0 0 8px rgba(0,0,0,.08); transition: opacity .12s ease;
+  }
+  .custom-cursor.is-visible{ opacity: 1; }
+  
+  /* =======================================================
+     END
+     ======================================================= */
+  
+     /* ===== NAV basics ===== */
+:root{ --nav-h: 72px; }
+.nav-header{ position: fixed; top:0; left:0; right:0; z-index:60; }
+.nav-spacer{ height: var(--nav-h); }  /* keeps layout from jumping */
+section{ scroll-margin-top: var(--nav-h); }
+
+/* ===== HERO layout + bottom marquee ===== */
+:root{
+  --hero-marquee-h: 48px;        /* smaller bar height */
+  --hero-marquee-offset: 6px;    /* lift slightly above the very bottom */
+}
+
+.hero-image{
+  position: relative;
+  min-height: calc(100vh - var(--nav-h));
+  display: grid;
+  place-items: center;
+  text-align: center;
+  overflow: hidden;
+
+  /* reserve exact space so the marquee never overlaps the heading */
+  padding-bottom: calc(var(--hero-marquee-h) + var(--hero-marquee-offset));
+}
+
+/* kill ANY previous hero-marquee styles and define one canonical version */
+.hero-marquee{
+  position: absolute !important;
+  left: 0; right: 0;
+  bottom: var(--hero-marquee-offset);
+  height: var(--hero-marquee-h);
+  padding: 8px 0;
+  z-index: 6;
+
+  backdrop-filter: blur(6px) saturate(1.05);
+  -webkit-backdrop-filter: blur(6px) saturate(1.05);
+  background:
+    linear-gradient(to top, rgba(6,10,20,.55), rgba(6,10,20,0)),
+    linear-gradient(to bottom, rgba(6,10,20,.66), rgba(6,10,20,.2));
+  border-top: 1px solid rgba(168,190,255,.08);
+}
+
+/* keep marquee moving even on hover */
+.marquee:hover .marquee-track{ animation-play-state: running !important; }
+
+/* ===== Hero typography (1st line big, 2nd line smaller) ===== */
+.hero-heading{ line-height: 1.12; letter-spacing: -.02em; }
+.hero-line{ display:block; }
+.hero-line-1{ font-size: clamp(32px, 6.5vw, 72px); font-weight: 900; color:#fff; }
+.hero-line-2{
+  margin-top: .35em;
+  font-size: clamp(18px, 3.8vw, 36px);
+  font-weight: 800;
+  color: #e7ecf7;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* ===== Hard reset for duplicate/old rules that were causing the weird layout ===== */
+.marquee-section{ margin:0; padding:0; border:0; background: transparent; } /* if you had a second marquee wrapper */
+.hero-image::before{ pointer-events:none; }  /* ensure overlays don't block clicks */
+.hero-overlay{ pointer-events:none; }
+
+/* OPTIONAL: if you still have a bottom “skills dock”, hide it to avoid duplicates */
+.skills-dock{ display:none !important; }
+
+/* ========== ABOUT v2 fixes & polish ========== */
+
+/* Grid sizing (keeps your current layout but ensures visible media) */
+.aboutv2 { padding-block: clamp(28px, 6vw, 56px); }
+.aboutv2 .container { width: min(1100px, 92vw); margin: 0 auto; }
+
+.aboutv2-grid{
+  display: grid;
+  gap: clamp(14px, 2vw, 22px);
+  grid-template-columns: 2fr 1.2fr;
+  grid-auto-rows: minmax(200px, auto);
+}
+@media (max-width: 940px){ .aboutv2-grid{ grid-template-columns: 1fr; } }
+
+/* --- 1) BIG LEFT IMAGE: make it actually show --- */
+.about-card.hero { padding: 0; }
+.about-card.hero .hero-media{
+  position: relative;
+  width: 100%;
+  /* give it height – choose one of the two lines below */
+  aspect-ratio: 16 / 10;                     /* responsive ratio */
+  /* min-height: clamp(320px, 48vh, 560px); */ /* or a fixed responsive height */
+
+  border-radius: 20px;
+  overflow: hidden;
+  background-image: var(--hero);              /* <-- picks up the React inline var */
+  background-size: cover;                     /* fill */
+  background-position: center 22%;            /* nice framing */
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+/* subtle readability/shine overlay (very light) */
+.about-card.hero .hero-media::after{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,0) 28%),
+    radial-gradient(120% 80% at 90% -10%, rgba(110,168,255,.22), transparent 60%);
+  pointer-events:none;
+}
+
+/* overlay title sits over the photo */
+.about-card.hero .card-title.overlay{
+  position: absolute;
+  inset: 12px 16px auto 16px;
+  z-index: 2;
+  margin: 0;
+  line-height: 1.15;
+  font-size: clamp(18px, 2.6vw, 28px);
+  color: #f3f6ff;
+  text-shadow: 0 1px 8px rgba(0,0,0,.28);
+}
+
+/* --- 2) CENTER THE LIGHT BULB (CreativeSpark) --- */
+.about-card.blurb{
+  display: grid;
+  grid-template-rows: auto auto 1fr;  /* title, text, art */
+}
+.about-card.blurb .card-title{ margin-bottom: .4em; }
+.about-card.blurb .card-text{ margin-bottom: .6em; }
+
+/* CreativeSpark is an inline SVG; center it cleanly */
+.about-card.blurb svg{
+  display: block;
+  margin: clamp(8px, 2vh, 16px) auto 0;  /* centers horizontally */
+  max-width: 200px;                      /* cap size */
+  width: clamp(140px, 22vw, 200px);
+  height: auto;
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,.35));
+}
+
+/* --- 3) TOP-RIGHT CODE CARD: cool animated “bubble” glow behind --- */
+.about-card.code{
+  position: relative;
+  overflow: visible;                      /* let glow extend outside */
+  z-index: 0;
+}
+.about-card.code::after{
+  content:"";
+  position: absolute;
+  top: -28px; right: -28px;
+  width: clamp(160px, 24vw, 240px);
+  height: clamp(160px, 24vw, 240px);
+  border-radius: 50%;
+  background:
+    radial-gradient(closest-side, rgba(167,139,250,.55), rgba(167,139,250,0) 70%),
+    radial-gradient(closest-side, rgba(34,211,238,.45), rgba(34,211,238,0) 70%);
+  filter: blur(22px) saturate(1.05);
+  opacity: .65;
+  z-index: -1;                            /* behind the card */
+  animation: floatOrb 14s ease-in-out infinite alternate;
+}
+@keyframes floatOrb{
+  0%   { transform: translate(0,0) scale(1);    opacity:.65; }
+  100% { transform: translate(6px,-10px) scale(1.08); opacity:.8; }
+}
+
+/* code block glass/card feel */
+.about-card.code .code-preview{
+  position: relative;
+  border-radius: 14px;
+  padding: 14px;
+  background: rgba(255,255,255,.04);
+  outline: 1px solid rgba(255,255,255,.08);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.02),
+              0 10px 26px rgba(0,0,0,.28);
+}
+.about-card.code .codeblock{
+  margin: 0; white-space: pre-wrap;
+  font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 14px; color: #cbd5e1;
+}
+
+/* --- Health / lifting card blob image sits behind the canvas animation --- */
+.about-card.stacks{ position: relative; overflow: hidden; }
+.about-card.stacks .blob{
+  position: absolute;
+  right: -40px; bottom: -28px;
+  width: clamp(180px, 26vw, 260px);
+  opacity: .16;
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: 0;
+}
+.about-card.stacks > *{ position: relative; z-index: 1; } /* keep text/animation above */
+
+
+/* Kill the leftover height on the photo card */
+.about-card.hero{
+  padding: 0 !important;
+  min-height: unset !important;      /* ← this removes the extra empty area */
+  height: auto !important;
+}
+
+/* Make the media define the height */
+.about-card.hero .hero-media{
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;             /* or comment this and use a fixed min-height */
+  background-image: var(--hero);
+  background-size: cover;            /* show full area (crops edges) */
+  /* If you prefer NO crop, swap to: background-size: contain; background-color:#0b0f1a; */
+  background-position: center 22%;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* Keep the overlay title on top of the photo */
+.about-card.hero .card-title.overlay{
+  position: absolute;
+  inset: 12px 16px auto 16px;
+  margin: 0;
+  z-index: 2;
+}
+
+
+
+
+/* One full-page background, fixed behind everything */
+.global-bg{
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* All sections share the same global background */
+.section-about,
+.section-dark,
+.projects-sec,
+.create-sec,
+.contact-sec,
+.hero {
+  background: transparent !important;
+}
+
+/* The subtle line often comes from this top border — remove it */
+.hero-marquee{ border-top: 0 !important; }
+
+/* If you still see a seam, also ensure there's no 1px collapse trick */
+.section-dark + .section-dark{ margin-top: 0 !important; }
+
+
+/* ===== Contact (compact card + 4 logos row) ===== */
+#contact.contact-min{
+  padding: clamp(36px, 6vw, 64px) 0;
+  background: transparent;                /* uses your global backdrop */
+}
+
+.contact-min__inner{
+  width: min(560px, 92vw);                /* <<< small card */
+  margin: 0 auto;
+  text-align: center;
+}
+
+.contact-min__title{
+  margin: 0 0 12px;
+  font-size: clamp(26px, 4.2vw, 36px);
+  font-weight: 800;
+  letter-spacing: -.01em;
+  color: #e9edf5;
+}
+
+/* --- card --- */
+.contact-min__form{
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 16px;
+  backdrop-filter: blur(8px);
+  padding: clamp(14px, 3.2vw, 18px);
+  margin: 0 auto 12px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.30), inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+.cm-field{ display:flex; flex-direction:column; gap:6px; margin: 8px 0; }
+.cm-field > span{ font-size: 12px; color:#cbd5e1; }
+.cm-field input,
+.cm-field textarea{
+  font: inherit; color:#eaf1ff;
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 12px;
+  padding: 10px 12px;
+  outline: none;
+}
+.cm-field input:focus,
+.cm-field textarea:focus{
+  border-color: #7dd3fc;
+  box-shadow: 0 0 0 3px rgba(125,211,252,.15);
+}
+
+/* actions */
+.cm-actions{
+  display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+  margin-top: 8px;
+}
+.cm-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding: 9px 14px; border-radius:999px; cursor:pointer;
+  color:#e9edf5; background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.16);
+  text-decoration:none;
+  transition: transform .15s ease, background .15s ease, border-color .15s ease;
+}
+.cm-btn:hover{ transform: translateY(-1px); background: rgba(255,255,255,.12); }
+.cm-btn--primary{
+  color:#0b0f1a; border:0;
+  background: linear-gradient(90deg,#6ea8ff,#a78bfa);
+  box-shadow: 0 10px 24px rgba(110,168,255,.30);
+}
+
+/* --- 4 logos row at the bottom --- */
+.contact-min__icons{
+  display:grid;
+  grid-template-columns: repeat(4,1fr);
+  gap: 10px;
+  width: 100%;
+  margin: 10px auto 0;
+}
+
+.cm-icon{
+  display:grid; place-items:center;
+  height: 58px;                          /* compact pills */
+  border-radius: 14px;
+  background: linear-gradient(180deg,#ffffff,#eaf2ff);
+  color:#0b0f1a;
+  text-decoration:none;
+  box-shadow: 0 8px 22px rgba(110,168,255,.22),
+              inset 0 0 0 1px rgba(15,23,42,.08);
+  transition: transform .15s ease, filter .15s ease;
+}
+.cm-icon:hover{ transform: translateY(-2px); filter:saturate(1.05); }
+.cm-icon svg{ width: 60%; height: 60%; display:block; }
+
+/* brand accent tweaks (optional) */
+.cm-icon--resume{ background: linear-gradient(180deg,#fff,#f8ebe6); }
+.cm-icon--github{ background: linear-gradient(180deg,#fff,#f1f5f9); }
+.cm-icon--mail{   background: linear-gradient(180deg,#fff,#ffe7ec); }
+.cm-icon--linkedin{ background: linear-gradient(180deg,#e9f2ff,#d9e9ff); }
+
+/* bottom tagline */
+.contact-min__tagline{
+  width: min(560px, 92vw);
+  margin: 10px auto 0;
+  padding: 8px 0;
+  font-size: 13px;
+  color:#d6deef;
+  background: rgba(255,255,255,.06);
+  border-top: 1px solid rgba(255,255,255,.10);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* PhotoWall.css */
+.photo-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px,1fr));
+  gap: 12px;
+}
+
+/* Reserve space for each tile to avoid layout shift */
+.photo-tile{
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;                 /* space reservation */
+  background: rgba(255,255,255,.04);
+  content-visibility: auto;             /* perf */
+  contain-intrinsic-size: 220px 165px;  /* fallback size for offscreen tiles */
+}
+
+/* Optional: if you still see jumps, disable scroll anchoring for this section */
+.photowall-root{ overflow-anchor: none; }
+
+/* Images */
+.photo-tile img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform: translateZ(0);
+}
+
+
+/* =========================
+   HOME (inline in App.jsx)
+   ========================= */
+
+   :root{
+    --nav-h: 64px;              /* your sticky navbar height */
+    --hero-marquee-h: 44px;     /* height of the tech marquee row */
+    --container-max: 1100px;
+  }
+  
+  /* Layout helpers */
+  .container{
+    width: min(var(--container-max), 92vw);
+    margin-inline: auto;
+  }
+  
+  /* Make sections share a single global background (no seams) */
+  .hero,
+  .main-band,
+  .section-about,
+  .section-dark,
+  .projects-sec,
+  .contact-min { background: transparent !important; }
+  
+  /* ===== HERO ===== */
+  /* 2-row grid:
+     row 1 = centered content
+     row 2 = marquee bar */
+  .hero.hero--with-stack{
+    position: relative;
+    min-height: calc(100vh - var(--nav-h));
+    display: grid;
+    grid-template-rows: 1fr var(--hero-marquee-h);
+    align-items: center;           /* vertical center row 1 */
+    justify-items: center;         /* horizontal center row 1 */
+    padding: 0;
+    overflow: hidden;
+    text-align: center;
+  }
+  
+  /* Canvas / particles layer sits behind and never blocks clicks */
+  .hero__bg{
+    position: absolute; inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  
+  /* Content sits above the canvas and is centered */
+  .hero__content{
+    position: relative; z-index: 2;
+    width: min(var(--container-max), 92vw);
+    margin: 0;
+    /* Slight nudge up so headline feels perfectly centered visually.
+       Tweak or remove this if you want pure math-center. */
+    transform: translateY(-6vh);
+  }
+  @media (max-width: 900px){
+    .hero__content{ transform: translateY(-3vh); }
+  }
+  
+  /* Headings */
+  .hero__title{
+    margin: 0 0 .35em;
+    font-weight: 900;
+    letter-spacing: -.02em;
+    line-height: 1.06;
+    font-size: clamp(34px, 6.6vw, 72px);
+    color: #fff;
+  }
+  .hero__subtitle{
+    margin: 0;
+    font-weight: 800;
+    font-size: clamp(16px, 3.4vw, 30px);
+    color: #e9efff;
+    white-space: nowrap;           /* keep typewriter on one line */
+    text-shadow: 0 1px 6px rgba(0,0,0,.16);
+  }
+  .hero__subtitle .cursor{
+    margin-left: 4px;
+    font-weight: 700;
+    animation: caretBlink 1.05s steps(1, end) infinite;
+  }
+  @keyframes caretBlink{ 50%{ opacity: 0; } }
+  
+  /* CTA */
+  .hero__cta{ margin-top: clamp(14px, 2vh, 22px); }
+  .hero__btn.resume-btn{
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 12px 20px; border-radius: 999px; font-weight: 800;
+    color:#0b0f1a; text-decoration: none;
+    background: linear-gradient(90deg,#6ea8ff,#a78bfa);
+    box-shadow: 0 10px 26px rgba(110,168,255,.30);
+    border: 0;
+  }
+  .hero__btn.resume-btn:hover{ filter: brightness(1.05); transform: translateY(-1px); }
+  
+  /* ===== Marquee row (second grid row) ===== */
+  .hero-marquee{
+    position: static;                   /* not absolute; it's the second row */
+    align-self: end;
+    justify-self: stretch;
+    height: var(--hero-marquee-h);
+    width: 100%;
+    padding: 8px 0;
+    margin: 0;
+    border-top: 0;                      /* removes the tiny seam line */
+    backdrop-filter: blur(6px) saturate(1.04);
+    -webkit-backdrop-filter: blur(6px) saturate(1.04);
+    background:
+      linear-gradient(to top, rgba(6,10,20,.55), rgba(6,10,20,0)),
+      linear-gradient(to bottom, rgba(6,10,20,.66), rgba(6,10,20,.2));
+    box-shadow: 0 -8px 28px rgba(0,0,0,.22) inset;
+    z-index: 1;
+  }
+  /* keep it flowing inside the same max width if you want */
+  .hero-marquee > *{ width: min(var(--container-max), 96vw); margin-inline: auto; }
+  
+  /* ===== MAIN BAND ===== */
+  .main-band{
+    position: relative;
+    /* no padding-top hack needed; background is global/transparent */
+  }
+  .main-band__bg{ display: none; } /* we use one global background elsewhere */
+  
+  /* Generic section spacing rhythm */
+  .section-about,
+  .section-dark,
+  .projects-sec,
+  .contact-min{
+    padding-block: clamp(48px, 7vw, 96px);
+  }
+  
+  /* Optional: tighter spacing when sections touch */
+  .section-dark + .section-dark,
+  .section-dark + .projects-sec,
+  .projects-sec + .contact-min{
+    padding-top: clamp(32px, 4.5vw, 64px);
+  }
+  
+  /* === ReactAIBuilder animation === */
+.ai-dev-anim{
+  display: inline-block;
+  aspect-ratio: 1 / 1;
+  position: relative;
+  /* center inside card if you want: */
+  /* display:block; margin-inline:auto; */
+}
+
+.ai-dev-anim__svg{ width: 100%; height: 100%; display: block; }
+
+/* Float the whole laptop a bit */
+@keyframes aiFloat {
+  0%   { transform: translateY(0); }
+  50%  { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
+.ai-float{ animation: aiFloat 4.5s ease-in-out infinite; }
+
+/* React atom slow spin */
+@keyframes orbitSpin {
+  to { transform: translate(100px,88px) rotate(360deg); }
+}
+.react-orbit{
+  transform-origin: 100px 88px; /* svg center we translated from */
+  animation: orbitSpin 12s linear infinite;
+  opacity: .95;
+}
+
+/* A small dot circling around the orbit (uses motion path fallback) */
+@keyframes dotPath {
+  0%   { transform: translate(122px,88px); }
+  25%  { transform: translate(111px,106px); }
+  50%  { transform: translate(100px,88px); }
+  75%  { transform: translate(111px,70px); }
+  100% { transform: translate(122px,88px); }
+}
+.react-dot{
+  animation: dotPath 3.8s ease-in-out infinite;
+  opacity: .9;
+  filter: drop-shadow(0 0 6px rgba(45,212,191,.55));
+}
+
+/* Chip “alive” pulse + subtle glow */
+@keyframes chipPulse {
+  0%   { box-shadow: none; }
+  50%  { box-shadow: 0 0 0 6px rgba(125,211,252,.10), 0 0 12px rgba(125,211,252,.45); }
+  100% { box-shadow: none; }
+}
+.ai-chip{
+  /* `box-shadow` works on SVG via filter fallback; mimic with stroke changes: */
+  animation: chipPulse 2.2s ease-in-out infinite;
+  stroke: #7dd3fc;
+}
+
+/* Sparks: tiny parallax movement to imply working state */
+@keyframes sparks {
+  0%,100% { transform: translate(0,0); opacity: .85; }
+  50%     { transform: translate(1.6px,-1.2px); opacity: 1; }
+}
+.ai-sparks{ animation: sparks 1.8s ease-in-out infinite; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .ai-float,
+  .react-orbit,
+  .react-dot,
+  .ai-sparks,
+  .ai-chip { animation: none !important; }
+}
+
+/* Make the "now" card pack content at the top */
+.about-card.now{
+  display: grid;
+  grid-template-rows: auto auto auto;   /* eyebrow, title, text/figure */
+  row-gap: 8px;
+  align-content: start;
+  /* trim extra space if your base card is generous */
+  padding-top: clamp(14px, 2.2vw, 18px);
+  padding-bottom: clamp(14px, 2.2vw, 18px);
+  min-height: 0;                         /* avoid forcing tall cards */
+}
+
+/* Pull the animation closer to the text */
+.about-card.now .ai-wrap{
+  justify-self: center;
+  margin-top: -90px;                     /* ← move up; try -32px if you want more */
+}
+
+/* On wider screens, lift it a bit more */
+@media (min-width: 920px){
+  .about-card.now .ai-wrap{ margin-top: -32px; }
+}
+
+/* If the text still creates big bottom space, let the figure use it */
+.about-card.now .ai-wrap .ai-dev-anim{
+  max-width: 220px;                      /* keep proportions */
+  width: 100%;
+}
+
+/* Tighten gap between ABOUT and EXPERIENCE */
+.section-about{
+  /* keep a normal top, trim the bottom */
+  padding-top: clamp(40px, 6vw, 80px);
+  padding-bottom: clamp(14px, 2.6vw, 28px);
+}
+
+/* Experience section starts tighter when it follows About */
+.section-about + #experiences.section-dark{
+  padding-top: clamp(12px, 2.2vw, 22px);   /* was ~48–96px */
+}
+
+/* Kill any stray top margin on the first heading inside Experience */
+#experiences .container > h2:first-child{
+  margin-top: 0;
+}
+
+/* If your About grid leaves extra space at the bottom, trim it a bit */
+.aboutv2 .aboutv2-grid{
+  margin-bottom: 0;
+}
+
+/* Optional: make it even tighter on wide screens */
+@media (min-width: 1024px){
+  .section-about{ padding-bottom: 18px; }
+  .section-about + #experiences.section-dark{ padding-top: 16px; }
+}
+
+/* Tighten gap: Experience → Create */
+
+/* 1) Trim the bottom of the Experience section */
+#experiences.section-dark{
+  padding-bottom: clamp(12px, 2.2vw, 24px);
+}
+
+/* 2) Trim the top of the Create section (whatever class/id you use) */
+#create,
+section#create,
+.create-sec{
+  padding-top: clamp(14px, 2.4vw, 26px);
+}
+
+/* 3) Remove any stray top-margin on the first title inside Create */
+#create .container > h2:first-child,
+.create-sec .container > h2:first-child{
+  margin-top: 0;
+}
+
+/* Optional: make it a hair tighter on wide screens */
+@media (min-width: 1024px){
+  #experiences.section-dark{ padding-bottom: 16px; }
+  #create, section#create, .create-sec{ padding-top: 16px; }
+}
+
+#experiences .cards-grid,
+#experiences .exp-wrap { margin-bottom: 0; }
+
+
+/* --- Clamp Experience → Create gap to ~12–20px --------------------------- */
+
+/* 1) Trim Experience bottom padding hard */
+#experiences.section-dark{
+  padding-bottom: 10px !important;      /* tighten here */
+}
+
+/* kill any bottom margins inside Experience */
+#experiences .exp-wrap,
+#experiences .exp-sec,
+#experiences .cards-grid{
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* 2) Trim Create top padding and heading top margin  */
+#create,
+.create-sec{
+  padding-top: 10px !important;         /* tighten here */
+}
+#create .container > h2:first-child,
+.create-sec .container > h2:first-child{
+  margin-top: 0 !important;
+}
+
+/* 3) When Create follows Experience, pull it up a touch more */
+#experiences.section-dark + #create,
+#experiences.section-dark + .create-sec{
+  margin-top: -8px;                     /* nudge upward; try -12px if you want tighter */
+}
+
+/* Optional: make it extra tight on wide screens */
+@media (min-width: 1024px){
+  #experiences.section-dark{ padding-bottom: 8px !important; }
+  #experiences.section-dark + #create,
+  #experiences.section-dark + .create-sec{ margin-top: -10px; }
+}
+
+/* ===== Tighten gap: Create → Projects ===== */
+
+/* 1) Trim bottom of Create */
+#create,
+.create-sec{
+  padding-bottom: 10px !important;
+}
+#create .create-wrap,
+#create .create-grid,
+.create-sec .create-wrap,
+.create-sec .create-grid{
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* 2) Trim top of Projects */
+#projects,
+.projects-sec{
+  padding-top: 10px !important;
+}
+#projects .container > h2:first-child,
+.projects-sec .container > h2:first-child,
+.projects-title{
+  margin-top: 0 !important;
+}
+
+/* 3) When Projects immediately follows Create, pull it up slightly */
+#create + #projects,
+#create + .projects-sec,
+.create-sec + #projects,
+.create-sec + .projects-sec{
+  margin-top: -12px;               /* tweak: -8px…-20px depending on taste */
+}
+
+/* Optional: a hair tighter on wide screens */
+@media (min-width: 1024px){
+  #create, .create-sec{ padding-bottom: 8px !important; }
+  #projects, .projects-sec{ padding-top: 8px !important; }
+  #create + #projects,
+  #create + .projects-sec,
+  .create-sec + #projects,
+  .create-sec + .projects-sec{ margin-top: -14px; }
+}
+
+/* --- CONTACT: hero look like the screenshot --- */
+.contact-min{
+  position: relative;
+  padding: clamp(64px, 12vw, 140px) 0 clamp(16px, 4vw, 32px);
+  background: #05070B;                 /* deep black/blue */
+  overflow: hidden;
+}
+
+/* soft center layout */
+.contact-min__inner{
+  width: min(1100px, 92vw);
+  margin-inline: auto;
+  text-align: center;
+  position: relative;
+  z-index: 2;                           /* above background net */
+}
+
+/* Big, vivid heading */
+.contact-min__title{
+  margin: 0 0 clamp(18px, 3.6vw, 28px);
+  font-weight: 900;
+  letter-spacing: .02em;
+  color: #62A7F7;                        /* blue like screenshot */
+  font-size: clamp(28px, 6vw, 72px);
+}
+
+/* Make the form compact (or hide it if you want) */
+.contact-min__form{
+  display: none;                        /* SHOW: change to block if you want the form here */
+  margin: 0 auto clamp(18px, 4vw, 28px);
+  width: min(560px, 90vw);
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 16px;
+  padding: clamp(14px, 3vw, 20px);
+  backdrop-filter: blur(6px);
+}
+
+/* The 4 big icons row */
+.contact-min__icons{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(16px, 3.5vw, 32px);
+  margin: clamp(8px, 2.5vw, 20px) 0 clamp(12px, 3vw, 24px);
+}
+
+/* Base icon tile */
+.cm-icon{
+  width: clamp(64px, 10vw, 120px);
+  height: clamp(64px, 10vw, 120px);
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  box-shadow:
+    0 12px 32px rgba(0,0,0,.45),
+    inset 0 0 0 1px rgba(255,255,255,.08);
+  transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+  text-decoration: none;
+}
+.cm-icon:hover{
+  transform: translateY(-3px);
+  filter: saturate(1.05);
+  box-shadow:
+    0 18px 40px rgba(0,0,0,.5),
+    inset 0 0 0 1px rgba(255,255,255,.12);
+}
+
+/* individual brand looks to match the screenshot style */
+.cm-icon svg{ width: 66%; height: 66%; }
+
+/* Resume: orange/red paper */
+.cm-icon--resume{
+  background: #F05443;
+  color: #0b0f1a;
+}
+
+/* GitHub: white circle on black */
+.cm-icon--github{
+  background: #0b0f1a;
+  color: #0b0f1a;
+  border-radius: 50%;
+  box-shadow:
+    0 12px 32px rgba(0,0,0,.55),
+    inset 0 0 0 3px #fff;
+}
+.cm-icon--github svg circle{ fill: #fff; }
+
+/* Mail: pink rounded rectangle */
+.cm-icon--mail{
+  background: #FF7191;
+  border-radius: 16px;
+  color: #0b0f1a;
+}
+
+/* LinkedIn: blue brand tile */
+.cm-icon--linkedin{
+  background: #0A66C2;
+  color: #EAF2FF;
+}
+
+/* Tagline strip */
+.contact-min__tagline{
+  margin-top: clamp(10px, 3vw, 16px);
+  color:#d9dde7;
+  background:#1f2227;
+  border-top: 1px solid rgba(255,255,255,.06);
+  font-size: clamp(12px, 1.7vw, 16px);
+  padding: 10px 0;
+}
+
+/* --- Decorative background (static fallback) ------------------------- */
+/* Subtle starfield/glow so it still looks good without JS canvas */
+.contact-min::before{
+  content:"";
+  position:absolute; inset:0;
+  background:
+    radial-gradient(1200px 700px at 70% -10%, rgba(72,130,255,.18), transparent 60%),
+    radial-gradient(900px 600px  at 15%  0%, rgba(82,185,255,.12), transparent 65%),
+    #05070B;
+  z-index: 0;
+}
+
+/* Canvas overlay sits on top of ::before but under content */
+.contact-net{
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: .65;            /* tweak intensity */
+  pointer-events: none;
+}
+
+/* === Contact hero === */
+#contact.contact-min {
+  position: relative;
+  isolation: isolate;      /* keep canvas behind content only */
+  padding: 96px 0 64px;    /* top space for title */
+  min-height: 440px;       /* ensures the canvas has area to paint */
+  overflow: hidden;
+}
+
+/* Animated network canvas fills the section */
+.contact-net {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 0;
+  opacity: 0.45;
+  filter: contrast(110%) saturate(120%);
+}
+
+/* Soft background glows so it blends into your site gradient */
+#contact.contact-min::before {
+  content: "";
+  position: absolute;
+  inset: -30% -10% -20% -10%;
+  z-index: 0;
+  background:
+    radial-gradient(1200px 600px at 70% 0%, rgba(18, 84, 130, 0.35), rgba(9, 14, 24, 0) 60%),
+    radial-gradient(800px 500px at 20% 10%, rgba(33, 117, 214, 0.18), rgba(9, 14, 24, 0) 55%);
+}
+
+.contact-min__inner {
+  position: relative;
+  z-index: 2;              /* above canvas */
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.contact-min__title {
+  margin: 0 0 28px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  font-size: clamp(32px, 5vw, 64px);
+  line-height: 1.05;
+  background: linear-gradient(180deg, #8ec5ff, #63a0ff 55%, #8ec5ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Hide the form to match the screenshot look (show later if you want) */
+.contact-min__form { display: none; }
+
+/* Icon row (4 tiles) */
+.contact-min__icons {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(16px, 4vw, 32px);
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.cm-icon {
+  width: clamp(72px, 9vw, 120px);
+  height: clamp(72px, 9vw, 120px);
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.cm-icon svg {
+  width: 65%;
+  height: 65%;
+  fill: #0b0f1a;     /* inner glyph color */
+  color: #dbe8ff;   /* stroke color where used */
+}
+
+/* Brand colors for each tile */
+.cm-icon--resume   { background: #ef5743; }
+.cm-icon--github   { background: #0b0f1a; }
+.cm-icon--github svg { fill: #ffffff; color: #ffffff; }
+.cm-icon--mail     { background: #ff8aa1; }
+.cm-icon--linkedin { background: #1976d2; }
+
+.cm-icon:hover {
+  transform: translateY(-6px) scale(1.04);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* Tagline */
+.contact-min__tagline {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin-top: 22px;
+  font-size: 14px;
+  opacity: .7;
+}
+
+@media (max-width: 640px) {
+  #contact.contact-min { padding: 72px 0 48px; min-height: 360px; }
+}
+
+/* === Bigger skills marquee (bottom strip) === */
+/* Works for: #tech-marquee, .skills-marquee, .tech-marquee, .stack-marquee */
+#tech-marquee,
+.skills-marquee,
+.tech-marquee,
+.stack-marquee {
+  --mq-h: 92px;          /* height of the bar */
+  --mq-gap: 22px;        /* space between pills */
+  --mq-pad-y: 12px;      /* vertical padding inside each pill */
+  --mq-pad-x: 18px;      /* horizontal padding inside each pill */
+  --mq-radius: 16px;     /* pill rounding */
+  --mq-icon: 30px;       /* icon size */
+  --mq-font: 16px;       /* label font size */
+  height: var(--mq-h);
+}
+
+/* Track row that scrolls */
+#tech-marquee .track,
+.skills-marquee .track,
+.tech-marquee .track,
+.stack-marquee .track {
+  gap: var(--mq-gap);
+  align-items: center;
+}
+
+/* Each badge/pill */
+#tech-marquee .badge,
+.skills-marquee .badge,
+.tech-marquee .badge,
+.stack-marquee .badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: var(--mq-pad-y) var(--mq-pad-x);
+  border-radius: var(--mq-radius);
+  font-size: var(--mq-font);
+  line-height: 1;
+  backdrop-filter: blur(6px);
+}
+
+/* Icon sizes inside pills */
+#tech-marquee .badge img,
+#tech-marquee .badge svg,
+.skills-marquee .badge img,
+.skills-marquee .badge svg,
+.tech-marquee .badge img,
+.tech-marquee .badge svg,
+.stack-marquee .badge img,
+.stack-marquee .badge svg {
+  width: var(--mq-icon);
+  height: var(--mq-icon);
+}
+
+/* Optional: make the whole strip feel denser without changing speed */
+#tech-marquee .track > * { transform: translateZ(0); }
+
+/* Fill the whole card with the hero photo */
+.aboutv2 .about-card.hero {
+  position: relative;
+  padding: 0;                 /* kill inner spacing that creates the gap */
+  min-height: clamp(420px, 55vw, 720px); /* responsive height for the block */
+}
+
+/* The picture is the card */
+.aboutv2 .about-card.hero .hero-media {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 22px;
+  overflow: hidden;
+
+  /* background image from inline --hero */
+  background-image: var(--hero);
+  background-size: cover;          /* cover the entire block */
+  background-position: 50% 45%;    /* adjust if you want more/less headroom */
+  background-repeat: no-repeat;
+}
+
+/* Gentle darken so the white title stays readable */
+.aboutv2 .about-card.hero .hero-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 12, 20, 0.06) 0%,
+    rgba(8, 12, 20, 0.30) 65%,
+    rgba(8, 12, 20, 0.45) 100%
+  );
+  pointer-events: none;
+}
+
+/* Title sits on top of the photo */
+.aboutv2 .about-card.hero .overlay {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  margin: 0;
+  z-index: 2;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+}
+
+/* ====== Skills marquee ====== */
+.skills-marquee {
+  /* tune these */
+  --fade: 36px;        /* end fade width (smaller = less fade) */
+  --h: 88px;           /* track height (bigger = taller strip) */
+
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+
+  height: var(--h);
+  display: grid;
+  align-items: center;
+  background: rgba(7, 12, 20, 0.8);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+
+  /* narrower edge fade */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--fade),
+    #000 calc(100% - var(--fade)),
+    transparent 100%
+  );
+          mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--fade),
+    #000 calc(100% - var(--fade)),
+    transparent 100%
+  );
+}
+
+.skills-marquee__rail {
+  display: flex;
+  gap: 36px;                  /* spacing between items */
+  align-items: center;
+  width: max-content;
+  animation: scroll-x 28s linear infinite;
+  padding: 0 8px;
+  height: 100%;
+}
+
+.skills-marquee:hover .skills-marquee__rail {
+  animation-play-state: paused;
+}
+
+@keyframes scroll-x {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* item sizing to match taller track */
+.skill-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: calc(var(--h) - 24px);
+  padding: 0 18px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 6px 18px rgba(0,0,0,.25) inset, 0 1px 0 rgba(255,255,255,.05);
+  white-space: nowrap;
+}
+
+.skill-pill img,
+.skill-pill svg {
+  width: 28px;
+  height: 28px;
+}
+
+.skill-pill span {
+  font-size: 18px;
+  line-height: 1;
+  letter-spacing: .2px;
+  color: rgba(240, 244, 255, 0.92);
+}
+
+/* small screens: keep it readable */
+@media (max-width: 600px) {
+  .skills-marquee { --fade: 18px; --h: 76px; }
+  .skills-marquee__rail { gap: 22px; }
+  .skill-pill { height: calc(var(--h) - 18px); padding: 0 14px; }
+  .skill-pill img, .skill-pill svg { width: 24px; height: 24px; }
+  .skill-pill span { font-size: 16px; }
+}
+
+/* Hide the system cursor on devices with a fine pointer (mouse/trackpad) */
+@media (pointer: fine) {
+  html, body, #root, main, .app, * {
+    cursor: none !important;
+  }
+
+  /* If you want the I-beam in text fields, keep this override.
+     If you want *no* system cursor anywhere, delete this block. */
+  input, textarea, [contenteditable="true"], select {
+    cursor: text !important;
+  }
+}
+
+/* Hero section */
+.home-hero {
+  min-height: 78vh;               /* keep the section tall */
+  display: grid;
+  place-items: center;            /* still centered horizontally */
+}
+
+/* Shift the center block down a touch */
+.home-hero .hero-content {
+  transform: translateY(3vh);     /* adjust 1–5vh to taste */
+}
+
+/* On small screens, keep it closer to center */
+@media (max-width: 640px) {
+  .home-hero .hero-content {
+    transform: translateY(1.5vh);
+  }
+}
+
+/* ===== Thicker marquee ===== */
+.skill-ticker {
+  /* easy knobs to tune thickness */
+  --ticker-h: 92px;          /* overall height of the bar */
+  --rail-pad: 10px;          /* top/bottom breathing room inside */
+  --card-h-gap: 16px;        /* space lost to the rail padding + shadow */
+  --card-radius: 14px;       /* item corner radius */
+  --item-pad-y: 14px;
+  --item-pad-x: 28px;
+  --icon-size: 30px;         /* logo size */
+  --label-size: 1.1rem;      /* text size */
+  --fade-w: clamp(12px, 4vw, 56px); /* smaller edge-fade so more content shows */
+}
+
+.skill-ticker {
+  position: sticky;          /* or fixed/relative—keep what you had */
+  bottom: 0;
+  width: 100%;
+  height: var(--ticker-h);
+  padding-block: var(--rail-pad);
+  z-index: 30;
+}
+
+.skill-ticker .ticker-rail {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  position: relative;
+  /* your background/blur/shadow stays the same */
+}
+
+/* Edge fade (make it narrower than before) */
+.skill-ticker .ticker-rail::before,
+.skill-ticker .ticker-rail::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: var(--fade-w);
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+  /* keep your gradient colors—example: */
+  background: linear-gradient(to right, rgba(9,14,22,1), rgba(9,14,22,0));
+}
+.skill-ticker .ticker-rail::after {
+  right: 0;
+  left: auto;
+  transform: scaleX(-1);
+}
+
+/* Track that scrolls */
+.skill-ticker .ticker-track {
+  display: flex;
+  gap: 18px;                 /* spacing between items */
+  align-items: center;
+  will-change: transform;
+}
+
+/* Each item card */
+.skill-ticker .skill-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  height: calc(var(--ticker-h) - var(--card-h-gap));
+  padding: var(--item-pad-y) var(--item-pad-x);
+  border-radius: var(--card-radius);
+  /* keep your bg/opacity/shadow rules */
+}
+
+/* Icon + label */
+.skill-ticker .skill-card img,
+.skill-ticker .skill-card svg {
+  width: var(--icon-size);
+  height: var(--icon-size);
+  flex: 0 0 auto;
+}
+
+.skill-ticker .skill-card span {
+  font-size: var(--label-size);
+  line-height: 1;
+  letter-spacing: 0.2px;
+}
+
+/* Optional: if your ticker overlaps content above, give the previous section a little bottom padding equal to the new ticker height */
+.section-before-ticker {
+  padding-bottom: calc(var(--ticker-h) + 12px);
+}
+
+/* --- Shared section title look (Projects / Experiences) --- */
+.section-title-like {
+  font-size: clamp(34px, 4.4vw, 64px);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #e6edf7;           /* same light heading color */
+  margin: 0 0 24px;
+  position: relative;
+}
+
+.section-title-like::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -12px;            /* underline distance */
+  width: 140px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  box-shadow: 0 0 24px rgba(96, 165, 250, 0.5);
+}
+
+/* --- Apply to Create (and keep for reuse) --- */
+.create-title {           /* use this class on your Create <h2> */
+  composes: section-title-like; /* if you use CSS Modules */
+}
+
+/* If not using CSS Modules, just duplicate: */
+.create-title {
+  font-size: clamp(34px, 4.4vw, 64px);
+  line-height: 1.05;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #e6edf7;
+  margin: 0 0 24px;
+  position: relative;
+}
+.create-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -12px;
+  width: 140px;
+  height: 4px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  box-shadow: 0 0 24px rgba(96, 165, 250, 0.5);
+}
+
+/* =========================
+   CONTACT — Clean hero style
+   ========================= */
+   .contact-min{
+    position: relative;
+    overflow: hidden;
+    padding: clamp(4rem, 6vw, 6.5rem) 0 clamp(3rem, 4vw, 4.5rem);
+    text-align: center;
+    isolation: isolate;
+  }
+  
+  /* subtle constellation-ish backdrop */
+  .contact-min::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(1200px 600px at 70% -10%, rgba(74,140,255,.08), transparent 60%),
+      radial-gradient(900px 500px at 10% 0%, rgba(146,192,255,.07), transparent 55%),
+      radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.18) 50%, transparent 55%),
+      radial-gradient(2px 2px at 65% 15%, rgba(255,255,255,.16) 50%, transparent 55%),
+      radial-gradient(2px 2px at 82% 42%, rgba(255,255,255,.14) 50%, transparent 55%),
+      radial-gradient(2px 2px at 35% 75%, rgba(255,255,255,.12) 50%, transparent 55%);
+    filter: blur(.2px);
+    z-index:-1;
+  }
+  
+  /* Title */
+  .contact-min__title{
+    font-weight: 800;
+    font-size: clamp(2.25rem, 1.2rem + 4vw, 4rem);
+    line-height: 1.05;
+    letter-spacing: .4px;
+    margin: 0 0 clamp(1.75rem, 2vw, 2.25rem);
+    color: #a8c8ff;
+    text-shadow: 0 0 24px rgba(90,140,255,.15);
+  }
+  
+  /* ====== ICON STRIP ====== */
+  .contact-min__icons{
+    display: flex;
+    justify-content: center;
+    gap: clamp(1.2rem, 1.6vw, 1.8rem);
+    margin: 0 auto clamp(1.75rem, 2vw, 2rem);
+    padding: 0;
+    list-style: none;
+  }
+  
+  .cm-icon{
+    width: clamp(80px, 7vw, 112px);
+    height: clamp(80px, 7vw, 112px);
+    border-radius: 18px;
+    display: grid;
+    place-items: center;
+    text-decoration: none;
+    outline: none;
+    transform: translateZ(0); /* perf */
+    box-shadow:
+      0 10px 30px -12px rgba(0,0,0,.5),
+      inset 0 0 0 1px rgba(255,255,255,.06);
+    transition: transform .22s ease, box-shadow .22s ease, filter .22s ease;
+  }
+  
+  /* consistent inner SVG sizing */
+  .cm-icon svg{
+    width: 58%;
+    height: 58%;
+    display: block;
+    color: #0b0f1a;
+  }
+  
+  /* Colorways to match your reference */
+  .cm-icon--resume{   background: #F35A4A; box-shadow: 0 10px 30px -12px rgba(243,90,74,.6), inset 0 0 0 1px rgba(255,255,255,.06); }
+  .cm-icon--github{   background: #0b0f1a; }
+  .cm-icon--mail{     background: #FF8CA1; box-shadow: 0 10px 30px -12px rgba(255,140,161,.55), inset 0 0 0 1px rgba(255,255,255,.06); }
+  .cm-icon--linkedin{ background: #1177D1; box-shadow: 0 10px 30px -12px rgba(17,119,209,.55), inset 0 0 0 1px rgba(255,255,255,.06); }
+  
+  /* Make the GitHub tile match the white circle / black cat look */
+  .cm-icon--github svg circle{ fill:#fff; }
+  .cm-icon--github svg path{ fill:#0b0f1a; }
+  
+  /* Hover / focus */
+  .cm-icon:focus-visible{
+    outline: 2px solid rgba(160,200,255,.65);
+    outline-offset: 3px;
+    filter: saturate(1.05);
+  }
+  .cm-icon:hover{
+    transform: translateY(-4px);
+    box-shadow:
+      0 16px 38px -14px rgba(0,0,0,.55),
+      0 0 0 4px rgba(255,255,255,.04) inset;
+  }
+  
+  /* ====== FORM (kept, but compact & tidy) ====== */
+  .contact-min__form{
+    max-width: 780px;
+    margin: 0 auto clamp(2.25rem, 2.2vw, 2.75rem);
+    padding: clamp(1rem, 1.4vw, 1.4rem);
+    display: grid;
+    gap: .9rem;
+    grid-template-columns: 1fr 1fr;
+    border-radius: 16px;
+    background: rgba(8,12,20,.35);
+    border: 1px solid rgba(255,255,255,.06);
+    box-shadow: 0 20px 60px -30px rgba(0,0,0,.5);
+    backdrop-filter: blur(6px);
+  }
+  
+  .contact-min__form .cm-field{
+    display: grid; gap: .45rem;
+  }
+  .contact-min__form .cm-field:nth-child(3){
+    grid-column: 1 / -1;
+  }
+  
+  .contact-min__form input,
+  .contact-min__form textarea{
+    width: 100%;
+    color: #dfe8ff;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    padding: .9rem 1rem;
+    font: inherit;
+    transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+  }
+  .contact-min__form input::placeholder,
+  .contact-min__form textarea::placeholder{ color: #93a4c8; }
+  
+  .contact-min__form input:focus,
+  .contact-min__form textarea:focus{
+    outline: none;
+    border-color: rgba(150,190,255,.45);
+    box-shadow: 0 0 0 3px rgba(120,170,255,.15);
+    background: rgba(255,255,255,.06);
+  }
+  
+  /* Form buttons */
+  .cm-actions{
+    grid-column: 1 / -1;
+    display: flex; flex-wrap: wrap; gap: .6rem;
+    justify-content: center;
+    margin-top: .2rem;
+  }
+  .cm-btn{
+    border: 1px solid rgba(255,255,255,.1);
+    background: rgba(255,255,255,.06);
+    color: #dfe8ff;
+    padding: .7rem 1rem;
+    border-radius: 999px;
+    transition: background .18s ease, border-color .18s ease, transform .18s ease;
+  }
+  .cm-btn:hover{ background: rgba(255,255,255,.1); transform: translateY(-1px); }
+  .cm-btn--primary{
+    background: linear-gradient(180deg, #7aa3ff, #4f74f5);
+    border-color: transparent;
+    color: #061024;
+    font-weight: 700;
+  }
+  .cm-btn--primary:hover{ filter: brightness(1.06); }
+  
+  /* “icons only” mode (optional) */
+  .contact-min.icons-only .contact-min__form{ display: none; }
+  
+  /* Tagline strip */
+  .contact-min__tagline{
+    max-width: 56rem;
+    margin: clamp(1.25rem, 1.8vw, 1.9rem) auto 0;
+    padding: .85rem 1.1rem;
+    color: #b9c8e8;
+    background: rgba(0,0,0,.35);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 12px;
+    font-size: clamp(.9rem, .85rem + .2vw, 1rem);
+    box-shadow: 0 12px 40px -24px rgba(0,0,0,.6);
+  }
+  
+  /* Responsive: stack form on small screens */
+  @media (max-width: 720px){
+    .contact-min__icons{ gap: 1rem; }
+    .cm-icon{ width: 82px; height: 82px; border-radius: 16px; }
+    .contact-min__form{ grid-template-columns: 1fr; }
+  }
+
+  :root{
+    /* tweak these if you want different tones */
+    --bg-deep: #070b13;
+    --bg-mid:  #0c1422;
+    --bg-top:  #0a1b29;
+  }
+  
+  html, body { height: 100%; }
+  
+  body{
+    /* one continuous backdrop */
+    background:
+      radial-gradient(1200px 800px at 75% -10%, rgba(64,132,255,.14), transparent 60%),
+      radial-gradient(1000px 700px at 8% -5%, rgba(92,182,255,.12), transparent 55%),
+      linear-gradient(180deg, var(--bg-mid), var(--bg-top) 35%, var(--bg-deep) 100%);
+    background-attachment: fixed, fixed, fixed; /* keeps it consistent while scrolling */
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+
+  /* your particles canvas or bg image */
+#bg-canvas{
+  position: fixed;
+  inset: 0;
+  z-index: -2;          /* behind all content */
+  pointer-events: none; /* never blocks clicks */
+}
+
+/* keep sections clear so the global background shows through */
+section,
+.aboutv2,
+.contact-min{
+  background: transparent !important;
+}
+
+/* kill the Contact section overlay from earlier CSS */
+.contact-min::before{ content: none !important; }
+
+/* keep your form/cards readable without adding big bands */
+.contact-min__form{
+  background: rgba(8,12,20,.35);          /* subtle glass */
+  border: 1px solid rgba(255,255,255,.06);
+  backdrop-filter: blur(6px);
+}
+
+/* if any marquee/footer bar has its own band, make it translucent */
+.skills-marquee,
+.contact-min__tagline{
+  background: rgba(0,0,0,.35);            /* not a full-width dark strip */
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+/* ================================
+   Timeline — variables & resets
+   ================================ */
+   :root{
+    --xp-bg: rgba(10,14,20,.66);
+    --xp-bg-hover: rgba(14,18,26,.78);
+    --xp-border: 1px solid rgba(255,255,255,.06);
+    --xp-rail: rgba(255,255,255,.08);
+    --xp-rail-strong: rgba(255,255,255,.14);
+    --xp-text: rgba(235,243,255,.92);
+    --xp-sub: rgba(210,224,245,.72);
+    --xp-muted: rgba(200,210,225,.45);
+    --xp-accent: #7aa2ff;       /* left rail glow & active dot */
+    --xp-accent-2: #60e6ff;     /* subtle gradient blend */
+    --xp-shadow: 0 10px 35px rgba(0,12,40,.45);
+    --xp-radius: 18px;
+  }
+  
+  /* container for the whole block */
+  .timeline{
+    position: relative;
+    margin: 28px auto 80px;
+    padding: 28px clamp(16px, 3vw, 32px);
+    background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)) , var(--xp-bg);
+    border: var(--xp-border);
+    border-radius: 26px;
+    box-shadow: var(--xp-shadow);
+    backdrop-filter: blur(6px);
+    color: var(--xp-text);
+  }
+  
+  /* left rail */
+  .timeline__rail{
+    position: absolute;
+    left: clamp(16px, 2.2vw, 28px);
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    background:
+      linear-gradient(180deg, var(--xp-rail-strong), var(--xp-rail));
+    box-shadow: 0 0 24px 0 rgba(122,162,255,.25);
+    border-radius: 2px;
+  }
+  
+  /* each item/card row (grid: rail gutter | content | date) */
+  .timeline__item{
+    position: relative;
+    display: grid;
+    grid-template-columns: 34px 1fr auto;
+    align-items: start;
+    gap: clamp(14px, 2vw, 24px);
+    padding: 22px clamp(10px, 2vw, 18px);
+    border-radius: var(--xp-radius);
+    transition: transform .25s ease, background-color .25s ease, border-color .25s ease;
+  }
+  .timeline__item + .timeline__item{
+    border-top: 1px dashed rgba(255,255,255,.075);
+  }
+  
+  /* dot that sits over the rail */
+  .timeline__dot{
+    grid-column: 1;
+    width: 12px; height: 12px;
+    translate: 8px 4px;            /* nudges onto the rail */
+    border-radius: 50%;
+    background: radial-gradient(circle at 45% 35%, var(--xp-accent-2) 0 35%, var(--xp-accent));
+    box-shadow: 0 0 0 4px rgba(122,162,255,.18), 0 0 22px rgba(122,162,255,.35);
+  }
+  .timeline__dot.is-active{
+    animation: xpPulse 1.8s ease-out infinite;
+  }
+  @keyframes xpPulse{
+    0%   { box-shadow: 0 0 0 4px rgba(122,162,255,.18), 0 0 22px rgba(122,162,255,.35); }
+    70%  { box-shadow: 0 0 0 16px rgba(122,162,255,0), 0 0 28px rgba(122,162,255,.45); }
+    100% { box-shadow: 0 0 0 4px rgba(122,162,255,.18), 0 0 22px rgba(122,162,255,.35); }
+  }
+  
+  /* content card (logo + text) */
+  .timeline__card{
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 16px;
+    align-items: start;
+    background: transparent; /* inherited glass from parent */
+  }
+  .timeline__logo{
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.07);
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+  }
+  .timeline__logo img{ width: 100%; height: 100%; object-fit: cover; }
+  
+  /* text */
+  .timeline__header{
+    display: flex; align-items: baseline; gap: 10px;
+  }
+  .timeline__company{
+    font-weight: 800;
+    letter-spacing: .2px;
+  }
+  .timeline__role{
+    margin-top: 2px;
+    font-weight: 700;
+    color: var(--xp-sub);
+  }
+  .timeline__desc{
+    margin-top: 8px;
+    color: var(--xp-muted);
+    line-height: 1.55;
+  }
+  
+  /* date column */
+  .timeline__date{
+    grid-column: 3;
+    margin-left: 12px;
+    color: var(--xp-sub);
+    font-weight: 600;
+    white-space: nowrap;
+    opacity: .9;
+  }
+  
+  /* hover/focus: subtle lift and glass deepen */
+  .timeline__item:hover,
+  .timeline__item:focus-within{
+    background: var(--xp-bg-hover);
+    border-color: rgba(255,255,255,.1);
+    transform: translateY(-1px);
+  }
+  .timeline__item:focus-within{
+    outline: 2px solid rgba(122,162,255,.35);
+    outline-offset: 2px;
+  }
+  
+  /* compact on mobile — date drops under header */
+  @media (max-width: 820px){
+    .timeline__item{
+      grid-template-columns: 30px 1fr;
+    }
+    .timeline__date{
+      grid-column: 2;
+      margin: 6px 0 0 0;
+      font-size: .95rem;
+      opacity: .8;
+    }
+    .timeline__logo{ width: 48px; height: 48px; }
+  }
+  
+  /* respect motion preferences */
+  @media (prefers-reduced-motion: reduce){
+    .timeline__item{ transition: none; }
+    .timeline__dot.is-active{ animation: none; }
+  }
+  
+  /* ========== Experience Timeline Polish ========== */
+:root{
+  --xp-bg: rgba(10,14,20,.66);
+  --xp-bg-hover: rgba(14,18,26,.78);
+  --xp-bd: rgba(255,255,255,.06);
+  --xp-rail: rgba(255,255,255,.08);
+  --xp-rail-strong: rgba(255,255,255,.14);
+  --xp-text: rgba(235,243,255,.92);
+  --xp-sub: rgba(210,224,245,.78);
+  --xp-muted: rgba(200,210,225,.5);
+  --xp-accent: #7aa2ff;
+  --xp-accent-2: #60e6ff;
+  --xp-radius: 18px;
+  --xp-shadow: 0 10px 35px rgba(0,12,40,.45);
+}
+
+/* wrapper card */
+.exp-card{
+  position: relative;
+  margin-top: 18px;
+  padding: 28px clamp(16px,3vw,32px);
+  background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.01)), var(--xp-bg);
+  border: 1px solid var(--xp-bd);
+  border-radius: 26px;
+  backdrop-filter: blur(6px);
+  box-shadow: var(--xp-shadow);
+  color: var(--xp-text);
+}
+
+/* rail */
+.exp-rail{
+  position: absolute;
+  left: clamp(16px,2.2vw,28px);
+  top: 24px;
+  bottom: 24px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--xp-rail-strong), var(--xp-rail));
+  border-radius: 2px;
+  box-shadow: 0 0 24px rgba(122,162,255,.25);
+}
+
+/* list structure */
+.exp-list{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.exp-item{
+  position: relative;
+  display: grid;
+  grid-template-columns: 34px 56px 1fr auto; /* gutter | logo | content | date */
+  gap: clamp(12px,2vw,20px);
+  align-items: start;
+  padding: 22px clamp(10px,2vw,18px);
+  border-radius: var(--xp-radius);
+  transition: transform .25s ease, background-color .25s ease, border-color .25s ease;
+}
+.exp-item + .exp-item{
+  border-top: 1px dashed rgba(255,255,255,.075);
+}
+
+/* timeline dot */
+.exp-dot{
+  grid-column: 1;
+  width: 12px; height: 12px;
+  translate: 8px 4px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 45% 35%, var(--xp-accent-2) 0 35%, var(--xp-accent));
+  box-shadow: 0 0 0 4px rgba(122,162,255,.18), 0 0 22px rgba(122,162,255,.35);
+}
+.exp-dot.is-active{
+  animation: expPulse 1.8s ease-out infinite;
+}
+@keyframes expPulse{
+  0%   { box-shadow: 0 0 0 4px rgba(122,162,255,.18), 0 0 22px rgba(122,162,255,.35); }
+  70%  { box-shadow: 0 0 0 16px rgba(122,162,255,0), 0 0 28px rgba(122,162,255,.45); }
+  100% { box-shadow: 0 0 0 4px rgba(122,162,255,.18), 0 0 22px rgba(122,162,255,.35); }
+}
+
+/* logo */
+.exp-logo{
+  grid-column: 2;
+  width: 56px; height: 56px;
+  border-radius: 14px;
+  object-fit: cover;
+  background: rgba(255,255,255,.05);
+  border: 1px solid rgba(255,255,255,.07);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.03);
+}
+.exp-logo--fallback{
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  color: var(--xp-sub);
+}
+
+/* content + header */
+.exp-content{ grid-column: 3; }
+.exp-head{
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.exp-company{
+  font-weight: 800;
+  letter-spacing: .2px;
+  margin: 0;
+}
+.exp-dates{
+  color: var(--xp-sub);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.exp-role{
+  margin-top: 4px;
+  font-weight: 700;
+  color: var(--xp-sub);
+}
+.exp-summary{
+  margin: 8px 0 0 0;
+  color: var(--xp-muted);
+  line-height: 1.55;
+}
+
+/* hover/focus states */
+.exp-item:hover,
+.exp-item:focus-within{
+  background: var(--xp-bg-hover);
+  transform: translateY(-1px);
+}
+.exp-item:focus-within{
+  outline: 2px solid rgba(122,162,255,.35);
+  outline-offset: 2px;
+}
+
+/* responsive: stack date under header */
+@media (max-width: 820px){
+  .exp-item{
+    grid-template-columns: 30px 48px 1fr; /* drop date column */
+  }
+  .exp-logo{ width: 48px; height: 48px; border-radius: 12px; }
+  .exp-dates{
+    width: 100%;
+    margin-top: 4px;
+    order: 2;
+    opacity: .9;
+    font-size: .95rem;
+  }
+}
+
+/* motion */
+@media (prefers-reduced-motion: reduce){
+  .exp-item{ transition: none; }
+  .exp-dot.is-active{ animation: none; }
+}
+
+/* Global background colors (fallback) */
+html, body, #root {
+  height: 100%;
+  background: radial-gradient(1200px 800px at 50% -10%, #142235 0%, #0a121e 55%, #070c14 100%);
+}
+
+/* The moving background canvas */
+.bg-constellation{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;           /* sits behind all content */
+  pointer-events: none;  /* allows clicking through */
+}
+
+/* Make sections translucent so you can see the background */
+section {
+  background: transparent;
+}
+
+/* If you have a sticky/nav bar, keep it above */
+.site-nav, header{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* Respect reduced motion users */
+@media (prefers-reduced-motion: reduce) {
+  .bg-constellation { opacity: 0.7; } /* still image-like */
+}
+
+/* full-page background – no seams while scrolling */
+.bg-constellation {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none; /* don't block links */
+}
+
+html, body {
+  background: #0b1323; /* your base */
+}
+
+/* sections themselves should not paint full-width backgrounds */
+#home, #about, #experiences, #create, #projects, #contact,
+.aboutv2, .exp-sec, .create-sec, .projects-sec, .contact-min {
+  background: transparent !important;
+  box-shadow: none !important;
+  border-top: 0 !important;
+}
+
+/* remove divider/fade pseudo elements if you have them */
+.aboutv2::before, .aboutv2::after,
+.exp-sec::before, .exp-sec::after,
+.create-sec::before, .create-sec::after,
+.projects-sec::before, .projects-sec::after,
+.contact-min::before, .contact-min::after,
+.section-sep, .section-divider, hr {
+  display: none !important;
+  content: none !important;
+  border: 0 !important;
+}
+
+/* Contact form/card can keep its glass look */
+.contact-min__form, .about-card, .exp-card, .create-card, .project-card {
+  background: rgba(12, 18, 30, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 18px;
+}
+
+/* if your navbar casts a heavy bottom glow that reads like a seam, soften it */
+.header, .navbar {
+  background: rgba(10,14,24,0.55);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+}
+
+/* ============== CONTACT (compact, clean) ============== */
+.contact-min {
+  position: relative;
+  padding: clamp(56px, 6vw, 96px) 0;
+}
+
+.contact-min__inner {
+  width: min(920px, 92vw);
+  margin: 0 auto;
+}
+
+.contact-min__title {
+  text-align: center;
+  font-size: clamp(32px, 4.5vw, 56px);
+  line-height: 1.05;
+  letter-spacing: 0.4px;
+  font-weight: 800;
+  margin: 0 0 22px;
+  color: #c9daff;
+}
+
+/* Card */
+.contact-min__form {
+  margin: 14px auto 26px;
+  background: rgba(8, 12, 20, 0.60);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  padding: clamp(16px, 2.4vw, 22px);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.03);
+  backdrop-filter: blur(6px);
+
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* Field blocks */
+.cm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+  color: rgba(215,226,255,0.76);
+  font-size: 13px;
+}
+
+/* Inputs */
+.cm-field input,
+.cm-field textarea {
+  appearance: none;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(17, 24, 39, 0.75);
+  color: #dbe7ff;
+  border-radius: 12px;
+  height: 44px;
+  padding: 0 14px;
+  outline: none;
+  width: 100%;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.cm-field textarea {
+  height: auto;
+  padding: 12px 14px;
+  min-height: 140px;
+  resize: vertical;
+}
+
+/* Placeholder tint */
+.cm-field input::placeholder,
+.cm-field textarea::placeholder {
+  color: rgba(200,214,255,0.55);
+}
+
+/* Focus ring */
+.cm-field input:focus,
+.cm-field textarea:focus {
+  border-color: #6e9bff;
+  box-shadow: 0 0 0 3px rgba(110, 155, 255, 0.25);
+  background: rgba(17, 24, 39, 0.9);
+}
+
+/* Make message field span both columns on desktop */
+.contact-min__form .cm-field:nth-of-type(3) {
+  grid-column: 1 / -1;
+}
+
+/* Actions */
+.cm-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-top: 2px;
+}
+
+.cm-btn {
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  color: #dbe7ff;
+  background: rgba(20,26,38,0.75);
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, background .15s ease, border-color .15s;
+}
+.cm-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 18px rgba(0,0,0,0.25);
+  background: rgba(26,32,46,0.85);
+}
+.cm-btn--primary {
+  background: linear-gradient(180deg, #7ea3ff, #567efb);
+  color: #0b1020;
+  font-weight: 700;
+  border-color: transparent;
+  box-shadow: 0 10px 22px rgba(86,126,251,0.35);
+}
+.cm-btn--primary:hover {
+  box-shadow: 0 12px 28px rgba(86,126,251,0.45);
+}
+
+/* Icon row */
+.contact-min__icons {
+  margin: 22px auto 18px;
+  display: flex;
+  gap: clamp(16px, 3.5vw, 26px);
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Base icon tile */
+.cm-icon {
+  --tile: 92px;
+  width: var(--tile);
+  height: var(--tile);
+  border-radius: 22px;
+  display: grid;
+  place-items: center;
+  color: #0b0f1a;
+  text-decoration: none;
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow:
+    0 12px 26px rgba(0,0,0,0.35),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+}
+.cm-icon:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 18px 36px rgba(0,0,0,0.4),
+    0 0 22px rgba(110,155,255,0.25);
+}
+
+/* Individual colorways */
+.cm-icon--resume { background: #ff6a56; }
+.cm-icon--github { background: #0c1220; color: #fff; }
+.cm-icon--mail   { background: #ff9bb0; }
+.cm-icon--linkedin { background: #1f80ff; color: #081224; }
+
+/* SVG sizing inside icons */
+.cm-icon svg {
+  width: 56%;
+  height: 56%;
+  fill: currentColor;
+}
+
+/* Tagline */
+.contact-min__tagline {
+  width: min(760px, 92vw);
+  margin: 8px auto 0;
+  text-align: center;
+  color: rgba(210,222,255,0.75);
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(12,16,26,0.55);
+  backdrop-filter: blur(4px);
+  font-size: 15px;
+}
+
+/* Mobile */
+@media (max-width: 720px) {
+  .contact-min__form {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .contact-min__form .cm-field:nth-of-type(3) {
+    grid-column: auto;
+  }
+  .cm-actions { justify-content: stretch; }
+  .cm-btn { flex: 1 1 auto; text-align: center; }
+  .cm-icon { --tile: 84px; border-radius: 18px; }
+}
+
+/* Tighter seam between Projects and Contact */
+.projects-sec {
+  /* reduce the space at the bottom of Projects */
+  padding-bottom: 24px !important;   /* was likely larger */
+  margin-bottom: 0 !important;
+}
+
+/* Contact block: reduce its top padding */
+.contact-min {
+  padding-top: 24px !important;      /* was likely 56–96px */
+  margin-top: -2px;                  /* tiny pull to close any hairline gap */
+}
+
+/* If your sections share a generic spacing class, keep it compact too */
+.section-dark + .contact-min {
+  padding-top: 24px !important;
+}
+
+/* Tighten gap: Experience → Create */
+#experiences {
+  /* was probably 64–96px */
+  padding-bottom: 24px !important;
+  margin-bottom: 0 !important;
+}
+
+/* The card wrapper inside the timeline sometimes adds extra gap */
+.exp-sec .exp-card {
+  margin-bottom: 16px !important;   /* or 0 if you want it tighter */
+}
+
+/* Create section: reduce top spacing */
+#create {
+  padding-top: 24px !important;     /* was larger */
+  margin-top: 0 !important;
+}
+
+/* If your sections are wrapped in .container with big bottom spacing */
+#experiences .container {
+  padding-bottom: 16px !important;
+}
+#create .container {
+  padding-top: 16px !important;
+}
+
+/* Tighten gap: Experience → Create */
+#experiences {
+  /* was probably 64–96px */
+  padding-bottom: 24px !important;
+  margin-bottom: 0 !important;
+}
+
+/* The card wrapper inside the timeline sometimes adds extra gap */
+.exp-sec .exp-card {
+  margin-bottom: 16px !important;   /* or 0 if you want it tighter */
+}
+
+/* Create section: reduce top spacing */
+#create {
+  padding-top: 24px !important;     /* was larger */
+  margin-top: 0 !important;
+}
+
+/* If your sections are wrapped in .container with big bottom spacing */
+#experiences .container {
+  padding-bottom: 16px !important;
+}
+#create .container {
+  padding-top: 16px !important;
+}
+
+/* Tighten gap: Experience → Create */
+#experiences {
+  /* was probably 64–96px */
+  padding-bottom: 24px !important;
+  margin-bottom: 0 !important;
+}
+
+/* The card wrapper inside the timeline sometimes adds extra gap */
+.exp-sec .exp-card {
+  margin-bottom: 16px !important;   /* or 0 if you want it tighter */
+}
+
+
+/* keep your existing styles; add/merge these */
+
+:root{
+  --nav-h: 72px;                      /* height of your fixed navbar */
+  --page-top-pad: clamp(72px, 10vh, 140px);
+}
+
+/* generic page wrapper (used by Photos, Resume, etc.) */
+.page{
+  position: relative;
+  min-height: 100vh;
+  padding-top: var(--page-top-pad);    /* clears the fixed header */
+  padding-bottom: 6rem;                /* nice breathing room at bottom */
+}
+
+/* tighten sections that shouldn’t have extra gaps */
+.photos-sec{ margin-top: 0; }
+
+/* (optional) ensure body doesn’t “remember” old scroll visually */
+html, body, #root{ min-height: 100%; }
+
+/* If your navbar is fixed, make sure it has a clear class for query: */
+.nav-header{ height: var(--nav-h); }
+
+
+/* PHOTO PAGE TIGHTENING */
+.page-photos {
+  /* reduce default top spacing so the title sits higher */
+  padding-top: clamp(40px, 6vh, 72px);
+}
+
+.page-photos .container {
+  /* make sure we don't re-introduce extra padding in the container */
+  padding-top: 0;
+}
+
+/* header spacing */
+.photos-header {
+  max-width: 980px;
+  margin: 0 auto 20px;
+}
+
+.photos-title {
+  margin: 0 0 8px;
+  font-size: clamp(28px, 4.2vw, 44px);
+  line-height: 1.15;
+}
+
+.photos-blurb {
+  margin: 0 0 16px;
+  color: var(--text-muted, rgba(220,230,255,0.75));
+}
+
+/* If your PhotoWall adds a big glow or shadow wrapper above the rail, trim it */
+.page-photos .pw-rail,
+.page-photos .photowall,
+.page-photos .photo-wall {
+  margin-top: 8px;   /* keep tight to the blurb */
+}
+
+/* If your carousel adds a top margin/gap, neutralize it here */
+.page-photos .carousel,
+.page-photos .slider {
+  margin-top: 0 !important;
+}
+
+/* Keep header from overlapping first content */
+.page-photos .photos-header {
+  padding-top: clamp(48px, 8vh, 96px);
+  margin-bottom: 24px;
+}
+
+/* Ensure global background sits truly behind everything */
+.bg-constellation { z-index: -1; position: fixed; inset: 0; pointer-events: none; }
+
+/* If you see tall gaps above sections, normalize section spacing */
+.section-dark { padding-top: clamp(48px, 7vh, 80px); }
+
+/* A soft, readable panel for any dark section */
+.section-panel {
+  background: rgba(10, 15, 25, 0.72);   /* translucent charcoal */
+  box-shadow: 0 12px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 24px;
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+/* If your sections already have padding, just apply to the inner container */
+.section-panel > .container,
+.section-panel .container {
+  padding: 32px 28px;
+}
+
+/* Images/cards inside should stand out */
+.section-panel img,
+.section-panel .card {
+  border-radius: 18px;
+  box-shadow: 0 10px 28px rgba(0,0,0,0.4);
+}
+
+/* Optional: slightly darken large photos so headings read over them */
+.section-panel .photo-hero {
+  position: relative;
+}
+.section-panel .photo-hero::after {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,.2), rgba(0,0,0,.35));
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Add on the main content wrapper */
+.main-band::before {
+  content: "";
+  position: fixed; inset: 0;
+  pointer-events: none;
+  /* faint vignette to suppress busy edges */
+  background:
+    radial-gradient(1200px 600px at 50% 30%, rgba(0,0,0,0.35), transparent 70%),
+    linear-gradient(to bottom, rgba(0,0,0,0.18), rgba(0,0,0,0.18));
+  z-index: -1; /* sits above stars but below content */
+}
+
+
+/* =========================
+   Site background presets
+   ========================= */
+
+/* A) Deep mesh gradient (default recommendation) */
+.bg-mesh {
+  /* Smooth dark navy with soft color glows */
+  background:
+    radial-gradient(1200px 600px at 10% 0%,  rgba(124, 58, 237, .18), transparent 60%),
+    radial-gradient(1000px 500px at 90% -10%, rgba(34, 211, 238, .16), transparent 60%),
+    radial-gradient(900px 600px at 80% 90%,  rgba(56, 189, 248, .12), transparent 60%),
+    linear-gradient(180deg, #0b1020 0%, #0e152a 100%);
+}
+
+/* optional very subtle grain for depth (no image) */
+.bg-mesh::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,.05) 1px, transparent 1.3px);
+  background-size: 3px 3px;
+  opacity: .05;
+  pointer-events: none;
+}
+
+/* B) Minimal radial vignette (super clean) */
+.bg-radial {
+  background:
+    radial-gradient(900px 380px at 50% -120px, rgba(130,150,255,.14), transparent 70%),
+    linear-gradient(180deg, #0b1020, #0f172a 60%, #0b1020 100%);
+}
+
+/* C) Solid dark with micro-glow corners (ultra minimal) */
+.bg-flat {
+  background:
+    radial-gradient(600px 300px at 0% 0%,     rgba(124,58,237,.10), transparent 70%),
+    radial-gradient(600px 300px at 100% 100%, rgba(34,211,238,.10), transparent 70%),
+    #0b1020;
+}
+
+/* Make hero sections actually paint full background */
+.hero-image {
+  position: relative;
+  min-height: 92vh;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  color: #fff;
+  overflow: hidden; /* needed for the grain overlay above */
+}
+
+/* If you previously had the animated aurora ::before, disable it */
+.hero-image::before { content: none !important; }
+
+/* Optional: soft vignette so text pops */
+.hero-image .hero-overlay {
+  position: absolute; inset: 0;
+  background: radial-gradient(1200px 500px at 50% -200px, rgba(0,0,0,.35), rgba(0,0,0,.65));
+  pointer-events: none;
+}
+
+/* Frame: reduce bottom padding so no band shows */
+.hero-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  /* top / sides / bottom (smaller bottom) */
+  padding: clamp(12px, 1.6vw, 18px) clamp(14px, 2vw, 20px) clamp(8px, 1vw, 12px);
+  border-radius: 24px;
+  background: linear-gradient(180deg, rgba(18,20,26,0.55), rgba(18,20,26,0.35));
+  box-shadow: inset 0 20px 60px rgba(0,0,0,0.35), 0 12px 40px rgba(0,0,0,0.35);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+.hero-frame::before {
+  content: "";
+  position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+  background:
+    radial-gradient(120% 80% at 50% 30%, rgba(255,255,255,0.06), transparent 40%),
+    linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.18));
+}
+
+/* Wrap holds image + caption so caption overlays the photo, not the frame */
+.hero-img-wrap {
+  position: relative;
+  display: inline-block;
+  border-radius: 16px;
+  overflow: hidden;               /* keep caption chips inside image corners */
+}
+
+/* Image stays crisp */
+.hero-img {
+  width: min(72vw, 780px);
+  max-height: min(72vh, 820px);
+  object-fit: cover;
+  display: block;
+  border-radius: 16px;
+  box-shadow: 0 16px 60px rgba(0,0,0,0.55);
+  background: #0f1116;
+  filter: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+/* Caption overlays the bottom of the PHOTO (no layout shift) */
+.hero-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 10px;                 /* ⬅ anchored at the bottom of the image */
+  transform: translateX(-50%);
+  display: inline-flex;         /* prevents full-width bar */
+  width: fit-content;
+  max-width: 92%;
+  color: #e9eefb;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 2;
+}
+
+/* Thumbnails: slightly tighter so they sit closer without a big “break” */
+.photo-grid { margin-top: 10px; }
+
+/* Nav buttons unchanged */
+.hero-nav { /* ... your existing styles ... */ }
+.hero-nav.left { left: 16px; }
+.hero-nav.right { right: 16px; }
+
+/* ---- GLOBAL, ONE BACKGROUND ---- */
+html, body, #root, .global-bg {
+  min-height: 100%;
+}
+
+.global-bg {
+  position: relative;
+  isolation: isolate; /* so ::after sits behind content, above body */
+  background:
+    radial-gradient(1200px 700px at 50% 20%, rgba(28,34,46,0.65), rgba(12,16,24,0.65) 50%, rgba(9,12,18,0.85) 100%),
+    linear-gradient(180deg, #0b1220, #0b1220);
+  background-attachment: fixed, fixed; /* seamless on scroll */
+}
+
+/* Subtle noise/film over the whole page */
+.global-bg::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cdefs%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.7 0'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  z-index: -1;
+}
+
+/* 1) Drop this once in your global stylesheet */
+:root {
+  --bg-base: #0b1220;
+  --bg-glow-1: rgba(28, 34, 46, 0.75);
+  --bg-glow-2: rgba(12, 16, 24, 0.85);
+  --bg-noise-opacity: 0.06;
+}
+
+html, body, #root, .global-bg { min-height: 100%; }
+
+.global-bg {
+  position: relative;
+  isolation: isolate;
+  background:
+    radial-gradient(1200px 700px at 50% 15%, var(--bg-glow-1), transparent 55%),
+    linear-gradient(180deg, var(--bg-base), var(--bg-glow-2));
+  background-attachment: fixed, fixed; /* seamless while scrolling */
+  overflow: clip;
+}
+
+/* Subtle film grain across the whole page */
+.global-bg::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--bg-noise-opacity);
+  mix-blend-mode: soft-light;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'%3E%3Cdefs%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.7 0'/%3E%3C/filter%3E%3C/defs%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  z-index: -1;
+}
+
+.section, .page, .photos-sec, .photos-wrap { background: transparent; }
+
+.page, .section, .photos-sec, .photos-wrap { background: transparent !important; }
+
+/* one blinking caret */
+.cursor { margin-left: 2px; animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* If you have something like this, remove or disable it */
+.hero__subtitle::after { content: none; } /* or delete the rule */
+
+.brand-logo {
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.35));
+}
+
+@media (max-width: 640px) {
+  .brand-logo { height: 34px; } /* slightly smaller on phones */
+}
+
+/* ensure header is tall enough so the bigger logo isn't cropped */
+.nav-header .nav-inner {
+  min-height: 64px;
+}
+
+/* Ensure the header is tall enough and items are centered */
+.nav-header .nav-inner {
+  min-height: 76px;               /* room for 64px logo */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* Never let global img rules shrink it */
+.brand-logo {
+  height: 64px !important;        /* override any generic img { height: 24px } */
+  width: auto !important;
+  max-height: 64px !important;
+  image-rendering: auto;
+  filter: invert(1) brightness(1.8) contrast(1.1);
+}
+
+/* If your center nav is absolutely centered, let left/right flex without overlap */
+.nav-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 50%;
+  translate: 0 -50%;
+  pointer-events: auto;
+}
+
+/* Responsive sizes */
+@media (max-width: 1024px) {
+  .brand-logo { max-height: 56px !important; }
+  .nav-header .nav-inner { min-height: 68px; }
+}
+@media (max-width: 640px) {
+  .brand-logo { max-height: 44px !important; }
+  .nav-header .nav-inner { min-height: 60px; }
+}
+
+
+/* Left brand area: vertically center the image within the bar */
+.brand-link {
+  display: inline-flex;     /* only affects the logo wrapper */
+  align-items: center;      /* centers the img vertically */
+  height: 100%;
+  line-height: 0;           /* removes baseline nudge */
+}
+
+/* Logo sizing + crispness */
+.brand-logo {
+  height: 64px;             /* adjust to taste */
+  width: auto;
+  display: block;           /* avoids extra descender space */
+  object-fit: contain;
+  border-radius: 10px;
+
+  /* make white on dark + subtle base shadow */
+  filter: invert(1) brightness(1.9) contrast(1.08)
+          drop-shadow(0 1px 2px rgba(0,0,0,.35));
+  transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+  will-change: transform, filter;
+}
+
+/* Optional: tiny optical nudge if it still looks a hair low/high */
+.brand-logo.center-nudge-up   { transform: translateY(-1px); }
+.brand-logo.center-nudge-down { transform: translateY(1px); }
+
+/* Hover pop (logo only) */
+.brand-link:hover .brand-logo,
+.brand-link:focus-visible .brand-logo {
+  transform: translateY(-1px) scale(1.08);
+  filter: invert(1) brightness(2.25) contrast(1.06)
+          drop-shadow(0 6px 18px rgba(88,160,255,.45));
+}
+
+/* tune once, reuse */
+:root{
+  --nav-h: 72px;        /* your navbar height */
+  --logo-h: 60px;       /* logo drawing height */
+  --logo-nudge-y: -2px; /* ⬅️ lift a touch; try -2 to -3 */
+}
+
+/* only the brand area */
+.brand-link{
+  display: inline-flex;
+  align-items: center;    /* true vertical centering */
+  height: var(--nav-h);
+  line-height: 0;         /* kill baseline wiggle */
+  padding: 0; margin: 0;  /* remove any stray spacing */
+}
+
+/* the logo itself */
+.brand-logo{
+  display: block;
+  height: var(--logo-h);
+  width: auto;
+  object-fit: contain;
+  border-radius: 10px;
+
+  /* make it white + subtle base shadow */
+  filter: invert(1) brightness(1.9) contrast(1.08)
+          drop-shadow(0 1px 2px rgba(0,0,0,.35));
+
+  /* precise recenter: */
+  transform: translateY(var(--logo-nudge-y));
+  transition: transform .18s ease, filter .18s ease;
+}
+
+/* hover pop (keeps the nudge) */
+.brand-link:hover .brand-logo,
+.brand-link:focus-visible .brand-logo{
+  transform: translateY(var(--logo-nudge-y)) scale(1.08);
+  filter: invert(1) brightness(2.2) contrast(1.06)
+          drop-shadow(0 6px 18px rgba(88,160,255,.45));
+}
+
+:root { --logo-nudge-y: -3px; } /* up a bit more */
+/* or */ :root { --logo-nudge-y: -1px; } /* less lift */
+
+/* ===== NAVBAR VERTICAL ALIGNMENT FIX ===== */
+:root{
+  --nav-h: 72px;   /* your bar height; adjust to taste */
+}
+
+/* The bar */
+.nav-header .nav-inner{
+  display: flex !important;
+  align-items: center !important;      /* ⬅️ center children vertically */
+  justify-content: space-between;
+  min-height: var(--nav-h) !important; /* room for big logo */
+  box-sizing: border-box;
+}
+
+/* Left brand lane (logo wrapper) */
+.brand-link{
+  display: inline-flex !important;
+  align-items: center !important;
+  height: var(--nav-h) !important;
+  line-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* The logo image */
+.brand-logo{
+  display: block;
+  height: 60px;           /* 56–64 looks good */
+  width: auto;
+  object-fit: contain;
+  border-radius: 10px;
+  /* make it light + shadow; remove if you don't want the tint */
+  filter: invert(1) brightness(1.9) contrast(1.08)
+          drop-shadow(0 1px 2px rgba(0,0,0,.35));
+  transition: transform .18s ease, filter .18s ease;
+}
+
+/* Right lane (Contact + hamburger) */
+.nav-right{
+  display: flex !important;
+  align-items: center !important;      /* ⬅️ center buttons vertically */
+  gap: 10px;
+  height: var(--nav-h) !important;
+}
+
+/* Buttons in the right lane */
+.nav-right .nav-link,
+.nav-right .contact-link,
+.nav-right .menu-btn{
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center;
+  height: 40px;                        /* actual button size */
+  line-height: 1 !important;
+  margin: 0 !important;
+  padding: 0 14px;
+  transform: translateY(0) !important; /* kill any old nudges */
+  vertical-align: middle;
+}
+
+/* Pop on hover — logo only */
+.brand-link:hover .brand-logo,
+.brand-link:focus-visible .brand-logo{
+  transform: translateY(-1px) scale(1.08);
+  filter: invert(1) brightness(2.2) contrast(1.06)
+          drop-shadow(0 6px 18px rgba(88,160,255,.45));
+}
+
+/* If you use an absolutely-centered .nav-center, leave it.
+   Just make sure its own height doesn't push the bar. */
+.nav-center{
+  /* keep your existing positioning */
+  pointer-events: auto;
+}
+
+/* control size from one place */
+:root{
+  --exp-logo-size: 44px;   /* ↓ make smaller/larger here */
+  --exp-logo-pad: 6px;     /* inner padding = visual “zoom out” */
+}
+
+.exp-logo{
+  inline-size: var(--exp-logo-size);
+  block-size: var(--exp-logo-size);
+  padding: var(--exp-logo-pad);   /* creates the zoom-out effect */
+  object-fit: contain;            /* show full logo without cropping */
+  border-radius: 12px;            /* keep the rounded-square look */
+  background: rgba(255,255,255,0.03); /* optional subtle chip */
+}
+
+/* if your images are appearing a bit blurry on retina, cap max width */
+.exp-item .exp-logo {
+  image-rendering: auto;
+}
+
+/* ---- Unified CTA button ---- */
+:root{
+  --cta-grad-1: hsl(215 90% 66%);
+  --cta-grad-2: hsl(275 85% 72%);
+}
+
+.cta{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.5rem;
+
+  padding:.9rem 1.4rem;
+  border-radius:9999px;
+  font-weight:700;
+  letter-spacing:.2px;
+
+  color:white;
+  background:linear-gradient(90deg,var(--cta-grad-1),var(--cta-grad-2));
+  border:0;
+
+  box-shadow:0 10px 28px rgba(88,100,255,.25);
+  transition:transform .15s ease, box-shadow .2s ease, filter .2s ease;
+}
+
+.cta:hover{
+  transform:translateY(-1px);
+  box-shadow:0 14px 36px rgba(88,100,255,.32);
+  filter:saturate(1.05);
+}
+
+.cta:active{ transform:translateY(0); }
+
+.cta:focus-visible{
+  outline:2px solid transparent;
+  box-shadow:
+    0 0 0 3px rgba(255,255,255,.15),
+    0 0 0 6px rgba(88,100,255,.45);
+}
+
+/* ensure old outline styles don't leak */
+.create-card .btn, .create-card .ghost, .create-card .outline{
+  all: unset;
+}
+
+/* ===== Unified CTA (matches the View Resume button) ===== */
+:root{
+  --cta1: hsl(215 87% 66%);   /* blue */
+  --cta2: hsl(270 75% 72%);   /* lavender */
+  --cta-text: #0b1220;        /* dark text on light gradient */
+}
+
+.cta{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:.5rem;
+
+  padding:1rem 1.75rem;           /* size */
+  border-radius:9999px;           /* full pill */
+  font-weight:800;
+  font-size:1.1rem;
+  line-height:1;
+
+  color:var(--cta-text);
+  background:linear-gradient(90deg,var(--cta1),var(--cta2));
+  border:2px solid rgba(255,255,255,.25);   /* thin stroke */
+  box-shadow:
+    0 18px 48px rgba(88,120,255,.35),       /* outer glow */
+    inset 0 1px 0 rgba(255,255,255,.25);    /* subtle highlight */
+
+  transition:
+    transform .15s ease,
+    box-shadow .2s ease,
+    filter .2s ease;
+  text-decoration:none;
+  cursor:pointer;
+}
+
+.cta:hover{
+  transform:translateY(-2px);
+  box-shadow:
+    0 24px 62px rgba(88,120,255,.45),
+    inset 0 1px 0 rgba(255,255,255,.35);
+  filter:saturate(1.05);
+}
+
+.cta:active{ transform:translateY(0) scale(.995); }
+
+.cta:focus-visible{
+  outline:2px solid transparent;
+  box-shadow:
+    0 0 0 3px rgba(255,255,255,.18),
+    0 0 0 6px rgba(102,132,255,.55);
+}
+
+/* Optional sizes */
+.cta--lg { padding:1.1rem 2rem; font-size:1.25rem; }
+.cta--sm { padding:.75rem 1.25rem; font-size:.95rem; }
+
+/* Large size = matches your Resume button */
+.cta--lg{
+  padding: 1.1rem 2.0rem;
+  font-size: 1.25rem;
+  white-space: nowrap;          /* keep on one line */
+}
+
+/* Large size = matches your Resume button */
+.cta--lg{
+  padding: 1.1rem 2.0rem;
+  font-size: 1.25rem;
+  white-space: nowrap;          /* keep on one line */
+}
+
+.thoughts-sec{ margin-top:3rem; }
+.thoughts-head{ margin-bottom:1rem; }
+.thoughts-title{ font-size:1.75rem; font-weight:800; }
+.thoughts-sub{ color:var(--text-2,#9aa4b2); }
+
+.thoughts-grid{
+  display:grid; gap:1.25rem;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+}
+@media (max-width: 960px){ .thoughts-grid{ grid-template-columns:1fr; } }
+
+.thought-card{
+  display:flex; flex-direction:column; gap:.5rem;
+  padding:1.1rem 1.2rem 1.2rem;
+  border-radius:16px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  text-decoration:none; color:inherit;
+  transition:transform .15s ease, box-shadow .25s ease, border-color .2s ease;
+}
+.thought-card:hover{
+  transform:translateY(-2px);
+  border-color:rgba(147,197,253,.45);
+  box-shadow:0 14px 36px rgba(88,120,255,.18);
+}
+.thought-icon{ font-size:1.25rem; }
+.thought-h3{ font-size:1.15rem; font-weight:800; margin-top:.25rem; }
+.thought-excerpt{ color:var(--text-2,#a2acba); }
+.thought-meta{ display:flex; align-items:center; gap:.5rem; color:var(--text-3,#7b8596); font-size:.9rem; }
+.thought-tags{ display:flex; gap:.4rem; list-style:none; padding:0; margin:0; }
+.thought-card .cta{ margin-top:.5rem; align-self:flex-start; }
+
+.thought-detail{ max-width:820px; }
+.back-link{ color:#aeb9ff; text-decoration:none; }
+.back-link:hover{ text-decoration:underline; }
+.thought-detail-title{ font-size:2rem; font-weight:900; margin:.5rem 0; }
+.thought-detail-meta{ color:var(--text-3,#8a94a7); margin-bottom:1.25rem; }
+.thought-body p{ margin:1rem 0; line-height:1.75; color:var(--text-1,#e6ecff); }
+
+/* styles.css (or wherever) */
+.section-dark {
+  min-height: calc(100vh - 72px);        /* adjust for your navbar height */
+  padding: 48px 0;
+  background: radial-gradient(1200px 600px at 20% -100px, rgba(255,255,255,0.08), transparent 60%),
+              linear-gradient(180deg, #0b1625 0%, #0a1220 60%, #0a0f1b 100%);
+}
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* Offset in-page anchors so headers aren’t hidden under the navbar */
+[id] { scroll-margin-top: 80px; }   /* match your navbar height */
+
+/* Optional: if you set smooth scrolling globally and it still "slides",
+   you can switch to instant here or keep smooth if you prefer */
+html { scroll-behavior: auto; }
+
+/* photos page */
+.page--photos .container {
+  display: flow-root;         /* or overflow: auto */
+  /* optional: if you had big section padding globally, trim it here */
+  padding-top: 0;
+}
+
+/* tighten the first two blocks */
+.page--photos h1 { margin-top: 0; margin-bottom: 12px; }
+.page--photos .lead { margin-top: 0; margin-bottom: 20px; }
+
+.page--photos .container { padding-top: 1px; } /* breaks the margin collapse */
+.page--photos h1 { margin-top: 0; }
+
+/* You may have .section-dark { padding: 48px 0; } */
+.page--photos.section-dark { padding-top: 12px; }  /* only this page */
+
+
+/* ==== tighten space between Create and Projects ==== */
+
+/* If your Create section root has an id/class, target it.
+   Replace selectors to match yours if different. */
+   #create, .create-sec {
+    padding-bottom: 0px !important;   /* was probably ~48px */
+    margin-bottom: 0 !important;
+    overflow: clip;                     /* trims any big glow/shadow bleed */
+  }
+  
+  /* Projects section: reduce the top spacing */
+  #projects, .projects-sec {
+    padding-top: 0px !important;       /* was probably ~48px */
+  }
+  
+  /* Headline in Projects: remove default top margin */
+  #projects h2,
+  .projects-sec h2 {
+    margin-top: 0 !important;
+  }
+  
+  
+  
+/* 1) Soften the bottom of the CREATE section */
+.create-sec{
+  padding-bottom: clamp(12px, 1.5vw, 20px) !important; /* was probably 48–96px */
+  margin-bottom: 0 !important;
+}
+
+/* 2) Remove excess top spacing on PROJECTS */
+.projects-sec{
+  padding-top: clamp(8px, 1vw, 16px) !important;
+  margin-top: 0 !important;
+}
+
+/* 3) Headings often have default margins — zero them at section tops */
+.projects-sec h2,
+.projects-sec .section-title{
+  margin-top: 0 !important;
+}
+
+/* (optional) if your grids/cards add top margins */
+.projects-grid,
+.projects-wrap{
+  margin-top: 0 !important;
+}
+
+/* (optional) consistent section rhythm site-wide */
+.section + .section{
+  margin-top: 0; /* rely on padding, not margins, to avoid double-spacing */
+}
+
+.create-sec::after, .projects-sec::before { z-index: 0; pointer-events:none; }
+
+.projects-sec > *:first-child { margin-top: 0 !important; }
+
+
+/* 1) Tame the bottom of CREATE */
+.create-sec,
+#create, /* in case your id is used */
+.section--create{
+  padding-bottom: 20px !important;
+  margin-bottom: 0 !important;
+  position: relative;
+  overflow: visible;               /* don't clip the marquee or shadows */
+}
+
+/* Many designs draw rings/gradients with ::after. Make sure it doesn't add height */
+.create-sec::after,
+.section--create::after,
+.create-rings,
+.create-bg {
+  position: absolute !important;
+  left: 0; right: 0; bottom: 0;
+  height: 0 !important;           /* <-- stops it from pushing layout */
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 2) Remove top spacing on PROJECTS */
+.projects-sec,
+#projects,
+.section--projects{
+  margin-top: 0 !important;
+  padding-top: 8px !important;
+  position: relative;
+}
+
+/* Headings/default margins often add space */
+.projects-sec > *:first-child,
+#projects > *:first-child{
+  margin-top: 0 !important;
+}
+
+/* Filters/toolbar rows sometimes have a top margin */
+.projects-filters,
+.projects-toolbar,
+.projects-wrap{
+  margin-top: 0 !important;
+}
+
+/* 3) Ensure the spacing BETWEEN the two sections is small */
+.create-sec + .projects-sec,
+.section--create + .section--projects,
+#create + #projects{
+  margin-top: clamp(8px, 1.2vw, 16px) !important;
+}
+
+/* 4) If your theme gives all sections big vertical rhythm, neutralize for these two */
+.section { margin-block: 0; }            /* site-wide baseline */
+.section + .section { margin-top: 0; }   /* avoid double-spacing */
+
+/* 5) LAST RESORT: pull Projects up a bit (safe visual tweak) */
+@media (min-width: 768px){
+  .projects-sec, #projects { margin-top: -24px !important; }
+}
+
+/* ===== Close the gap between Create and Projects ===== */
+
+/* Make Create end tighter */
+#create {
+  padding-bottom: clamp(16px, 2vw, 24px) !important;
+  margin-bottom: 0 !important;
+}
+#create .create-grid,
+#create .create-card:last-child { margin-bottom: 0 !important; }
+
+/* Make Projects start tighter */
+#projects {
+  margin-top: 0 !important;
+  padding-top: clamp(16px, 2vw, 24px) !important;
+  scroll-margin-top: 96px; /* keeps anchor scroll nice with fixed navbar */
+}
+
+/* Headings: avoid huge built-in margins */
+#projects h2.section-title,
+#create h2.section-title {
+  margin-top: 0 !important;
+  margin-bottom: clamp(10px, 1.6vw, 18px) !important;
+}
+
+/* Normalize section-to-section spacing sitewide (optional) */
+.section + .section { margin-top: 0 !important; }
+
+/* Kill any spacer divs that might be sitting there */
+.section-spacer, .spacer, .gap {
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: none !important;
+}
+
+/* If a rogue min-height is causing the void, zero it just for these */
+#create, #projects { min-height: unset !important; }
+
+
+/* ====== Section layout & titles (consistent across pages) ====== */
+:root{
+  --container-max: 1200px;
+  --page-pad: clamp(16px, 4vw, 48px);
+  --title-size: clamp(36px, 6vw, 72px);
+}
+
+.section{
+  padding: clamp(48px, 6vw, 96px) 0;
+}
+
+.section__container{
+  width: min(var(--container-max), 100% - 2 * var(--page-pad));
+  margin-inline: auto;                /* centers content */
+}
+
+.section__title{
+  margin: 0 0 24px;
+  font-weight: 800;
+  font-size: var(--title-size);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-align: left;                   /* keep consistent alignment */
+  position: relative;
+  color: hsl(210 30% 96%);
+}
+
+/* Optional gradient accent for any word(s) inside the title */
+.section__title .accent{
+  background: linear-gradient(90deg, hsl(215 90% 66%), hsl(195 100% 64%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Consistent underline bar beneath titles (toggle-able) */
+.section__title[data-underline="true"]::after{
+  content: "";
+  display: block;
+  width: clamp(72px, 12vw, 160px);
+  height: 4px;
+  margin-top: 12px;
+  border-radius: 999px;
+  background: hsl(215 90% 66%);
+  opacity: .9;
+}
+
+/* Make anchor jumps land cleanly below sticky nav */
+.anchor-offset{
+  scroll-margin-top: 96px;            /* adjust if your navbar height differs */
+}
+
+/* Keep section content left edges aligned even if inner grids/cards have padding */
+.section__content{
+  margin-top: clamp(16px, 2vw, 24px);
+}
+
+/* Make the first heading inside each section match our global style */
+.section .section__content h1:first-child,
+.section .section__content h2:first-child {
+  margin: 0 0 24px;
+  font-weight: 800;
+  font-size: var(--title-size);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  text-align: left;
+  color: hsl(210 30% 96%);
+}
+
+/* ========== Projects sizing upgrade ========== */
+
+/* Tabs */
+.projects-sec .tabs-row{
+  display:flex; gap: clamp(10px, 1.6vw, 20px);
+  border-bottom: 1px solid hsl(215 14% 22% / .5);
+  position: relative;
+  padding-bottom: 10px;
+}
+.projects-sec .tab{
+  font-weight: 700;
+  font-size: clamp(14px, 1.4vw, 18px);          /* bigger */
+  padding: 10px 14px;                           /* bigger tap target */
+  border-radius: 999px;
+  color: hsl(215 20% 80%);
+}
+.projects-sec .tab.is-active{ color: hsl(210 30% 96%); }
+.projects-sec .tab-count{
+  margin-left: 6px;
+  font-weight: 700;
+  background: hsl(215 25% 24%);
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 0.85em;
+}
+.projects-sec .tab-underline{
+  position:absolute; left:0; bottom:-2px; height:4px;   /* thicker underline */
+  background: linear-gradient(90deg, hsl(215 90% 66%), hsl(195 100% 64%));
+  border-radius: 999px;
+  transition: transform .25s ease, width .25s ease;
+}
+
+/* Grid & Card */
+.projects-sec .cards-grid{
+  margin-top: clamp(18px, 2.5vw, 28px);
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(clamp(320px, 38vw, 520px), 1fr)); /* larger cards */
+  gap: clamp(18px, 2.4vw, 28px);
+}
+
+.projects-sec .p-card{
+  overflow: hidden;
+  border-radius: 18px;
+  background: hsl(220 20% 12% / .55);
+  box-shadow: 0 10px 28px hsl(220 40% 2% / .45);
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.projects-sec .p-card:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 18px 36px hsl(220 50% 2% / .55);
+  background: hsl(220 22% 14% / .6);
+}
+
+/* Media area taller */
+.projects-sec .p-media{
+  aspect-ratio: 16 / 10;                 /* taller preview */
+  background: hsl(220 16% 18%);
+}
+.projects-sec .p-media img{
+  width:100%; height:100%; object-fit: cover; display:block;
+}
+
+/* Body sizes */
+.projects-sec .p-body{
+  padding: clamp(16px, 2vw, 22px) clamp(18px, 2.2vw, 24px) clamp(18px, 2.2vw, 24px);
+}
+.projects-sec .p-title{
+  font-weight: 800;
+  font-size: clamp(18px, 2.1vw, 28px);   /* bigger */
+  letter-spacing: -0.01em;
+  color: hsl(210 30% 96%);
+  margin: 0 0 8px;
+}
+.projects-sec .p-blurb{
+  font-size: clamp(14px, 1.2vw, 18px);   /* bigger */
+  line-height: 1.45;
+  color: hsl(215 18% 78%);
+  margin: 0 0 12px;
+}
+
+/* Tags and links */
+.projects-sec .p-tags{ display:flex; flex-wrap:wrap; gap: 8px; margin-bottom: 12px; }
+.projects-sec .tag{
+  font-size: clamp(12px, 1.05vw, 14px);  /* slightly bigger */
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: hsl(220 16% 20%);
+  color: hsl(215 22% 88%);
+}
+.projects-sec .p-links{ display:flex; gap: 16px; }
+.projects-sec .link{
+  font-weight: 700;
+  font-size: clamp(14px, 1.2vw, 18px);   /* bigger */
+  color: hsl(215 90% 66%);
+}
+
+/* Optional: make the whole section’s base font a touch larger */
+.projects-sec, .projects-sec *{
+  --proj-scale: 1.04;                      /* tweak if you want even bigger */
+  font-size: calc(1rem * var(--proj-scale));
+}
+
+/* ======= Selected Projects look ======= */
+.projects-sec .projects-wrap{
+  width: min(1100px, 100% - clamp(24px, 6vw, 64px));
+  margin-inline: auto;
+}
+
+.projects-sec .projects-title{
+  margin: 0;
+  text-align: center;
+  font-weight: 900;
+  font-size: clamp(28px, 5.6vw, 56px);
+  letter-spacing: -0.02em;
+  color: hsl(220 22% 96%);
+}
+.projects-sec .projects-title .accent{
+  background: linear-gradient(90deg, hsl(260 90% 72%), hsl(220 90% 62%));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.projects-sec .projects-sub{
+  margin: 10px auto 20px;
+  max-width: 70ch;
+  text-align: center;
+  color: hsl(220 15% 78%);
+  font-size: clamp(14px, 1.4vw, 18px);
+}
+
+/* Pills row */
+.projects-sec .pills-row{
+  position: relative;
+  display: flex; justify-content: center; flex-wrap: wrap;
+  gap: 10px; padding-bottom: 12px; margin-top: 8px;
+}
+.projects-sec .pill{
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: clamp(13px, 1.2vw, 16px);
+  border-radius: 999px;
+  background: hsl(260 50% 16% / .25);
+  color: hsl(260 25% 88%);
+  border: 1px solid hsl(260 40% 40% / .25);
+  transition: transform .15s ease, background .15s ease, color .15s ease;
+}
+.projects-sec .pill:hover{ transform: translateY(-1px); }
+.projects-sec .pill.is-active{
+  background: hsl(260 85% 66% / .25);
+  color: hsl(260 95% 88%);
+  border-color: hsl(260 85% 66% / .55);
+}
+.projects-sec .pill-ico{ font-size: 1.05em; }
+.projects-sec .pill-count{
+  margin-left: 6px; padding: 2px 8px; border-radius: 999px;
+  background: hsl(260 40% 20% / .55); font-size: .85em;
+}
+.projects-sec .pill-underline{
+  position: absolute; left: 0; bottom: 0; height: 4px;
+  background: linear-gradient(90deg, hsl(260 90% 66%), hsl(220 90% 62%));
+  border-radius: 999px;
+  transition: transform .25s ease, width .25s ease;
+}
+
+/* Grid */
+.projects-sec .cards-grid{
+  margin-top: clamp(24px, 3vw, 32px);
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: clamp(16px, 2.4vw, 28px);
+}
+
+/* Card */
+.card-soft{
+  border-radius: 22px;
+  background: hsl(220 22% 10% / .55);
+  border: 1px solid hsl(220 20% 30% / .28);
+  box-shadow: 0 10px 28px hsl(220 60% 2% / .45);
+  overflow: hidden;
+  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.card-soft:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 18px 36px hsl(220 70% 2% / .55);
+  background: hsl(220 24% 12% / .62);
+}
+.card-inner{ display: grid; gap: 16px; padding: 18px; }
+
+/* Top (title, blurb, CTA, tags) */
+.card-title{
+  margin: 2px 0 6px;
+  font-weight: 800;
+  font-size: clamp(18px, 2.2vw, 28px);
+  letter-spacing: -0.01em;
+  color: hsl(220 22% 98%);
+}
+.card-blurb{
+  color: hsl(220 16% 80%);
+  font-size: clamp(14px, 1.3vw, 18px);
+  line-height: 1.45;
+  margin: 0 0 10px;
+}
+.btn-primary{
+  display: inline-flex; align-items: center; gap: 8px;
+  margin: 6px 0 10px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: clamp(14px, 1.2vw, 16px);
+  color: white;
+  background: linear-gradient(90deg, hsl(260 90% 66%), hsl(220 90% 62%));
+  box-shadow: 0 6px 16px hsl(250 88% 60% / .25);
+}
+.badge-row{ display: flex; flex-wrap: wrap; gap: 8px; }
+.badge{
+  padding: 6px 10px; border-radius: 999px;
+  background: hsl(220 16% 20%);
+  color: hsl(220 12% 90%);
+  font-size: clamp(12px, 1.05vw, 14px);
+  font-weight: 700;
+}
+
+/* Media preview (rounded like the reference) */
+.card-media{
+  border-radius: 18px;
+  overflow: hidden;
+  background: hsl(220 16% 16%);
+}
+.card-media img{ width: 100%; height: 100%; display: block; object-fit: cover; }
+
+.card-links{ display: flex; gap: 16px; }
+.link-soft{
+  color: hsl(220 80% 70%);
+  font-weight: 700;
+  font-size: clamp(13px, 1.15vw, 16px);
+}
+
+/* --- fix Projects header/pills overlaying cards --- */
+.projects-sec .projects-head{
+  display:block;
+  position: relative;
+  margin: 0 0 clamp(16px, 2.6vw, 28px);   /* space under header */
+  padding-bottom: 2px;                     /* prevents margin collapse */
+  overflow: auto;                          /* stops first-child margins from escaping */
+  isolation: isolate;                      /* new stacking context */
+}
+
+.projects-sec .pills-row{
+  position: relative; 
+  z-index: 1;                              /* pills above their underline only */
+  padding-bottom: 12px;
+}
+
+.projects-sec .pill-underline{
+  position: absolute; left: 0; bottom: 0; height: 4px;
+  border-radius: 999px;
+  pointer-events: none;
+  z-index: 0;                              /* keep underline behind the pills */
+}
+
+/* make sure the grid sits below the header and doesn't overlap */
+.projects-sec .cards-grid{
+  position: relative;
+  z-index: 0;
+  margin-top: 0;                           /* header already adds spacing */
+}
+
+/* ensure cards establish their own stacking context */
+.projects-sec .card-soft{
+  position: relative;
+  z-index: 0;
+}
+
+/* If you still have the old tabs styles, scope or remove them to avoid collisions */
+.projects-sec .tabs-row,
+.projects-sec .tab,
+.projects-sec .tab-underline{
+  /* comment these out if not used anymore, or keep them scoped to a different component */
+}
+
+
+/* GLOBAL title size */
+:root{
+  /* was clamp(36px, 6vw, 72px) */
+  --title-size: clamp(30px, 4.2vw, 54px);
+}
+
+/* hard cap on ultra-wide viewports */
+@media (min-width: 1600px){
+  :root{ --title-size: 52px; }
+}
+
+/* apply globally to section titles AND to the first heading inside each section */
+.section__title{
+  font-size: var(--title-size);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+}
+.section .section__content h1:first-child,
+.section .section__content h2:first-child{
+  font-size: var(--title-size) !important;  /* overrides component default */
+  line-height: 1.05;
+}
+
+/* slightly shorter underline so it looks balanced at smaller sizes */
+.section__title[data-underline="true"]::after{
+  width: clamp(56px, 10vw, 120px);
+}
+
+/* ===============================
+   CONTACT SPLASH (scoped)
+   structure from ContactSplash.jsx
+   =============================== */
+
+   .contact-splash{
+    position: relative;
+    isolation: isolate;
+    min-height: 56vh;
+    display: grid;
+    place-items: center;
+    padding: clamp(24px, 6vw, 56px) 0 72px; /* room for ribbon */
+    overflow: hidden;
+  }
+  
+  /* If you drop in a canvas/bg div, just give it class="cs-bg" */
+  .contact-splash .cs-bg{
+    position: absolute; inset: 0;
+    z-index: -1;
+    opacity: .7;                       /* make stars subtle */
+  }
+  
+  /* soft top vignette to help title pop */
+  .contact-splash::before{
+    content:"";
+    position:absolute; inset:0 0 60% 0;
+    background: linear-gradient(to bottom, rgb(0 0 0 / .45), transparent 70%);
+    z-index:-1;
+  }
+  
+  /* ----- Inner ----- */
+  .cs-inner{
+    width: min(1100px, 100% - clamp(24px, 6vw, 64px));
+    margin-inline: auto;
+    display: grid;
+    gap: clamp(14px, 2.4vw, 22px);
+    justify-items: center;
+  }
+  
+  /* Title */
+  .cs-title{
+    margin: 0;
+    text-align: center;
+    font-weight: 900;
+    font-size: clamp(28px, 5vw, 56px);
+    letter-spacing: -0.02em;
+    color: hsl(210 30% 96%);
+  }
+  
+  /* Icons row */
+  .cs-icons{
+    display: flex;
+    gap: clamp(14px, 3.6vw, 28px);
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Icon tile (anchor) */
+  .cs-icon{
+    --tile: clamp(64px, 10vw, 96px);
+    width: var(--tile); height: var(--tile);
+    border-radius: 20px;
+    display: grid; place-items: center;
+    color: #0b0b0b;                    /* icon foreground unless overridden */
+    background: hsl(220 16% 14%);      /* default tile fill */
+    border: 1px solid hsl(220 20% 30% / .45);
+    box-shadow:
+      inset 0 -8px 18px rgb(0 0 0 / .45),
+      0 10px 24px rgb(0 0 0 / .35);
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease, border-color .18s ease, color .18s ease, outline-color .18s ease;
+    outline: 0;
+    text-decoration: none;
+  }
+  .cs-icon svg{ width: 62%; height: 62%; display:block; }
+  
+  /* Brand variants */
+  .cs-resume { background: #ff6a4d; color: #111827; }
+  .cs-github { background: #0f1115; color: #ffffff; }
+  .cs-email  { background: #ff7e9b; color: #111827; }
+  .cs-linkedin{ background:#2f83ff; color:#081426; }
+  
+  /* Hover/Focus: gentle lift + glow ring */
+  .cs-icon:hover{
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 -10px 20px rgb(0 0 0 / .5),
+      0 18px 36px rgb(0 0 0 / .45),
+      0 0 0 6px rgb(47 131 255 / .12);
+    border-color: rgb(47 131 255 / .5);
+  }
+  .cs-icon:focus-visible{
+    outline: 3px solid rgb(47 131 255 / .9);
+    outline-offset: 3px;
+  }
+  
+  /* ----- Ribbon footer ----- */
+  .cs-ribbon{
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: #1d1d1d;
+    border-top: 1px solid #2a2a2a;
+    padding: 10px 16px;
+  }
+  .cs-ribbon p{
+    margin: 0; text-align: center;
+    color: #d7d7d7;
+    font-size: clamp(12px, 1.2vw, 14px);
+    letter-spacing: .01em;
+  }
+  
+  /* Optional: anchor offset so #contact scrolls below sticky nav */
+  #contact.contact-splash{ scroll-margin-top: 96px; }
+  
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce){
+    .cs-icon{ transition: none; }
+    .cs-icon:hover{ transform: none; }
+  }
+  
+/* turn off the dark top overlay */
+.contact-splash::before{ display:none; }
+
+/* if ContactSplash sits inside .section / .container with a dark bg */
+.section-dark .contact-splash,
+.section-dark .contact-splash .cs-inner{
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* --- tighten gap above Contact --- */
+
+/* previous section (Projects) — trim bottom space */
+#projects,
+.projects-sec {
+  padding-bottom: 12px !important;
+  margin-bottom: 0 !important;
+  overflow: clip;                /* hides any glow/shadow that was extending */
+}
+
+/* Contact section — remove top space */
+#contact,
+.contact-splash {
+  padding-top: 8px !important;
+  margin-top: 0 !important;
+}
+
+#contact .cs-title,
+.contact-splash .cs-title {
+  margin-top: 0 !important;      /* h2 default margin was causing the gap */
+}
+
+/* If your project cards have a big bottom margin, normalize it */
+.projects-sec .card:last-child,
+#projects .card:last-child {
+  margin-bottom: 12px;
+}
+
+/* Make the section compact and end after the icons */
+.contact-splash{
+  min-height: auto;                         /* no forced height */
+  padding: clamp(16px, 3vw, 24px) 0 16px;   /* small, even padding; no extra bottom gap */
+  margin-top: 0;                            /* prevent any top gap from the section itself */
+}
+
+/* Title + icons spacing */
+.contact-splash .cs-inner{ gap: clamp(8px, 1.6vw, 14px); }
+.contact-splash .cs-title{ margin: 0 0 6px; }
+.contact-splash .cs-icons{ margin: 0; }
+
+/* Collapse the space between the section above and ContactSplash */
+.section + .contact-splash,
+.section-dark + .contact-splash,
+#projects + #contact.contact-splash{
+  margin-top: 0 !important;
+}
+
+/* If the section above is adding big bottom padding, trim it only when ContactSplash follows */
+.section:has(+ #contact.contact-splash),
+.section-dark:has(+ #contact.contact-splash){
+  padding-bottom: clamp(8px, 1.6vw, 16px) !important;
+}
+
+/* === Make Contact compact (no vertical centering) === */
+#contact.contact-splash{
+  /* kill previous center layout & fixed heights */
+  display: block;                 /* was grid/place-items:center */
+  min-height: auto;
+  margin: 0;
+  padding: 20px 0 20px;           /* small, even padding */
+}
+
+/* keep the first-child margins from "escaping" and creating a gap */
+#contact.contact-splash .cs-inner{
+  width: min(1100px, 100% - clamp(24px, 6vw, 64px));
+  margin-inline: auto;
+  overflow: hidden;               /* stops margin-collapsing */
+  padding-top: 1px;               /* tiny shim to prevent collapse */
+}
+
+/* compact title + icons spacing */
+#contact.contact-splash .cs-title{ margin: 0 0 10px; }
+#contact.contact-splash .cs-icons{ margin: 0; }
+
+/* === Close the gap coming from the section above (Projects) === */
+/* If your previous section has big bottom padding, reduce it only when Contact follows */
+#projects.section,
+#projects.section-dark{
+  padding-bottom: 16px;           /* was likely much larger */
+}
+
+/* ensure no extra gap between the two sections */
+#projects + #contact.contact-splash{ margin-top: 0; }
+
+/* If your framework adds generic spacing between sections, hard-stop it here */
+.section + #contact.contact-splash,
+.section-dark + #contact.contact-splash{
+  margin-top: 0 !important;
+}
+
+/* Optional: if you still see a tiny seam, pull the contact up a hair */
+@media (min-width: 700px){
+  #contact.contact-splash{ margin-top: -8px; }
+}
+
+/* ===== ContactSplash: remove gap + full-width fixed ribbon ===== */
+.contact-splash{
+  --ribbon-h: 52px;                          /* height of the bottom bar */
+  min-height: calc(100vh - var(--ribbon-h)); /* fill screen above ribbon */
+  display: grid;
+  place-items: center;
+  padding: clamp(24px, 6vw, 56px) 0 0;       /* no extra bottom padding */
+}
+
+/* keep the content from adding stray bottom space */
+.cs-inner{ margin-bottom: 0; }
+
+/* full-width bar pinned to bottom of the screen */
+.cs-ribbon{
+  position: fixed;           /* <— anchor to viewport */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--ribbon-h);
+  display: grid;
+  place-items: center;
+  background: #1a1a1a;
+  border-top: 1px solid #262626;
+  padding: 0 16px;           /* horizontal breathing room */
+  z-index: 50;               /* above page content */
+}
+
+/* ribbon text */
+.cs-ribbon p{
+  margin: 0;
+  color: #d7d7d7;
+  font-size: clamp(12px, 1.2vw, 14px);
+  letter-spacing: .01em;
+}
+
+/* optional: slightly taller ribbon on small screens */
+@media (max-width: 520px){
+  .contact-splash{ --ribbon-h: 60px; }
+}
+
+/* === Contact section gap fix === */
+#contact.contact-splash {
+  /* stop margin-collapsing from the H2 */
+  padding-top: 16px;           /* small, can tweak */
+  margin-top: 0 !important;    /* ensure no forced top gap */
+}
+
+#contact .cs-title {
+  margin-top: 0;               /* headings have default top margin */
+}
+
+/* If your previous section adds big space, neutralize it at the boundary */
+#projects,
+#create {
+  margin-bottom: 0 !important;
+  padding-bottom: 16px;        /* keep some breathing room without a gap */
+}
+
+/* In case there’s a spacer utility left around */
+.section-gap,
+.spacer {
+  display: none;
+}
+
+ /* === Contact section should size to content, not viewport === */
+#contact,
+#contact.contact-splash,
+#contact .cs-inner {
+  height: auto !important;
+  min-height: 0 !important;     /* kill 100vh/min-heights */
+}
+
+/* If you used flex/grid centering, turn it off */
+#contact,
+#contact .cs-inner {
+  display: block !important;     /* or keep flex but don't center */
+  align-items: start !important;
+  justify-content: start !important;
+  place-content: start !important;
+}
+
+/* Tighten the vertical spacing */
+#contact { 
+  margin-top: 0 !important;
+  padding-top: 12px !important;
+  padding-bottom: 24px !important;  /* small breathing room at end */
+}
+#contact .cs-title { margin: 0 0 16px 0 !important; }
+
+/* Also make sure the section above doesn't push down */
+#projects, #create, #experiences, #about {
+  margin-bottom: 0 !important;
+  padding-bottom: 12px !important;
+}
+
+.cta-btn{
+  display:inline-flex; align-items:center; justify-content:center;
+  padding: 0 28px;            /* width */
+  height: 60px;               /* height */
+  font: 600 20px/1.1 "Inter", system-ui;
+  color:#0b1220;
+  background: linear-gradient(90deg,#93a7ff,#a694ff);
+  border-radius: 999px;       /* pill */
+  border:1px solid rgba(255,255,255,.35);
+  box-shadow: 0 0 32px rgba(140,160,255,.35);
+  transition: transform .15s ease;
+}
+.cta-btn:hover{ transform: scale(1.02); }
+.cta-btn:active{ transform: scale(0.99); }
+
+@media (min-width: 900px){
+  .cta-btn{ height: 64px; padding: 0 34px; font-size: 22px; }
+}
+
+.cta-btn { margin-top: 16px; }          /* or 24px */
+@media (min-width: 900px){ .cta-btn{ margin-top: 20px; } }
+
+/* or, visual-only nudge */
+.cta-btn { position: relative; transform: translateY(4px); }
+
+:root { --nav-h: 72px; }
+
+.hero{
+  min-height: calc(100svh - var(--nav-h));
+  display: grid;
+  grid-template-rows: 1fr auto; /* center | skills */
+  padding-inline: 1rem;
+  padding-top: 1.5rem; /* small cushion under the navbar */
+}
+
+.hero__center{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero__center > div,
+.hero__center{
+  width: 100%;
+  max-width: 56rem; /* ~max-w-3xl */
+  margin-inline: auto;
+}
+
+.hero h1{ font-weight: 800; line-height: 1.05; font-size: clamp(2.5rem, 5vw, 4.5rem); letter-spacing: -0.02em; }
+.hero p{ margin-top: .75rem; font-size: clamp(1.125rem, 2.5vw, 1.5rem); color: #cbd5e1; line-height: 1.25; }
+
+.cta{ margin-top: 2rem; height: 60px; padding: 0 28px; border-radius: 999px; /* plus your gradient styles */ }
+
+.hero__skills{
+  display: flex; align-items: end; justify-content: center;
+}
+
+/* --- TechMarquee base --- */
+.marquee-section{
+  width: 100%;
+  overflow: hidden;           /* hide the sliding overflow */
+  background: transparent;    /* match your page bg */
+  padding-block: 8px;
+}
+
+.marquee{
+  width: 100%;
+  overflow: hidden;           /* important */
+}
+
+/* the long strip that slides */
+.marquee-track{
+  display: inline-flex;       /* inline so width = content width */
+  align-items: center;
+  gap: 48px;                  /* spacing between items */
+  padding-inline: 24px;
+  white-space: nowrap;        /* keep one line */
+  width: max-content;         /* allow it to be wider than the viewport */
+  will-change: transform;
+  animation: marquee var(--marquee-duration, 26s) linear infinite;
+}
+
+/* reverse direction when requested */
+.marquee-track.dir-right{
+  animation-direction: reverse;
+}
+
+/* each item */
+.marquee-item{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #e8eef7;
+  opacity: 0.9;
+}
+
+.marquee-item img{
+  width: 22px; height: 22px; object-fit: contain;
+}
+
+/* slide exactly one copy width (50% of the double track) */
+@keyframes marquee{
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* accessibility */
+@media (prefers-reduced-motion: reduce){
+  .marquee-track{ animation: none; }
+}
+.marquee-section{
+  width: 100%;
+  overflow: hidden;
+  padding-block: var(--marquee-padY, 8px);
+  background: transparent;
+}
+
+.marquee{
+  width: 100%;
+  height: var(--marquee-height, 56px);  /* makes it taller */
+  display: flex;
+  align-items: center;                  /* vertically center row */
+  overflow: hidden;
+}
+
+.marquee-track{
+  display: inline-flex;
+  align-items: center;
+  gap: var(--marquee-gap, 48px);
+  padding-inline: 24px;
+  white-space: nowrap;
+  width: max-content;
+  will-change: transform;
+  animation: marquee var(--marquee-duration, 26s) linear infinite;
+}
+
+.marquee-track.dir-right{ animation-direction: reverse; }
+
+.marquee-item{
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--marquee-font, 16px);  /* label size */
+  line-height: 1;
+  color: #e8eef7;
+  opacity: 0.95;
+}
+
+.marquee-item img{
+  width: var(--marquee-icon, 24px);
+  height: var(--marquee-icon, 24px);
+  object-fit: contain;
+}
+
+@keyframes marquee{
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .marquee-track{ animation: none; }
+}
+
+/* Space when a paragraph/lead follows any heading inside .projects */
+.projects :is(h1,h2,h3,h4,h5,h6) + :is(p, .lead, .section-lead) {
+  margin-top: clamp(14px, 2.2vw, 28px);
+}
+
+/* NEW: tunable flag sizing */
+:root{
+  --flag-w: 28px;   /* overall frame width  */
+  --flag-h: 20px;   /* overall frame height */
+  --flag-pad: 2px;  /* inner padding -> makes flag look zoomed out */
+}
+
+/* flag frame */
+.flag-box{
+  width: var(--flag-w);
+  height: var(--flag-h);
+  padding: var(--flag-pad);           /* <-- adds breathing room */
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+  background: hsl(220 18% 20% / 0.6);
+  box-shadow: 0 0 0 1px hsl(220 18% 22% / .55),
+              0 2px 6px hsl(220 50% 2% / .35);
+}
+
+/* the flag image itself */
+.flag-img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;                 /* keep whole flag visible */
+  border-radius: 4px;                  /* softer rounding than frame */
+}
+
+/* emoji fallback fits the padded box too */
+.flag-emoji{
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* Only the Growth page */
+#growth .page-title,
+#growth h1.page-title {
+  position: static !important;
+  top: auto !important;
+}
+
+.create { padding-top: clamp(24px, 4vw, 40px); }
+.create__head h2 { font-size: clamp(28px, 4.6vw, 56px); margin: 0; }
+.create__underline { width: 84px; height: 4px; border-radius: 999px; background: #4aa3ff33; margin: 12px 0 24px; }
+
+.create__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(16px, 2vw, 24px);
+  margin-bottom: clamp(16px, 3vw, 28px);
+}
+.create__card {
+  background: radial-gradient(120% 120% at 0% 0%, #0a1220cc, #0b1220 60%);
+  border-radius: 22px;
+  padding: clamp(16px, 2.4vw, 24px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.04);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.create__card.is-active { box-shadow: 0 16px 40px rgba(32,122,255,.25); transform: translateY(-2px); }
+.create__card-title { font-size: clamp(18px, 2.4vw, 28px); margin: 4px 0 6px; }
+.create__card-sub { opacity: .75; margin: 0 0 18px; }
+
+.btn-pill {
+  border: none; cursor: pointer; font-weight: 700;
+  padding: 14px 22px; border-radius: 999px;
+  background: linear-gradient(90deg, #7aa2ff, #b884ff);
+  color: #0b0f17; box-shadow: 0 12px 28px rgba(122,162,255,.25);
+}
+.btn-pill:hover { filter: brightness(1.05); }
+
+.create__viewer {
+  background: rgba(8,12,20,.6);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 22px;
+  padding: clamp(16px, 2.6vw, 28px);
+  box-shadow: 0 14px 34px rgba(0,0,0,.35);
+}
+.create__viewer-head { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.pill { font-size: 12px; padding: 6px 10px; border-radius: 999px; background: #1b2a3f; color: #a9c6ff; }
+.spacer { flex: 1; }
+.pager { display: flex; gap: 8px; }
+.pager__btn {
+  width: 34px; height: 34px; border-radius: 10px; border: 1px solid rgba(255,255,255,.08);
+  background: #0e1524; color: #cfe0ff; cursor: pointer;
+}
+.pager__btn:hover { background: #14203a; }
+.create__viewer-body { overflow: hidden; border-radius: 16px; }
+
+/* --- STOP the Growth header from sticking/overlaying --- */
+.mile { position: relative; isolation: isolate; }      /* keeps children from escaping */
+.mile__hdr {
+  position: static !important;                         /* disable any inherited sticky */
+  top: auto !important;
+  z-index: 0 !important;                               /* don't sit above following content */
+  pointer-events: none;                                /* header text won't block clicks */
+}
+.mile__hdr * { pointer-events: auto; }                 /* keep links/buttons clickable if any */
+
+/* container for the shelf */
+.shelf { --card-w: clamp(220px, 22vw, 340px); }
+
+/* cards get narrower = more fit in view */
+.shelf .card { width: var(--card-w); }
+
+/* optional: tighten spacing a bit */
+.shelf { gap: clamp(10px, 1.4vw, 18px); }
+
+/* more landscape → less vertical crop; more portrait → more vertical room */
+.card .cover { aspect-ratio: 4 / 3; }   /* try 4/3 or 3/2 instead of 16/9 */
+
+/* parent of the cards */
+.shelf { --zoom: 0.9; }            /* 1 = current size, 0.85..0.95 = “zoomed out” */
+
+/* apply it without breaking layout */
+.shelf .card {
+  transform: scale(var(--zoom));
+  transform-origin: top left;
+  /* preserve layout space so scaling doesn’t overlap */
+  inline-size: calc( clamp(260px, 28vw, 420px) * var(--zoom) );
+}
+
+/* ---- Create section ---- */
+.create {
+  --card-bg: rgba(12,16,24,.6);
+  --card-brd: rgba(255,255,255,.06);
+  --card-brd-hover: rgba(149,162,255,.25);
+  --card-shadow: 0 10px 30px rgba(0,0,0,.45);
+  --radius: 20px;
+  --space: clamp(16px, 2vw, 24px);
+  --title: clamp(28px, 4.2vw, 44px);
+}
+
+.create .section-title {
+  font-size: var(--title);
+  font-weight: 800;
+  letter-spacing: .2px;
+  margin-bottom: 22px;
+}
+.create .title-underline {
+  width: 120px; height: 4px;
+  background: linear-gradient(90deg,#6ca8ff, #b18cff);
+  border-radius: 999px;
+  margin: 6px 0 34px;
+  opacity: .9;
+}
+
+/* responsive equal-height grid */
+.create-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: clamp(18px, 2.4vw, 28px);
+  align-items: stretch;
+}
+
+/* card surface */
+.create-card{
+  position: relative;
+  display: flex; flex-direction: column;
+  padding: clamp(18px, 2.2vw, 26px);
+  border-radius: var(--radius);
+  background: radial-gradient(140% 120% at 0% 0%, rgba(150,130,255,.10), transparent 40%),
+              var(--card-bg);
+  border: 1px solid var(--card-brd);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: transform .18s ease, border-color .2s ease, box-shadow .25s ease;
+  min-height: 280px; /* forces equal height */
+}
+.create-card::after{
+  /* subtle vignette */
+  content:"";
+  position:absolute; inset:-1px;
+  border-radius: inherit;
+  background: radial-gradient(60% 60% at 50% 110%, rgba(20,40,120,.25), transparent 60%);
+  pointer-events:none;
+}
+.create-card:hover{
+  transform: translateY(-4px);
+  border-color: var(--card-brd-hover);
+  box-shadow: 0 14px 40px rgba(0,0,0,.55), 0 0 0 1px rgba(150,130,255,.18) inset;
+}
+
+/* icon chip */
+.card-chip{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:34px; height:34px; border-radius:10px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.12);
+  margin-bottom: 14px;
+  font-size: 18px;
+}
+
+/* text */
+.card-title{
+  font-size: clamp(22px, 2.4vw, 30px);
+  font-weight: 800;
+  letter-spacing:.2px;
+  margin: 6px 0 8px;
+}
+.card-sub{
+  color: rgba(225,235,255,.75);
+  font-size: clamp(14px, 1.2vw, 16px);
+  line-height: 1.4;
+  margin-bottom: clamp(18px, 2.2vw, 28px);
+}
+
+/* CTA */
+.card-cta{
+  margin-top: auto;                /* pushes button to bottom */
+  align-self: flex-start;
+  padding: 14px 20px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.14);
+  font-weight: 800;
+  letter-spacing:.2px;
+  background:
+     radial-gradient(120% 140% at 30% 30%, rgba(255,255,255,.18), transparent 40%),
+     linear-gradient(90deg, #6ca8ff 0%, #b18cff 100%);
+  color: #0b1220;
+  box-shadow: 0 10px 30px rgba(108,168,255,.25);
+  transition: transform .16s ease, box-shadow .2s ease, filter .2s ease;
+}
+.card-cta:hover{ transform: translateY(-2px); filter: saturate(1.08); }
+.card-cta:active{ transform: translateY(0); }
+
+/* tiny sparkle behind button */
+.card-cta-wrap{
+  position: relative; display:inline-block;
+}
+.card-cta-wrap::before{
+  content:""; position:absolute; inset:-18px -26px -18px -26px;
+  background: radial-gradient(60% 60% at 40% 50%, rgba(124,173,255,.12), transparent 70%);
+  filter: blur(18px);
+  z-index: 0; pointer-events:none;
+}
+.card-cta{ position: relative; z-index: 1; }
+
+/* ====== TUNABLE KNOBS ====== */
+:root {
+  --gallery-max: 1600px;     /* overall gallery width */
+  --tile-min:  220px;        /* thumbnail min width (desktop) */
+  --tile-gap:   12px;        /* spacing between thumbnails */
+  --blend-strength: 0.06;    /* 0.04–0.10 is nice */
+}
+
+/* ====== HERO FRAME (better blend, less heaviness) ====== */
+.hero-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: clamp(6px, 1vw, 12px);
+  margin: clamp(10px, 1.6vw, 20px) auto;
+  max-width: min(96vw, var(--gallery-max));
+  border-radius: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.03);
+  overflow: hidden;
+}
+
+/* subtle ambient glow + vignette without dark slabs */
+.hero-frame::before,
+.hero-frame::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+.hero-frame::before {
+  background:
+    radial-gradient(120% 140% at 20% 0%,
+      rgba(255,255,255,var(--blend-strength)),
+      rgba(0,0,0,0) 55%)
+    ,
+    radial-gradient(120% 140% at 80% 100%,
+      rgba(255,255,255,calc(var(--blend-strength) * .8)),
+      rgba(0,0,0,0) 55%);
+  mix-blend-mode: screen;
+}
+.hero-frame::after {
+  background:
+    radial-gradient(120% 120% at 50% 50%,
+      rgba(0,0,0,0) 60%, rgba(0,0,0,0.28) 100%);
+}
+
+/* Less empty space: let hero use more width, cap height by viewport */
+.hero-img-wrap {
+  position: relative;
+  width: min(95vw, var(--gallery-max));
+  height: min(80vh, 900px);
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 14px;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(12,16,22,.85), rgba(10,14,19,.85));
+}
+.hero-img {
+  width: 100%; height: 100%;
+  object-fit: contain; object-position: center;
+  display: block; border-radius: inherit;
+}
+
+/* Caption & arrows unchanged (kept here for completeness) */
+.hero-caption {
+  position: absolute; left: 50%; bottom: clamp(8px, 1.2vw, 14px);
+  transform: translateX(-50%);
+  padding: 6px 12px; border-radius: 10px;
+  font-size: clamp(12px, 1.1vw, 14px);
+  color: #eaf0fb; background: rgba(0,0,0,.55);
+  backdrop-filter: blur(3px); pointer-events: none;
+}
+.hero-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 38px; height: 38px; border-radius: 999px; border: 0;
+  background: rgba(0,0,0,.55); color: #fff; font-size: 18px;
+  display: grid; place-items: center; cursor: pointer;
+  transition: background .18s, transform .18s;
+}
+.hero-nav:hover { background: rgba(0,0,0,.75); transform: translateY(-50%) scale(1.06); }
+.hero-nav.left  { left: 12px; }
+.hero-nav.right { right: 12px; }
+
+/* ====== MUCH BIGGER, DENSER GRID ====== */
+.photo-grid {
+  margin: clamp(16px, 2.2vw, 28px) auto 0;
+  max-width: min(96vw, var(--gallery-max));
+  display: grid;
+  gap: var(--tile-gap);
+  grid-template-columns: repeat(auto-fill, minmax(var(--tile-min), 1fr));
+}
+@media (min-width: 1200px) {
+  :root { --tile-min: 240px; --tile-gap: 14px; }
+}
+@media (min-width: 1600px) {
+  :root { --tile-min: 260px; --gallery-max: 1800px; }
+}
+
+/* 4:3 shows scenery better; change to 16/10 for an even wider feel */
+.photo-tile {
+  position: relative; padding: 0; border: 0; background: transparent;
+  border-radius: 12px; overflow: hidden; cursor: pointer; outline-offset: 3px;
+  box-shadow: 0 2px 12px rgba(0,0,0,.28);
+}
+.photo-tile img {
+  width: 100%; height: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover; display: block;
+}
+.photo-tile.active {
+  outline: 2px solid rgba(120,180,255,.9);
+  filter: saturate(1.08);
+}
+
+/* ====== Small-screen polish ====== */
+@media (max-width: 900px) {
+  .hero-img-wrap { height: min(72vh, 760px); }
+  :root { --tile-min: 46vw; --tile-gap: 10px; } /* two big columns on mobile */
+}
+/* ===== Photos container (keeps everything centered & same width) ===== */
+.photos-wrap {
+  max-width: min(1100px, 96vw);
+  margin: 0 auto;
+  padding: 0 clamp(8px, 1.2vw, 14px);
+}
+
+/* ===== Hero frame (lighter blend, no overflow) ===== */
+.hero-frame {
+  position: relative;
+  isolation: isolate;                 /* keeps blend below content */
+  margin: clamp(12px, 2vw, 22px) auto;
+  padding: clamp(6px, 1vw, 12px);
+  border-radius: 16px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.28);
+  overflow: hidden;                   /* prevents any bleed outside rounded corners */
+}
+
+/* subtle ambient glow behind, not over content */
+.hero-frame::before,
+.hero-frame::after {
+  content: "";
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-frame::before {
+  background:
+    radial-gradient(120% 140% at 20% 0%, rgba(255,255,255,0.06), transparent 55%),
+    radial-gradient(120% 140% at 80% 100%, rgba(255,255,255,0.05), transparent 55%);
+  mix-blend-mode: screen;
+}
+.hero-frame::after {
+  background: radial-gradient(110% 120% at 50% 50%, transparent 60%, rgba(0,0,0,0.22) 100%);
+}
+
+/* ===== Hero inner sizing (prevents that “broken” wide overflow) ===== */
+.hero-img-wrap {
+  position: relative;
+  width: 100%;
+  /* Desktop feels balanced with a wide-but-not-ultrawide ratio */
+  aspect-ratio: 16 / 10;              /* controls width → height */
+  max-height: min(80vh, 860px);       /* guardrail so it never gets too tall */
+  margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #0b0f14;
+  z-index: 1;                         /* above blend layers */
+}
+
+@media (max-width: 900px) {
+  .hero-img-wrap {
+    aspect-ratio: 4 / 5;              /* nicer for mobile portrait space */
+    max-height: 72vh;
+  }
+}
+
+/* Always show the full image without cropping */
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  border-radius: inherit;
+}
+
+/* Caption + arrows sit above the blend */
+.hero-caption,
+.hero-nav { z-index: 2; }
+
+/* Caption */
+.hero-caption {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(8px, 1.2vw, 14px);
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  font-size: clamp(12px, 1.1vw, 14px);
+  color: #eaf0fb;
+  background: rgba(0,0,0,.55);
+  border-radius: 10px;
+  backdrop-filter: blur(3px);
+  pointer-events: none;
+}
+
+/* Prev/Next buttons — pinned inside padding, won’t drift */
+.hero-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 38px; height: 38px;
+  border-radius: 999px; border: 0;
+  background: rgba(0,0,0,.55); color: #fff;
+  font-size: 18px; display: grid; place-items: center;
+  cursor: pointer; transition: background .18s, transform .18s;
+}
+.hero-nav.left  { left: clamp(10px, 1vw, 14px); }
+.hero-nav.right { right: clamp(10px, 1vw, 14px); }
+.hero-nav:hover { background: rgba(0,0,0,.75); transform: translateY(-50%) scale(1.06); }
+
+/* ================= HERO: hug the image, minimal empty space ================= */
+
+/* Keep the photos page width, but let the hero shrink to its content */
+.photos-wrap {
+  max-width: min(1200px, 96vw);
+  margin: 0 auto;
+  padding: 0 clamp(8px, 1.2vw, 14px);
+}
+
+/* Frame becomes inline so it wraps the image width (no giant side gutters) */
+.hero-frame {
+  position: relative;
+  display: inline-block;           /* ✅ shrink-to-fit */
+  margin: clamp(12px, 2vw, 22px) auto;
+  padding: clamp(6px, 1vw, 10px);
+  border-radius: 14px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.28);
+  isolation: isolate;              /* blend layers stay under content */
+  overflow: hidden;
+}
+
+/* very subtle ambient glow; won’t darken the sides */
+.hero-frame::before,
+.hero-frame::after {
+  content: "";
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+}
+.hero-frame::before {
+  background:
+    radial-gradient(120% 150% at 20% 0%, rgba(255,255,255,0.05), transparent 55%),
+    radial-gradient(120% 150% at 80% 100%, rgba(255,255,255,0.04), transparent 55%);
+  mix-blend-mode: screen;
+}
+.hero-frame::after {
+  background: radial-gradient(110% 120% at 50% 50%, transparent 60%, rgba(0,0,0,0.18) 100%);
+}
+
+/* Image wrapper hugs the image; width is auto, only height is capped */
+.hero-img-wrap {
+  position: relative;
+  width: auto;                     /* ✅ hug intrinsic image width */
+  max-width: 92vw;                 /* guardrail on small screens */
+  margin: 0 auto;
+  display: flex; align-items: center; justify-content: center;
+  background: #0b0f14;
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Make portraits big: size from height, not width */
+.hero-img {
+  height: min(86vh, 980px);        /* ✅ fills vertical space, reduces side bars */
+  width: auto;
+  max-width: 92vw;                 /* if landscape gets too wide, it shrinks */
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  border-radius: inherit;
+}
+
+/* On phones, slightly lower the height so it doesn’t overwhelm */
+@media (max-width: 900px) {
+  .hero-img { height: min(76vh, 820px); max-width: 96vw; }
+}
+
+/* Caption stays inside, above blend */
+.hero-caption {
+  position: absolute; left: 50%; bottom: clamp(8px, 1.2vw, 14px);
+  transform: translateX(-50%);
+  padding: 6px 12px; border-radius: 10px;
+  font-size: clamp(12px, 1.05vw, 14px);
+  color: #eaf0fb; background: rgba(0,0,0,.55);
+  backdrop-filter: blur(3px);
+  pointer-events: none; z-index: 2;
+}
+
+/* Arrows sit INSIDE the snug image box so they don’t float in empty space */
+.hero-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 999px; border: 0;
+  background: rgba(0,0,0,.58); color: #fff; font-size: 18px;
+  display: grid; place-items: center; cursor: pointer;
+  transition: background .18s, transform .18s; z-index: 2;
+}
+.hero-nav.left  { left: clamp(6px, 1vw, 10px); }
+.hero-nav.right { right: clamp(6px, 1vw, 10px); }
+.hero-nav:hover { background: rgba(0,0,0,.78); transform: translateY(-50%) scale(1.06); }
+
+/* ==== SIMPLE, TIGHT HERO (hard overrides) ==== */
+.photos-wrap{max-width:min(1200px,96vw);margin:0 auto;padding:0 12px}
+
+/* Frame hugs the image width; remove heavy blends */
+.hero-frame{
+  position:relative;
+  width:fit-content !important;          /* shrink to image */
+  max-width:96vw;
+  margin:20px auto !important;
+  padding:8px;
+  border-radius:14px;
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(255,255,255,.06);
+  box-shadow:0 8px 22px rgba(0,0,0,.28);
+  overflow:hidden;
+}
+
+/* Wrapper just keeps rounded corners; no fixed aspect ratios */
+.hero-img-wrap{
+  position:relative;
+  width:fit-content !important;          /* hug image */
+  height:auto !important;
+  overflow:hidden;
+  border-radius:12px;
+  background:#0b0f14;
+}
+
+/* KEY: size from height; let width be whatever the photo needs */
+.hero-img{
+  display:block;
+  height:min(84vh,980px) !important;     /* big but bounded */
+  width:auto !important;                  /* prevents wide gutters */
+  max-width:92vw !important;              /* guardrail on narrow screens */
+  object-fit:contain !important;
+  object-position:center;
+  border-radius:inherit;
+}
+
+/* Caption overlay */
+.hero-caption{
+  position:absolute;left:50%;bottom:10px;transform:translateX(-50%);
+  padding:6px 12px;border-radius:10px;font-size:13px;
+  color:#eaf0fb;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);
+  pointer-events:none;
+}
+
+/* Arrows sit INSIDE the image edges */
+.hero-nav{
+  position:absolute;top:50%;transform:translateY(-50%);
+  width:36px;height:36px;border-radius:999px;border:0;
+  background:rgba(0,0,0,.6);color:#fff;font-size:18px;
+  display:grid;place-items:center;cursor:pointer;
+}
+.hero-nav.left{left:8px}
+.hero-nav.right{right:8px}
+.hero-nav:hover{background:rgba(0,0,0,.78);transform:translateY(-50%) scale(1.05)}
+
+/* Grid keeps your newer, larger look (tweak if you want even bigger) */
+.photo-grid{
+  margin:18px auto 0;max-width:min(1200px,96vw);
+  display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+}
+@media (min-width:1400px){ .photo-grid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr))}}
+@media (max-width:900px){
+  .hero-img{height:min(76vh,820px)}
+  .photo-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+}
+
+/* Layout width */
+.photos-wrap { max-width: min(1200px, 96vw); margin: 0 auto; padding: 0 12px; }
+
+/* Card */
+.hero-frame {
+  position: relative;
+  margin: clamp(12px, 2vw, 22px) auto;
+  padding: clamp(6px, 1vw, 10px);
+  border-radius: 14px;
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.06);
+  box-shadow: 0 8px 22px rgba(0,0,0,.28);
+  overflow: hidden;
+}
+
+/* Stage fills width, height capped by viewport */
+.hero-stage {
+  position: relative;
+  width: 100%;
+  height: min(86vh, 900px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #0b0f14; /* letterbox backdrop */
+}
+
+/* Main photo stays uncropped */
+.hero-img {
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  z-index: 2;
+}
+
+/* Peek previews use the side gutters */
+.hero-peek {
+  position: absolute;
+  top: 0; bottom: 0;
+  width: clamp(80px, 14vw, 260px);        /* amount of peek */
+  object-fit: cover;
+  filter: brightness(.78) saturate(.95);
+  transform: scale(1.03);
+  opacity: .95;
+  cursor: pointer;
+  z-index: 1;
+  transition: filter .18s ease, transform .18s ease, opacity .18s ease;
+}
+
+/* Fade the peeks toward the center so they don't fight the main shot */
+.hero-peek.left  {
+  left: 0;
+  mask-image: linear-gradient(to right, black 55%, transparent 95%);
+  -webkit-mask-image: linear-gradient(to right, black 55%, transparent 95%);
+}
+.hero-peek.right {
+  right: 0;
+  mask-image: linear-gradient(to left, black 55%, transparent 95%);
+  -webkit-mask-image: linear-gradient(to left, black 55%, transparent 95%);
+}
+.hero-peek:hover { filter: brightness(.95) saturate(1.05); transform: scale(1.04); }
+
+/* Caption */
+.hero-caption {
+  position: absolute; left: 50%; bottom: clamp(8px, 1.2vw, 14px);
+  transform: translateX(-50%);
+  padding: 6px 12px; border-radius: 10px;
+  font-size: 13px; color: #eaf0fb;
+  background: rgba(0,0,0,.55); backdrop-filter: blur(3px);
+  pointer-events: none; z-index: 3;
+}
+
+/* Arrows pinned inside the stage */
+.hero-nav {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: 999px; border: 0;
+  background: rgba(0,0,0,.6); color: #fff; font-size: 18px;
+  display: grid; place-items: center; cursor: pointer; z-index: 4;
+}
+.hero-nav.left  { left: 10px; }
+.hero-nav.right { right: 10px; }
+.hero-nav:hover { background: rgba(0,0,0,.78); transform: translateY(-50%) scale(1.05); }
+
+/* (Your existing .photo-grid styles can remain as you like) */
+
+/* ============ Photos page layout ============ */
+.photos-wrap{
+  max-width: min(1400px, 96vw);
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+/* Two-column row: left hero, right preview panel */
+.hero-row{
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 28vw, 360px);
+  gap: clamp(16px, 2vw, 28px);
+  align-items: start;
+}
+
+/* -------- Preview panel (right) -------- */
+.peek-panel{
+  position: sticky;
+  top: calc(var(--nav-h, 72px) + 12px);
+  align-self: start;
+  display: grid;
+  gap: 12px;
+}
+
+.peek-title{
+  margin: 0 0 2px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  opacity: .9;
+}
+
+.peek-card{
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  box-shadow: 0 6px 18px rgba(0,0,0,.28);
+  cursor: pointer;
+  text-align: left;
+}
+.peek-card img{
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+.peek-cap{
+  font-size: .85rem;
+  color: #cfd8e6;
+  line-height: 1.25;
+}
+
+.peek-strip{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+.peek-thumb{
+  padding: 0;
+  border: 0;
+  background: transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(0,0,0,.25);
+}
+.peek-thumb img{
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+}
+
+/* -------- Hero card (left) -------- */
+.hero-frame{
+  position: relative;
+  margin: clamp(12px, 2vw, 22px) auto;
+  padding: clamp(6px, 1vw, 10px);
+  border-radius: 14px;
+  background: rgba(255,255,255,.02);
+  border: 1px solid rgba(255,255,255,.06);
+  box-shadow: 0 8px 22px rgba(0,0,0,.28);
+  overflow: hidden;
+}
+
+.hero-stage{
+  position: relative;
+  width: 100%;
+  height: min(86vh, 900px);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #0b0f14; /* letterbox backdrop */
+}
+
+/* Main image stays uncropped */
+.hero-img{
+  max-height: 100%;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  z-index: 2;
+}
+
+/* Peeks paint the side gutters */
+.hero-peek{
+  position: absolute;
+  top: 0; bottom: 0;
+  width: clamp(64px, 12vw, 220px);
+  object-fit: cover;
+  filter: brightness(.78) saturate(.95);
+  transform: scale(1.03);
+  opacity: .95;
+  cursor: pointer;
+  z-index: 1;
+  transition: filter .18s ease, transform .18s ease, opacity .18s ease;
+}
+.hero-peek.left{
+  left: 0;
+  mask-image: linear-gradient(to right, black 55%, transparent 95%);
+  -webkit-mask-image: linear-gradient(to right, black 55%, transparent 95%);
+}
+.hero-peek.right{
+  right: 0;
+  mask-image: linear-gradient(to left, black 55%, transparent 95%);
+  -webkit-mask-image: linear-gradient(to left, black 55%, transparent 95%);
+}
+.hero-peek:hover{ filter: brightness(.95) saturate(1.05); transform: scale(1.04); }
+
+/* Caption & arrows */
+.hero-caption{
+  position: absolute;
+  left: 50%;
+  bottom: clamp(8px, 1.2vw, 14px);
+  transform: translateX(-50%);
+  padding: 6px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #eaf0fb;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(3px);
+  pointer-events: none;
+  z-index: 3;
+}
+.hero-nav{
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px; height: 36px;
+  border-radius: 999px; border: 0;
+  background: rgba(0,0,0,.6);
+  color: #fff; font-size: 18px;
+  display: grid; place-items: center;
+  cursor: pointer; z-index: 4;
+}
+.hero-nav.left{  left: 10px; }
+.hero-nav.right{ right: 10px; }
+.hero-nav:hover{ background: rgba(0,0,0,.78); transform: translateY(-50%) scale(1.05); }
+
+/* -------- Thumbnails grid (keep if you want larger) -------- */
+.photo-grid{
+  margin: clamp(16px, 2.2vw, 28px) auto 0;
+  max-width: min(1400px, 96vw);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+@media (min-width: 1400px){
+  .photo-grid{ grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+}
+
+/* -------- Responsive: collapse panel below -------- */
+@media (max-width: 1100px){
+  .hero-row{ grid-template-columns: 1fr; }
+  .peek-panel{ position: static; }
+}
+@media (max-width: 900px){
+  .photo-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+}
+
+/* ===== Make the main photo larger & the panel slimmer ===== */
+
+/* widen overall canvas a bit so hero can breathe */
+.photos-wrap{
+  max-width: min(1560px, 96vw);
+}
+
+/* give hero more of the row; make panel narrower */
+.hero-row{
+  grid-template-columns: minmax(0, 1fr) clamp(240px, 22vw, 320px);
+}
+
+/* taller hero so portraits feel immersive */
+.hero-stage{
+  height: min(92vh, 1050px);
+}
+
+/* make the photo itself claim more space but stay uncropped */
+.hero-img{
+  max-height: 100%;
+  max-width: 100%;
+}
+
+/* keep side peeks subtle so they don’t steal attention */
+.hero-peek{
+  width: clamp(48px, 9vw, 180px);
+  filter: brightness(.72) saturate(.92);
+  opacity: .9;
+}
+.hero-peek:hover{
+  filter: brightness(.9) saturate(1.02);
+  transform: scale(1.02);
+}
+
+/* slightly shrink the big preview card image in the panel */
+.peek-card img{
+  aspect-ratio: 4 / 5;          /* a bit taller/narrower than before */
+}
+
+/* on medium screens, still prioritize the hero a bit more */
+@media (max-width: 1300px){
+  .hero-row{
+    grid-template-columns: minmax(0, 1fr) clamp(220px, 24vw, 300px);
+  }
+}
+
+/* phone/tablet: unchanged — panel drops below */
+@media (max-width: 1100px){
+  .hero-row{ grid-template-columns: 1fr; }
+}
+
+/* ========= HERO DOMINATES ========= */
+
+/* Wider canvas so the hero can breathe */
+.photos-sec .photos-wrap{
+  max-width: min(1760px, 98vw) !important;
+}
+
+/* Give the hero a much larger column; slim the panel */
+.photos-sec .hero-row{
+  grid-template-columns: 1.45fr clamp(220px, 20vw, 300px) !important;
+  align-items: start !important;
+}
+
+/* Let the hero frame fill its column */
+.photos-sec .hero-frame{
+  width: 100% !important;
+  margin: clamp(10px, 1.6vw, 20px) 0 !important;
+}
+
+/* Make the hero taller = more immersive portraits */
+.photos-sec .hero-stage{
+  height: min(94vh, 1200px) !important;   /* was ~86vh */
+}
+
+/* Keep the main image uncropped but allow it to claim all that height */
+.photos-sec .hero-img{
+  max-height: 100% !important;
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+/* Side peeks smaller/subtler so they stop stealing attention */
+.photos-sec .hero-peek{
+  width: clamp(36px, 7vw, 140px) !important;
+  filter: brightness(.7) saturate(.9) !important;
+  opacity: .85 !important;
+}
+.photos-sec .hero-peek:hover{
+  filter: brightness(.9) saturate(1.0) !important;
+  transform: scale(1.02) !important;
+}
+
+/* Panel visuals a touch lighter so the hero pops */
+.photos-sec .peek-card{
+  background: rgba(255,255,255,.025) !important;
+}
+.photos-sec .peek-card img{
+  aspect-ratio: 4 / 5 !important;  /* a bit narrower than before */
+}
+
+/* Medium screens: still bias toward hero */
+@media (max-width: 1300px){
+  .photos-sec .hero-row{
+    grid-template-columns: 1.35fr clamp(210px, 24vw, 290px) !important;
+  }
+}
+
+/* Small screens unchanged (panel stacks) */
+@media (max-width: 1100px){
+  .photos-sec .hero-row{ grid-template-columns: 1fr !important; }
+}
+
+/* === BIG HERO, NO ZOOM/CROP (hard overrides) === */
+
+/* Wider canvas + hero gets more space than the panel */
+.photos-sec .photos-wrap{ max-width:min(1700px,98vw) !important; }
+.photos-sec .hero-row{
+  grid-template-columns: 1.45fr clamp(220px,20vw,300px) !important;
+}
+
+/* Tall stage so portraits feel immersive */
+.photos-sec .hero-stage{
+  height: min(92vh, 1100px) !important;
+  padding: 0 !important;                 /* no inner padding that can clip */
+}
+
+/* 🔑 Main image: ALWAYS show entire photo, never crop/zoom */
+.photos-sec .hero-img{
+  object-fit: contain !important;        /* show full image */
+  width: auto !important;                /* scale by height */
+  height: 100% !important;               /* fill the stage height */
+  max-width: 100% !important;            /* guard for landscapes */
+  max-height: 100% !important;
+  transform: none !important;            /* no accidental scaling */
+  aspect-ratio: auto !important;         /* let intrinsic ratio rule */
+}
+
+/* Make side previews subtler so hero stands out (they don't affect sizing) */
+.photos-sec .hero-peek{
+  width: clamp(36px, 7vw, 140px) !important;
+  filter: brightness(.72) saturate(.92) !important;
+  opacity: .85 !important;
+}
+
+/* Panel a touch slimmer so hero feels larger */
+.photos-sec .hero-row{
+  column-gap: clamp(16px, 2vw, 28px) !important;
+}
+.photos-sec .peek-card img{ aspect-ratio: 4/5 !important; }
+
+/* Medium screens: still bias toward hero */
+@media (max-width: 1300px){
+  .photos-sec .hero-row{
+    grid-template-columns: 1.35fr clamp(210px,24vw,290px) !important;
+  }
+}
+
+/* Small screens: stack as before */
+@media (max-width: 1100px){
+  .photos-sec .hero-row{ grid-template-columns: 1fr !important; }
+}
+
+/* === STOP CROPPING: image always fully visible === */
+
+/* the stage can be tall, but it's the bounding box */
+.photos-sec .hero-stage{
+  height: min(92vh, 1050px) !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+}
+
+/* KEY: constrain BOTH axes so object-fit: contain can work */
+.photos-sec .hero-img{
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;   /* show entire photo */
+  object-position: center center !important;
+  display: block !important;
+  transform: none !important;
+}
+
+/* make sure nothing else is shrinking the stage */
+.photos-sec .hero-frame{ width: 100% !important; }
+
+/* side previews should never push/cover the main image */
+.photos-sec .hero-peek{
+  pointer-events: auto;
+  z-index: 1 !important;
+}
+.photos-sec .hero-img{ z-index: 2 !important; } /* above peeks */
+
+/* ===== FINAL OVERRIDE: Big hero, zero cropping ===== */
+
+/* Make the hero column larger than the panel (can tweak the 1.5fr) */
+.photos-sec .photos-wrap { max-width: min(1700px, 98vw) !important; }
+.photos-sec .hero-row {
+  grid-template-columns: 1.5fr clamp(240px, 22vw, 320px) !important;
+}
+
+/* The stage is the bounding box; we center content in it */
+.photos-sec .hero-stage {
+  position: relative !important;
+  width: 100% !important;
+  height: min(92vh, 1100px) !important;   /* tall/immersive but bounded */
+  display: flex !important;
+  align-items: center !important;         /* vertical center */
+  justify-content: center !important;     /* horizontal center */
+  overflow: hidden !important;            /* only shows letterboxing if needed */
+  padding: 0 !important;
+}
+
+/* 🔑 The image must fit within BOTH width & height, no stretch, no crop */
+.photos-sec .hero-stage > img.hero-img {
+  max-width: 100% !important;
+  max-height: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  aspect-ratio: auto !important;          /* kill any previous aspect locks */
+  display: block !important;
+  transform: none !important;             /* kill any zoom transforms */
+  inset: auto !important;                 /* if anything set it absolute before */
+  z-index: 2 !important;
+}
+
+/* Make sure no ancestor is constraining with an aspect ratio */
+.photos-sec .hero-frame,
+.photos-sec .hero-img-wrap,
+.photos-sec .hero-stage {
+  aspect-ratio: auto !important;
+}
+
+/* Side previews should never cover the main image or affect layout */
+.photos-sec .hero-peek {
+  z-index: 1 !important;
+  pointer-events: auto !important;        /* still clickable */
+  width: clamp(48px, 9vw, 160px) !important;  /* keep them subtle */
+  mask-image: none; -webkit-mask-image: none; /* if masks were causing odd edges */
+  opacity: .85 !important;
+  filter: brightness(.75) saturate(.92) !important;
+}
+
+/* Arrows sit above everything, but do not change image size */
+.photos-sec .hero-nav { z-index: 3 !important; }
+
+/* Optional: if you ever added a fixed height to the image via another class, reset it */
+img.hero-img[style] { height: auto !important; width: auto !important; }
+
+/* ===== Clean hero: no corner peeks, no black gutters ===== */
+
+/* 1) Kill the side-peek images inside the hero */
+.photos-sec .hero-peek { display: none !important; }
+
+/* 2) Make the stage wrap the image size (so there's no extra black area) */
+.photos-sec .hero-frame {
+  display: flex !important;
+  justify-content: center !important;
+}
+.photos-sec .hero-stage {
+  display: inline-block !important;      /* shrink-to-fit the image */
+  width: auto !important;
+  height: auto !important;
+  background: transparent !important;    /* remove black backdrop */
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+/* 3) Size the image itself (big, but never cropped) */
+.photos-sec .hero-stage > img.hero-img {
+  width: auto !important;
+  height: auto !important;
+  max-height: min(92vh, 1100px) !important;  /* big + immersive */
+  max-width: 100% !important;                /* guard for landscapes */
+  object-fit: contain !important;            /* full image, no crop */
+  display: block !important;
+}
+
+/* 4) Keep arrows tight to the image edges */
+.photos-sec .hero-nav.left  { left: 8px !important; }
+.photos-sec .hero-nav.right { right: 8px !important; }
+
+/* ===== Fill the whole left column, no crop, no gutters ===== */
+
+/* Left column hero should stretch to its column width */
+.photos-sec .hero-frame{
+  width: 100% !important;
+  margin: clamp(10px, 1.6vw, 20px) 0 !important;
+}
+
+/* Let the stage size to the image width (not a fixed vh box) */
+.photos-sec .hero-stage{
+  display: block !important;
+  width: 100% !important;
+  height: auto !important;        /* <-- no fixed height */
+  padding: 0 !important;
+  overflow: visible !important;
+  background: transparent !important;
+}
+
+/* 🔑 Image fills the full column width; height adjusts = no cropping */
+.photos-sec .hero-stage > img.hero-img{
+  width: 100% !important;         /* fill all available horizontal space */
+  height: auto !important;        /* keep aspect ratio */
+  max-width: 100% !important;
+  max-height: none !important;
+  object-fit: contain !important; /* harmless here; width drives size */
+  display: block !important;
+  transform: none !important;
+}
+
+/* Keep arrows aligned to the image edges */
+.photos-sec .hero-nav{
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+.photos-sec .hero-nav.left{  left: 8px !important; }
+.photos-sec .hero-nav.right{ right: 8px !important; }
+
+/* If you previously hid the black backdrop, keep it off */
+.photos-sec .hero-peek{ display: none !important; }
+
+/* ===== Fit the whole photo on screen (no scroll), keep aspect ratio ===== */
+
+/* slightly smaller canvas + slimmer panel */
+.photos-sec .photos-wrap{ max-width:min(1350px, 94vw) !important; }
+.photos-sec .hero-row{
+  grid-template-columns: 1.4fr clamp(210px, 18vw, 280px) !important;
+  column-gap: clamp(14px, 2vw, 24px) !important;
+}
+
+/* hero frame spans its column but doesn't force extra height */
+.photos-sec .hero-frame{
+  width: 100% !important;
+  margin: clamp(8px, 1.4vw, 16px) 0 !important;
+}
+
+/* stage centers content; height is governed by the image's max-height */
+.photos-sec .hero-stage{
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  width:100% !important;
+  height:auto !important;
+  padding:0 !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+
+/* 🔑 Make image fit within viewport height, keep proportions */
+:root{ --nav-h: 72px; } /* adjust if your header differs */
+.photos-sec .hero-stage > img.hero-img{
+  width:auto !important;
+  height:auto !important;
+  max-width: 100% !important;                          /* cap by column width */
+  max-height: calc(100vh - var(--nav-h) - 120px) !important; /* fully visible */
+  object-fit: contain !important;
+  object-position:center center !important;
+  display:block !important;
+  transform:none !important;
+}
+
+/* remove corner previews (optional) */
+.photos-sec .hero-peek{ display:none !important; }
+
+/* keep arrows tight to image edges */
+.photos-sec .hero-nav{ top:50% !important; transform:translateY(-50%) !important; }
+.photos-sec .hero-nav.left{  left:8px !important; }
+.photos-sec .hero-nav.right{ right:8px !important; }
+
+/* make the right preview panel feel smaller, too */
+.photos-sec .peek-card img{ aspect-ratio: 4 / 5 !important; }
+
+/* === Tighten experiences → projects, and control ONLY projects → creative === */
+
+/* Remove any extra bottom spacing inside the Projects section */
+#projects,
+#projects .section__container,
+#projects .section__content {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Kill bottom margin on the last child inside Projects (in case ProjectRails adds one) */
+#projects .section__content > *:last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Add a targeted gap ONLY between Projects and Creative Mind.
+   Uses adjacent-sibling so nothing else is affected. */
+#projects + #create {
+  margin-top: clamp(32px, 5vw, 88px) !important;  /* ← adjust to taste */
+  padding-top: 0 !important;                      /* ensure no double-stacking */
+}
+
+/* Make sure the gap ABOVE Projects (from Experiences) doesn’t grow */
+#projects {
+  margin-top: 0 !important;   /* keep experiences → projects tight */
+  padding-top: inherit;       /* keep your normal top padding */
+}
+
+/* ===== Hero image buttons ===== */
+.hero__quick-links{
+  margin-top: clamp(18px, 3vw, 28px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(12px, 2vw, 18px);
+  flex-wrap: wrap;
+}
+
+.hero__image-button{
+  display: inline-block;
+  border-radius: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  box-shadow: 0 12px 28px rgba(0,0,0,.28);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  text-decoration: none !important;
+}
+
+.hero__image-button:hover{
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 18px 36px rgba(0,0,0,.34);
+  border-color: rgba(255,255,255,.22);
+}
+
+.hero__image-button img{
+  display: block;
+  width: clamp(180px, 18vw, 240px);
+  height: auto;
+  object-fit: cover;
+}
+
+@media (max-width: 640px){
+  .hero__quick-links{
+    gap: 10px;
+  }
+
+  .hero__image-button img{
+    width: min(42vw, 190px);
+  }
+}
+
+
+/* ===== Hero image buttons ===== */
+.hero__quick-links{
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.hero__image-button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 78px;
+  padding: 8px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,.03);
+  box-shadow: 0 6px 18px rgba(0,0,0,.18);
+  transition: transform .16s ease, border-color .16s ease, background .16s ease;
+  text-decoration: none !important;
+  opacity: 0.92;
+}
+
+.hero__image-button:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,255,255,.16);
+  background: rgba(255,255,255,.05);
+}
+
+.hero__image-button img{
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 10px;
+}
+
+@media (max-width: 640px){
+  .hero__quick-links{
+    margin-top: 14px;
+    gap: 10px;
+  }
+
+  .hero__image-button{
+    width: 104px;
+    height: 70px;
+    padding: 7px;
+    border-radius: 12px;
+  }
+}
+
+/* ===== Hero image buttons ===== */
+.hero__quick-links{
+  margin-top: 28px; /* move lower */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.hero__image-button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 132px;
+  height: 84px;
+  padding: 7px;
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none !important;
+
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.16);
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.22),
+    inset 0 1px 0 rgba(255,255,255,.06);
+
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    background .18s ease,
+    box-shadow .18s ease;
+}
+
+.hero__image-button:hover{
+  transform: translateY(-2px);
+  background: rgba(255,255,255,.09);
+  border-color: rgba(255,255,255,.28);
+  box-shadow:
+    0 14px 30px rgba(0,0,0,.28),
+    0 0 0 1px rgba(110,168,255,.10);
+}
+
+.hero__image-button img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+/* mobile */
+@media (max-width: 640px){
+  .hero__quick-links{
+    margin-top: 22px;
+    gap: 10px;
+  }
+
+  .hero__image-button{
+    width: 118px;
+    height: 76px;
+    padding: 6px;
+    border-radius: 14px;
+  }
+}
+
+/* ===== HERO BUTTONS LOWER, TEXT STAYS CENTERED ===== */
+.hero.hero--with-stack{
+  position: relative;
+}
+
+.hero__content{
+  position: relative;
+  z-index: 3;
+}
+
+.hero__quick-links{
+  position: absolute;
+  left: 50%;
+  top: 55%;
+  transform: translateX(-50%);
+  z-index: 4;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: nowrap;
+}
+
+.hero__image-button{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 138px;
+  height: 88px;
+  padding: 7px;
+  border-radius: 16px;
+  overflow: hidden;
+  text-decoration: none !important;
+
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.24),
+    inset 0 1px 0 rgba(255,255,255,.05);
+
+  transition:
+    transform .18s ease,
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease;
+}
+
+.hero__image-button:hover{
+  transform: translateY(-2px);
+  background: rgba(255,255,255,.11);
+  border-color: rgba(255,255,255,.28);
+  box-shadow:
+    0 14px 30px rgba(0,0,0,.30),
+    0 0 0 1px rgba(110,168,255,.10);
+}
+
+.hero__image-button img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 12px;
+}
+
+@media (max-width: 900px){
+  .hero__quick-links{
+    top: 73%;
+    gap: 10px;
+  }
+
+  .hero__image-button{
+    width: 118px;
+    height: 76px;
+    padding: 6px;
+    border-radius: 14px;
+  }
+}
+
+@media (max-width: 640px){
+  .hero__quick-links{
+    top: 73%;
+  }
+
+  .hero__image-button{
+    width: 104px;
+    height: 68px;
+  }
+}
