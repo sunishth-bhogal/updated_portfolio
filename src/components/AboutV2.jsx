@@ -1,6 +1,6 @@
 // AboutV2.jsx
 import React from "react";
-import HeadshotForPortfolio from "./assets/HeadshotForPortfolio.jpg";
+import HeadshotForPortfolio from "./assets/Cross_arms.png";
 import GymSceneAnimated from "./GymSceneAnimated";
 import CreativeSpark from "./CreativeSpark";
 import ReactAIBuilder from "./ReactAIBuilder";

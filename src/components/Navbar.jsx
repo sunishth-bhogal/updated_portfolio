@@ -1,6 +1,7 @@
 // src/components/Navbar.jsx
 import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import Logo from "../components/assets/SBLOGO.png";
 
 export default function Navbar() {
@@ -21,6 +22,7 @@ export default function Navbar() {
   const [active, setActive] = useState("home");
   const [open, setOpen] = useState(false); // ✅ now used (mobile drawer)
   const [scrolled, setScrolled] = useState(false);
+  const reduceMotion = useReducedMotion();
   const [visible, setVisible] = useState(true);
   const [progress, setProgress] = useState(0);
 
@@ -298,45 +300,104 @@ export default function Navbar() {
       <div className="nav-spacer" />
 
       {/* ✅ Mobile Drawer + Overlay (uses open/closeDrawer/onOverlayKeyDown) */}
-      {open && (
-        <div className="drawer-root" aria-hidden={!open}>
-          <div
-            className="drawer-overlay"
-            role="button"
-            tabIndex={0}
-            aria-label="Close menu overlay"
-            onClick={closeDrawer}
-            onKeyDown={onOverlayKeyDown}
-          />
-          <aside
-            id="mobile-drawer"
-            className="drawer"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Mobile navigation"
-          >
-            <div className="drawer-top">
-              <img src={Logo} alt="" className="drawer-logo" />
-              <button type="button" className="drawer-close" onClick={closeDrawer} aria-label="Close menu">
-                ✕
-              </button>
-            </div>
+      <AnimatePresence>
+        {open && (
+          <div className="drawer-root" aria-hidden={!open}>
+            <motion.div
+              className="drawer-overlay"
+              role="button"
+              tabIndex={0}
+              aria-label="Close menu overlay"
+              onClick={closeDrawer}
+              onKeyDown={onOverlayKeyDown}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.22 }}
+            />
+            <motion.aside
+              id="mobile-drawer"
+              className="drawer"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Mobile navigation"
+              initial={{ x: reduceMotion ? 0 : "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: reduceMotion ? 0 : "100%" }}
+              transition={{ duration: reduceMotion ? 0 : 0.32, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <span className="drawer-glow" aria-hidden="true" />
+              <span className="drawer-grid" aria-hidden="true" />
 
-            <nav className="drawer-links" aria-label="Mobile">
-              {sections.map((s) => (
-                <button
-                  key={s.id}
-                  type="button"
-                  className={`sheet-link ${isHome && active === s.id ? "active" : ""}`}
-                  onClick={() => scrollTo(s.id)}
-                >
-                  {s.label}
+              <div className="drawer-top">
+                <img src={Logo} alt="" className="drawer-logo" />
+                <button type="button" className="drawer-close" onClick={closeDrawer} aria-label="Close menu">
+                  ✕
                 </button>
-              ))}
-            </nav>
-          </aside>
-        </div>
-      )}
+              </div>
+
+              <div className="drawer-scroll">
+                <span className="drawer-eyebrow">Menu</span>
+                <nav className="drawer-links" aria-label="Mobile">
+                  {sections.map((s, i) => (
+                    <motion.button
+                      key={s.id}
+                      type="button"
+                      className={`sheet-link ${isHome && active === s.id ? "active" : ""}`}
+                      onClick={() => scrollTo(s.id)}
+                      initial={{ opacity: 0, x: reduceMotion ? 0 : 18 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        duration: reduceMotion ? 0 : 0.4,
+                        delay: reduceMotion ? 0 : 0.12 + i * 0.05,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                      whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+                    >
+                      <span className="sheet-link-index">{String(i + 1).padStart(2, "0")}</span>
+                      <span className="sheet-link-label">{s.label}</span>
+                      <span className="sheet-link-arrow" aria-hidden="true">↗</span>
+                    </motion.button>
+                  ))}
+                </nav>
+              </div>
+
+              <div className="drawer-footer">
+                <a
+                  className="drawer-social"
+                  href="https://github.com/sunishth-bhogal"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="GitHub"
+                >
+                  GitHub
+                </a>
+                <a
+                  className="drawer-social"
+                  href="https://www.linkedin.com/in/sunishth-bhogal-39a162222/"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="LinkedIn"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  className="drawer-social"
+                  href="https://x.com/BhogalSunishth"
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="X"
+                >
+                  X
+                </a>
+                <a className="drawer-social" href="mailto:sunishth.28@gmail.com" aria-label="Email">
+                  Email
+                </a>
+              </div>
+            </motion.aside>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* ---- INLINE NAVBAR CSS (compact) ---- */}
       <style>{`
@@ -446,7 +507,9 @@ export default function Navbar() {
         .drawer-overlay{
           position: absolute;
           inset: 0;
-          background: rgba(0,0,0,.55);
+          background: rgba(0,0,0,.6);
+          -webkit-backdrop-filter: blur(3px);
+          backdrop-filter: blur(3px);
           cursor: pointer;
           outline: none;
         }
@@ -455,61 +518,171 @@ export default function Navbar() {
           top: 0;
           right: 0;
           height: 100%;
-          width: min(82vw, 360px);
-          background: rgba(10,14,24,.92);
-          -webkit-backdrop-filter: blur(12px);
-          backdrop-filter: blur(12px);
+          width: min(88vw, 420px);
+          background: linear-gradient(165deg, rgba(14,18,30,.96), rgba(9,12,20,.97));
+          -webkit-backdrop-filter: blur(14px);
+          backdrop-filter: blur(14px);
           border-left: 1px solid rgba(255,255,255,.10);
-          box-shadow: -12px 0 40px rgba(0,0,0,.35);
+          box-shadow: -20px 0 60px rgba(0,0,0,.5);
           display: grid;
-          grid-template-rows: auto 1fr;
-          animation: drawerIn .18s ease-out;
+          grid-template-rows: auto 1fr auto;
+          overflow: hidden;
         }
-        @keyframes drawerIn{
-          from { transform: translateX(12px); opacity: .7; }
-          to   { transform: translateX(0); opacity: 1; }
+        .drawer-glow{
+          position: absolute;
+          top: -140px;
+          right: -120px;
+          width: 340px;
+          height: 340px;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(108,168,255,.3), rgba(177,140,255,.16) 55%, transparent 72%);
+          pointer-events: none;
+          filter: blur(2px);
+        }
+        .drawer-grid{
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          opacity: .5;
+          background-image:
+            linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+          background-size: 28px 28px;
+          -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.9), transparent 70%);
+          mask-image: linear-gradient(180deg, rgba(0,0,0,.9), transparent 70%);
         }
         .drawer-top{
+          position: relative;
+          z-index: 1;
           display:flex;
           align-items:center;
           justify-content: space-between;
-          padding: 14px 14px 10px;
+          padding: 18px 18px 14px;
           border-bottom: 1px solid rgba(255,255,255,.10);
         }
-        .drawer-logo{ height: 26px; width:auto; border-radius: 10px; }
+        .drawer-logo{ height: 28px; width:auto; border-radius: 10px; }
         .drawer-close{
           appearance:none;
           border: 1px solid rgba(255,255,255,.14);
           background: rgba(255,255,255,.06);
           color: #e7eefc;
-          border-radius: 12px;
-          padding: 8px 10px;
+          border-radius: 999px;
+          width: 34px;
+          height: 34px;
+          display: grid;
+          place-items: center;
           cursor: pointer;
+          transition: background .2s ease, transform .2s ease;
         }
-        .drawer-close:hover{ background: rgba(255,255,255,.10); }
+        .drawer-close:hover{ background: rgba(255,255,255,.10); transform: rotate(90deg); }
 
-        .drawer-links{ padding: 10px 0; }
+        .drawer-scroll{
+          position: relative;
+          z-index: 1;
+          overflow-y: auto;
+          padding: 22px 20px 12px;
+        }
+        .drawer-eyebrow{
+          display: block;
+          font-size: 11px;
+          font-weight: 800;
+          letter-spacing: .16em;
+          text-transform: uppercase;
+          color: hsl(220 40% 55%);
+          margin: 0 6px 14px;
+        }
+        .drawer-links{ position: relative; display: flex; flex-direction: column; gap: 2px; }
         .drawer .sheet-link{
-          display:block; width: calc(100% - 24px);
-          margin: 6px 12px;
+          position: relative;
+          display: flex;
+          align-items: baseline;
+          gap: 16px;
+          width: 100%;
           text-align:left;
           appearance:none;
           background: transparent;
           color: #e7eefc;
           border: 1px solid transparent;
-          border-radius: 12px;
-          padding: 12px 14px;
+          border-radius: 14px;
+          padding: 18px 16px;
           font-weight: 700;
           cursor: pointer;
-          transition: background .2s ease, border-color .2s ease;
+          overflow: hidden;
+          transition: background .2s ease, border-color .2s ease, padding-left .2s ease;
+        }
+        .drawer .sheet-link::before{
+          content: "";
+          position: absolute;
+          left: 0; top: 12px; bottom: 12px;
+          width: 3px;
+          border-radius: 999px;
+          background: linear-gradient(180deg, var(--accent-a), var(--accent-b));
+          transform: scaleY(0);
+          transition: transform .22s cubic-bezier(.16,1,.3,1);
         }
         .drawer .sheet-link:hover{
-          background: rgba(255,255,255,.06);
+          background: rgba(255,255,255,.055);
           border-color: rgba(255,255,255,.10);
+          padding-left: 20px;
         }
         .drawer .sheet-link.active{
-          background: rgba(255,255,255,.08);
+          background: rgba(255,255,255,.07);
           border-color: rgba(255,255,255,.12);
+        }
+        .drawer .sheet-link.active::before{ transform: scaleY(1); }
+        .sheet-link-index{
+          font-size: 13px;
+          font-weight: 800;
+          letter-spacing: .04em;
+          color: hsl(220 70% 70%);
+          opacity: .65;
+          flex: 0 0 auto;
+        }
+        .sheet-link.active .sheet-link-index{ opacity: 1; }
+        .sheet-link-label{
+          font-size: clamp(20px, 5vw, 24px);
+          font-weight: 800;
+          letter-spacing: -.01em;
+          flex: 1;
+        }
+        .sheet-link-arrow{
+          font-size: 16px;
+          opacity: 0;
+          transform: translate(-4px, 4px);
+          transition: opacity .2s ease, transform .2s ease;
+          color: hsl(220 80% 72%);
+        }
+        .drawer .sheet-link:hover .sheet-link-arrow,
+        .drawer .sheet-link.active .sheet-link-arrow{
+          opacity: 1;
+          transform: translate(0, 0);
+        }
+
+        .drawer-footer{
+          position: relative;
+          z-index: 1;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          padding: 16px 18px 20px;
+          border-top: 1px solid rgba(255,255,255,.10);
+        }
+        .drawer-social{
+          appearance: none;
+          border: 1px solid rgba(255,255,255,.12);
+          background: rgba(255,255,255,.04);
+          color: hsl(220 20% 88%);
+          border-radius: 999px;
+          padding: 8px 14px;
+          font-size: 12.5px;
+          font-weight: 700;
+          text-decoration: none;
+          transition: background .2s ease, border-color .2s ease, transform .2s ease;
+        }
+        .drawer-social:hover{
+          background: rgba(255,255,255,.09);
+          border-color: rgba(255,255,255,.2);
+          transform: translateY(-1px);
         }
 
         @media (max-width: 720px){

@@ -4208,6 +4208,124 @@ html { scroll-behavior: auto; }
 }
 .project-modal-close:hover{ background: hsl(220 30% 10% / .85); }
 
+/* ----- Project coverflow carousel ----- */
+.coverflow-wrap{
+  margin-top: clamp(24px, 3vw, 32px);
+}
+.coverflow{
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 1.4vw, 16px);
+  overflow: hidden;
+  outline: none;
+}
+.coverflow-track{
+  position: relative;
+  flex: 1;
+  height: clamp(420px, 46vw, 540px);
+  perspective: 1500px;
+}
+.coverflow-card{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(400px, 84vw);
+  border-radius: 22px;
+  background: hsl(220 22% 10% / .82);
+  border: 1px solid hsl(220 20% 30% / .3);
+  box-shadow: 0 20px 50px hsl(220 70% 2% / .5);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform .55s cubic-bezier(.16,1,.3,1), opacity .55s ease, box-shadow .3s ease, border-color .3s ease;
+}
+.coverflow-card.is-active{
+  border-color: hsl(220 60% 62% / .5);
+  box-shadow: 0 26px 60px hsl(220 80% 4% / .6), 0 0 0 1px hsl(220 70% 60% / .2);
+}
+.coverflow-card:focus-visible{
+  outline: 2px solid hsl(220 80% 66%);
+  outline-offset: 2px;
+}
+.coverflow-media{
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: hsl(220 16% 16%);
+}
+.coverflow-media img{ transition: transform .5s cubic-bezier(.16,1,.3,1); }
+.coverflow-card.is-active:hover .coverflow-media img{ transform: scale(1.045); }
+.coverflow-card-face{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 18px;
+}
+.coverflow-index{
+  font-weight: 800;
+  font-size: 12px;
+  color: hsl(220 70% 68%);
+  flex: 0 0 auto;
+}
+.coverflow-title{
+  margin: 0;
+  flex: 1;
+  font-weight: 800;
+  font-size: clamp(15px, 1.6vw, 19px);
+  color: hsl(220 22% 98%);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.coverflow-open{
+  flex: 0 0 auto;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: hsl(220 80% 72%);
+  white-space: nowrap;
+}
+.coverflow-arrow{
+  flex: 0 0 auto;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid hsl(220 20% 40% / .35);
+  background: hsl(220 30% 8% / .7);
+  color: hsl(220 20% 92%);
+  font-size: 22px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 60;
+  transition: background .2s ease, transform .2s ease, opacity .2s ease;
+}
+.coverflow-arrow:hover{ background: hsl(220 30% 15% / .88); transform: translateY(-1px); }
+.coverflow-arrow:disabled{ opacity: .3; cursor: default; transform: none; }
+.coverflow-dots{
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+.coverflow-dot{
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: hsl(220 20% 34%);
+  cursor: pointer;
+  transition: background .2s ease, width .2s ease;
+}
+.coverflow-dot.is-active{
+  width: 22px;
+  background: linear-gradient(90deg, hsl(260 90% 66%), hsl(220 90% 62%));
+}
+@media (max-width: 640px){
+  .coverflow-arrow{ width: 36px; height: 36px; font-size: 18px; }
+  .coverflow-card{ width: min(86vw, 340px); }
+}
+
 /* If you still have the old tabs styles, scope or remove them to avoid collisions */
 .projects-sec .tabs-row,
 .projects-sec .tab,

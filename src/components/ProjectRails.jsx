@@ -1,11 +1,9 @@
-import React, { useMemo, useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import TML from "../components/assets/TML.jpg";
 import Stock from "../components/assets/Stock.jpg";
 import Portfolio from "../components/assets/Portfolio.jpg";
 import UWStudySpots from "../components/assets/UWStudySpots.jpg";
-
-const CATEGORIES = ["All Projects", "Software", "Data"];
 
 const PROJECTS = [
   {
@@ -58,33 +56,23 @@ const PROJECTS = [
 ];
 
 export default function ProjectTabs() {
-  const [cat, setCat] = useState("All Projects");
   const [activeId, setActiveId] = useState(null);
   const reduceMotion = useReducedMotion();
 
-  const grouped = useMemo(() => {
-    const map = new Map(CATEGORIES.map((c) => [c, []]));
-    PROJECTS.forEach((p) => {
-      if (map.has(p.category)) map.get(p.category).push(p);
-    });
-    map.set("All Projects", PROJECTS);
-    return map;
-  }, []);
-
-  const rowRef = useRef(null);
-  const [underline, setUnderline] = useState({ left: 0, width: 0 });
-
-  useEffect(() => {
-    const row = rowRef.current;
-    const btn = row?.querySelector(`button[data-cat="${cat}"]`);
-    if (!btn || !row) return;
-    const { left, width } = btn.getBoundingClientRect();
-    const { left: rowLeft } = row.getBoundingClientRect();
-    setUnderline({ left: left - rowLeft, width });
-  }, [cat]);
-
-  const items = grouped.get(cat) || [];
+  const items = PROJECTS;
   const activeProject = PROJECTS.find((p) => p.id === activeId) || null;
+
+  const [coverIndex, setCoverIndex] = useState(0);
+  const goTo = (i) => {
+    const n = items.length;
+    setCoverIndex(((i % n) + n) % n);
+  };
+  const circularOffset = (i) => {
+    const n = items.length;
+    let offset = (i - coverIndex + n) % n;
+    if (offset > n / 2) offset -= n;
+    return offset;
+  };
 
   useEffect(() => {
     if (!activeId) return;
@@ -103,126 +91,109 @@ export default function ProjectTabs() {
   return (
     <section className="projects-sec" aria-labelledby="projects-title">
       <div className="projects-wrap">
-        <header className="projects-head">
-          <p className="projects-sub">
-            <br />
-            <br />
-            A collection of projects that showcase my work in software, data, and
-            AI. Each project represents a unique challenge, solution, and area of
-            interest.
-          </p>
-
+        <motion.div
+          className="coverflow-wrap"
+          initial={{ opacity: 0, y: reduceMotion ? 0 : 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: reduceMotion ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] }}
+        >
           <div
-            className="pills-row"
-            role="tablist"
-            aria-label="Project filters"
-            ref={rowRef}
+            className="coverflow"
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="Projects"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "ArrowLeft") {
+                e.preventDefault();
+                goTo(coverIndex - 1);
+              } else if (e.key === "ArrowRight") {
+                e.preventDefault();
+                goTo(coverIndex + 1);
+              }
+            }}
           >
-            {CATEGORIES.map((c) => (
-              <button
-                key={c}
-                role="tab"
-                data-cat={c}
-                aria-selected={cat === c}
-                className={`pill ${cat === c ? "is-active" : ""}`}
-                onClick={() => setCat(c)}
-              >
-                <span className="pill-ico" aria-hidden="true">
-                  {c === "All Projects" ? "🌐" : c === "Software" ? "🛠️" : "💾"}
-                </span>
-                {c}
-                <span className="pill-count">{(grouped.get(c) || []).length}</span>
-              </button>
-            ))}
-            <span
-              className="pill-underline"
-              style={{
-                transform: `translateX(${underline.left}px)`,
-                width: underline.width,
-              }}
-            />
-          </div>
-        </header>
-
-        <div className="cards-grid" role="list">
-          {items.map((p, i) => (
-            <motion.div
-              key={p.id}
-              initial={{ opacity: 0, y: reduceMotion ? 0 : 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.2 }}
-              transition={{
-                duration: reduceMotion ? 0 : 0.6,
-                delay: reduceMotion ? 0 : Math.min(i, 6) * 0.08,
-                ease: [0.16, 1, 0.3, 1],
-              }}
+            <button
+              type="button"
+              className="coverflow-arrow coverflow-arrow--prev"
+              onClick={() => goTo(coverIndex - 1)}
+              disabled={items.length <= 1}
+              aria-label="Previous project"
             >
-              <article
-                role="listitem"
-                className="card-soft"
-                tabIndex={0}
-                aria-label={`View details for ${p.title}`}
-                onClick={() => setActiveId(p.id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    e.preventDefault();
-                    setActiveId(p.id);
-                  }
-                }}
-              >
-                <div className="card-inner">
-                  <div className="card-top">
-                    <h3 className="card-title">{p.title}</h3>
-                    <p className="card-blurb">{p.blurb}</p>
+              ‹
+            </button>
 
-                    {p.links?.[0] && (
-                      <a
-                        className="btn-primary"
-                        href={p.links[0].url}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {p.links[0].label} <span aria-hidden>↗</span>
-                      </a>
-                    )}
-
-                    {p.tags?.length ? (
-                      <div className="badge-row">
-                        {p.tags.map((t) => (
-                          <span key={t} className="badge">
-                            {t}
-                          </span>
-                        ))}
-                      </div>
-                    ) : null}
-                  </div>
-
-                  <motion.div className="card-media" layoutId={`project-media-${p.id}`}>
-                    <img src={p.cover} alt={p.title} loading="lazy" />
-                  </motion.div>
-
-                  {p.links?.length > 1 && (
-                    <div className="card-links">
-                      {p.links.slice(1).map((l) => (
-                        <a
-                          key={l.label}
-                          className="link-soft"
-                          href={l.url}
-                          target="_blank"
-                          rel="noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          {l.label} →
-                        </a>
-                      ))}
+            <div className="coverflow-track">
+              {items.map((p, i) => {
+                const offset = circularOffset(i);
+                const abs = Math.abs(offset);
+                const isActive = offset === 0;
+                const hidden = abs > 3;
+                return (
+                  <div
+                    key={p.id}
+                    className={`coverflow-card ${isActive ? "is-active" : ""}`}
+                    role="button"
+                    tabIndex={hidden ? -1 : 0}
+                    aria-hidden={hidden}
+                    aria-label={isActive ? `Open ${p.title}` : `Show ${p.title}`}
+                    style={{
+                      transform: `translate(-50%, -50%) translateX(${offset * 58}%) translateZ(${
+                        -abs * 120
+                      }px) rotateY(${-offset * 26}deg) scale(${Math.max(0.72, 1 - abs * 0.13)})`,
+                      opacity: hidden ? 0 : Math.max(0.22, 1 - abs * 0.3),
+                      zIndex: 50 - abs,
+                      pointerEvents: hidden ? "none" : "auto",
+                    }}
+                    onClick={() => (isActive ? setActiveId(p.id) : goTo(i))}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        isActive ? setActiveId(p.id) : goTo(i);
+                      }
+                    }}
+                  >
+                    <motion.div className="card-media coverflow-media" layoutId={`project-media-${p.id}`}>
+                      <img src={p.cover} alt={p.title} loading="lazy" />
+                    </motion.div>
+                    <div className="coverflow-card-face">
+                      <span className="coverflow-index">{String(i + 1).padStart(2, "0")}</span>
+                      <h3 className="coverflow-title">{p.title}</h3>
+                      <span className="coverflow-open">
+                        Open Project <span aria-hidden>↗</span>
+                      </span>
                     </div>
-                  )}
-                </div>
-              </article>
-            </motion.div>
-          ))}
-        </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              className="coverflow-arrow coverflow-arrow--next"
+              onClick={() => goTo(coverIndex + 1)}
+              disabled={items.length <= 1}
+              aria-label="Next project"
+            >
+              ›
+            </button>
+          </div>
+
+          <div className="coverflow-dots" role="tablist" aria-label="Select project">
+            {items.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                role="tab"
+                className={`coverflow-dot ${i === coverIndex ? "is-active" : ""}`}
+                aria-selected={i === coverIndex}
+                aria-label={`Go to project ${i + 1}`}
+                onClick={() => goTo(i)}
+              />
+            ))}
+          </div>
+        </motion.div>
       </div>
 
       <AnimatePresence>
