@@ -30,6 +30,19 @@ const fadeUp = (delay = 0, reduceMotion = false) => ({
   transition: { duration: reduceMotion ? 0 : 0.7, delay: reduceMotion ? 0 : delay, ease: [0.16, 1, 0.3, 1] },
 });
 
+/* ---------- Ambient animated background (sits behind everything) ---------- */
+function AmbientBackground() {
+  return (
+    <div className="ambient-bg" aria-hidden="true">
+      <span className="ambient-blob ambient-blob--a" />
+      <span className="ambient-blob ambient-blob--b" />
+      <span className="ambient-blob ambient-blob--c" />
+      <span className="ambient-grain" />
+    </div>
+  );
+}
+/* ---------------------------------------------------------------- */
+
 /* ---------- Scroll to hash targets (keeps SPA smooth) ---------- */
 function ScrollManager() {
   const { pathname, hash } = useLocation();
@@ -63,6 +76,7 @@ function ScrollManager() {
 export default function App() {
   return (
     <>
+      <AmbientBackground />
       <CustomCursor />
       <ScrollToTop />
       <Navbar />

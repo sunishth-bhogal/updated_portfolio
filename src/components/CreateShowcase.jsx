@@ -1,6 +1,7 @@
 // src/components/CreateShowcase.jsx
 import React from "react";
 import { Link } from "react-router-dom";
+import { motion, useReducedMotion } from "framer-motion";
 
 const ITEMS = [
   { to: "/photos#top", icon: "📷", title: "Photo Journal", sub: "A collection of moments captured.", cta: "View Photos",  meta: { entries: 20, updated: "2d ago" } },
@@ -9,30 +10,42 @@ const ITEMS = [
 ];
 
 export default function CreateShowcase() {
+  const reduceMotion = useReducedMotion();
+
   return (
     <section id="create" className="section-dark">
       <div className="container">
         <div className="create-grid clean">
-          {ITEMS.map(({ to, icon, title, sub, cta, meta }) => (
-            <Link key={to} to={to} className="create-card clean" aria-label={title}>
-              <div className="card-top">
-                <span className="card-icon" aria-hidden="true">{icon}</span>
-                <h3 className="card-title">{title}</h3>
-                <p className="card-sub">{sub}</p>
+          {ITEMS.map(({ to, icon, title, sub, cta, meta }, i) => (
+            <motion.div
+              key={to}
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 26 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: reduceMotion ? 0 : 0.6, delay: reduceMotion ? 0 : i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <Link to={to} className="create-card clean" aria-label={title}>
+                <span className="card-watermark" aria-hidden="true">{icon}</span>
 
-                {meta && (
-                  <div className="card-meta">
-                    <span>{meta.entries} entries</span>
-                    <span className="meta-dot" />
-                    <span>Updated {meta.updated}</span>
-                  </div>
-                )}
-              </div>
+                <div className="card-top">
+                  <span className="card-icon" aria-hidden="true">{icon}</span>
+                  <h3 className="card-title">{title}</h3>
+                  <p className="card-sub">{sub}</p>
 
-              <div className="card-actions">
-                <span className="cta cta--lg clean">{cta}</span>
-              </div>
-            </Link>
+                  {meta && (
+                    <div className="card-meta">
+                      <span>{meta.entries} entries</span>
+                      <span className="meta-dot" />
+                      <span>Updated {meta.updated}</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="card-actions">
+                  <span className="cta cta--lg clean">{cta}</span>
+                </div>
+              </Link>
+            </motion.div>
           ))}
         </div>
       </div>
@@ -48,31 +61,50 @@ export default function CreateShowcase() {
 
         /* card */
         .create-card.clean{
+          position: relative;
+          overflow: hidden;
           display:flex; flex-direction:column;
-          padding: 18px;
-          border-radius: 14px;
+          padding: 20px;
+          border-radius: 16px;
           background: rgba(14,18,26,.65);
           border: 1px solid rgba(255,255,255,.06);
           box-shadow: 0 4px 14px rgba(0,0,0,.24);
           min-height: 240px;           /* ↓ was 260; reduces empty bottom */
-          transition: border-color .15s ease, transform .12s ease, box-shadow .15s ease;
+          transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease, background .2s ease;
           text-decoration: none;
         }
         .create-card.clean:hover,
         .create-card.clean:focus-visible{
-          border-color: rgba(255,255,255,.10);
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(0,0,0,.26);
+          border-color: hsl(220 70% 60% / .35);
+          background: rgba(18,23,34,.75);
+          transform: translateY(-4px);
+          box-shadow: 0 16px 34px rgba(0,0,0,.32), 0 0 0 1px hsl(220 70% 60% / .12);
+        }
+        .card-watermark{
+          position: absolute;
+          right: -18px;
+          bottom: -28px;
+          font-size: 140px;
+          line-height: 1;
+          opacity: .07;
+          filter: saturate(0.6);
+          pointer-events: none;
+          transition: transform .4s cubic-bezier(.16,1,.3,1), opacity .3s ease;
+        }
+        .create-card.clean:hover .card-watermark{
+          transform: scale(1.08) rotate(-4deg);
+          opacity: .1;
         }
 
         /* icon + text */
         .card-icon{
+          position: relative;
           display:inline-flex; align-items:center; justify-content:center;
-          width:28px; height:28px;       /* ↓ was 32 */
-          border-radius:10px;
-          background: rgba(255,255,255,.06);
-          border: 1px solid rgba(255,255,255,.10);
-          font-size: 16px; margin-bottom: 10px;
+          width:48px; height:48px;
+          border-radius:14px;
+          background: linear-gradient(135deg, hsl(220 90% 60% / .18), hsl(266 80% 62% / .18));
+          border: 1px solid hsl(220 60% 65% / .25);
+          font-size: 22px; margin-bottom: 14px;
         }
         .card-title{
           font-weight: 800;

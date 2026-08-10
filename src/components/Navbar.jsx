@@ -9,7 +9,7 @@ export default function Navbar() {
     () => [
       { id: "home", label: "Home" },
       { id: "about", label: "About" },
-      { id: "experiences", label: "Experiences" },
+      { id: "experiences", label: "Experience" },
       { id: "projects", label: "Projects" },
       { id: "create", label: "Creative Mind" },
       { id: "contact", label: "Contact" },
@@ -495,8 +495,9 @@ export default function Navbar() {
           padding: 0 12px;
           font-size: 18px;
           cursor: pointer;
+          transition: background .2s ease, transform .2s ease;
         }
-        .nav-menu-btn:hover{ background: rgba(255,255,255,.10); }
+        .nav-menu-btn:hover{ background: rgba(255,255,255,.10); transform: translateY(-1px); }
 
         /* Drawer */
         .drawer-root{
