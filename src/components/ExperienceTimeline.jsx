@@ -2,30 +2,39 @@ import React from "react";
 import shoppersLogo from "../components/assets/Shoppers.jpg";
 import stealthLogo from "../components/assets/stealthlogo.jpg";
 import remaxLogo from "../components/assets/remaxlogo.png";
+import TDLogo from "../components/assets/TD.jpg";
 
 const EXPERIENCES = [
+  {
+    company: "TD Bank",
+    role: "Software Engineer Intern",
+    dates: "Sep 2026 – Dec 2026",
+    summary:
+      "Incoming",
+    logo: TDLogo,
+  },
   {
     company: "Stealth Startup",
     role: "Full Stack Engineer Intern",
     dates: "Jan 2025 – Aug 2025",
     summary:
-      "Worked on full-stack product development for a startup building tools in the marketing space, contributing across engineering, product functionality, and data-driven features.",
+      "Early stage startup experience building a web application from scratch, contributing to both front-end and back-end development, and collaborating closely with the founding team.",
     logo: stealthLogo,
   },
   {
-    company: "REMAX Real Estate Group",
-    role: "Real Estate Data Analyst Intern",
+    company: "REMAX Real Estate Centre",
+    role: "Full Stack Developer Intern",
     dates: "May 2023 – Aug 2023",
     summary:
-      "Analyzed real estate data to support reporting, trends analysis, and business insights for brokerage operations.",
+      "Assisted in developing and maintaining web applications for real estate listings, implementing new features, and optimizing performance to enhance user experience.",
     logo: remaxLogo,
   },
   {
     company: "Shoppers Drug Mart",
-    role: "Accounting Intern",
+    role: "Pharmacy Assistant",
     dates: "May 2022 – Aug 2022",
     summary:
-      "Supported accounting and financial operations in a fast-paced retail environment, assisting with reporting and day-to-day financial processes.",
+      "Assisted pharmacists in preparing and dispensing medications, managing inventory, and providing customer service in a fast-paced retail pharmacy environment.",
     logo: shoppersLogo,
   },
 ];
