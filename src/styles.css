@@ -4031,14 +4031,26 @@ html { scroll-behavior: auto; }
   border: 1px solid hsl(220 20% 30% / .28);
   box-shadow: 0 10px 28px hsl(220 60% 2% / .45);
   overflow: hidden;
-  transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+  cursor: pointer;
+  transition: transform .22s cubic-bezier(.16,1,.3,1), box-shadow .22s ease, background .22s ease, border-color .22s ease;
 }
 .card-soft:hover{
-  transform: translateY(-3px);
-  box-shadow: 0 18px 36px hsl(220 70% 2% / .55);
+  transform: translateY(-6px);
+  box-shadow: 0 22px 44px hsl(220 70% 2% / .55);
   background: hsl(220 24% 12% / .62);
+  border-color: hsl(220 60% 60% / .35);
 }
 .card-inner{ display: grid; gap: 16px; padding: 18px; }
+
+/* Arrow / link nudge on hover — pure CSS, no framer, so it never fights
+   the card's own transform-based hover lift above. */
+.btn-primary span[aria-hidden],
+.link-soft{
+  display: inline-block;
+  transition: transform .2s cubic-bezier(.16,1,.3,1);
+}
+.card-soft:hover .btn-primary span[aria-hidden]{ transform: translate(3px, -3px); }
+.card-soft:hover .link-soft{ transform: translateX(3px); }
 
 /* Top (title, blurb, CTA, tags) */
 .card-title{
@@ -4080,7 +4092,11 @@ html { scroll-behavior: auto; }
   overflow: hidden;
   background: hsl(220 16% 16%);
 }
-.card-media img{ width: 100%; height: 100%; display: block; object-fit: cover; }
+.card-media img{
+  width: 100%; height: 100%; display: block; object-fit: cover;
+  transition: transform .35s cubic-bezier(.16,1,.3,1);
+}
+.card-soft:hover .card-media img{ transform: scale(1.035); }
 
 .card-links{ display: flex; gap: 16px; }
 .link-soft{
@@ -4123,7 +4139,74 @@ html { scroll-behavior: auto; }
 .projects-sec .card-soft{
   position: relative;
   z-index: 0;
+  height: 100%;
 }
+/* the motion.div stagger-reveal wrapper sits between the grid and the card;
+   give it full height so equal-height cards in a row still work */
+.projects-sec .cards-grid > div{
+  height: 100%;
+}
+
+/* ----- Project detail modal (expands from a clicked card's image) ----- */
+.project-modal-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: hsl(220 45% 2% / .88);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(16px, 4vw, 48px);
+  overflow-y: auto;
+}
+.project-modal{
+  position: relative;
+  width: min(760px, 100%);
+  max-height: min(88vh, 820px);
+  overflow-y: auto;
+  border-radius: 24px;
+  background: hsl(220 24% 9%);
+  border: 1px solid hsl(220 20% 32% / .35);
+  box-shadow: 0 30px 80px hsl(220 70% 2% / .6);
+}
+.project-modal-media{
+  border-radius: 24px 24px 0 0;
+  overflow: hidden;
+  background: hsl(220 16% 16%);
+  max-height: 46vh;
+}
+.project-modal-media img{ width: 100%; height: 100%; display: block; object-fit: cover; }
+.project-modal-body{ padding: clamp(20px, 3vw, 32px); display: grid; gap: 14px; }
+.project-modal-title{
+  margin: 0;
+  font-weight: 800;
+  font-size: clamp(22px, 3vw, 32px);
+  letter-spacing: -0.01em;
+  color: hsl(220 22% 98%);
+}
+.project-modal-blurb{
+  color: hsl(220 16% 80%);
+  font-size: clamp(15px, 1.3vw, 18px);
+  line-height: 1.55;
+  margin: 0;
+}
+.project-modal-links{ display: flex; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+.project-modal-close{
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 36px; height: 36px;
+  display: grid; place-items: center;
+  border-radius: 999px;
+  border: 1px solid hsl(220 20% 40% / .4);
+  background: hsl(220 30% 6% / .7);
+  color: hsl(220 20% 92%);
+  font-size: 18px;
+  cursor: pointer;
+  z-index: 1;
+}
+.project-modal-close:hover{ background: hsl(220 30% 10% / .85); }
 
 /* If you still have the old tabs styles, scope or remove them to avoid collisions */
 .projects-sec .tabs-row,

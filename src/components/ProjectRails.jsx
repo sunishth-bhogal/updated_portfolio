@@ -1,4 +1,5 @@
 import React, { useMemo, useState, useRef, useEffect } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import TML from "../components/assets/TML.jpg";
 import Stock from "../components/assets/Stock.jpg";
 import Portfolio from "../components/assets/Portfolio.jpg";
@@ -58,6 +59,8 @@ const PROJECTS = [
 
 export default function ProjectTabs() {
   const [cat, setCat] = useState("All Projects");
+  const [activeId, setActiveId] = useState(null);
+  const reduceMotion = useReducedMotion();
 
   const grouped = useMemo(() => {
     const map = new Map(CATEGORIES.map((c) => [c, []]));
@@ -81,6 +84,21 @@ export default function ProjectTabs() {
   }, [cat]);
 
   const items = grouped.get(cat) || [];
+  const activeProject = PROJECTS.find((p) => p.id === activeId) || null;
+
+  useEffect(() => {
+    if (!activeId) return;
+    const onKey = (e) => {
+      if (e.key === "Escape") setActiveId(null);
+    };
+    document.addEventListener("keydown", onKey);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [activeId]);
 
   return (
     <section className="projects-sec" aria-labelledby="projects-title">
@@ -127,59 +145,159 @@ export default function ProjectTabs() {
         </header>
 
         <div className="cards-grid" role="list">
-          {items.map((p) => (
-            <article key={p.id} role="listitem" className="card-soft">
-              <div className="card-inner">
-                <div className="card-top">
-                  <h3 className="card-title">{p.title}</h3>
-                  <p className="card-blurb">{p.blurb}</p>
+          {items.map((p, i) => (
+            <motion.div
+              key={p.id}
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 28 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{
+                duration: reduceMotion ? 0 : 0.6,
+                delay: reduceMotion ? 0 : Math.min(i, 6) * 0.08,
+                ease: [0.16, 1, 0.3, 1],
+              }}
+            >
+              <article
+                role="listitem"
+                className="card-soft"
+                tabIndex={0}
+                aria-label={`View details for ${p.title}`}
+                onClick={() => setActiveId(p.id)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setActiveId(p.id);
+                  }
+                }}
+              >
+                <div className="card-inner">
+                  <div className="card-top">
+                    <h3 className="card-title">{p.title}</h3>
+                    <p className="card-blurb">{p.blurb}</p>
 
-                  {p.links?.[0] && (
-                    <a
-                      className="btn-primary"
-                      href={p.links[0].url}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {p.links[0].label} <span aria-hidden>↗</span>
-                    </a>
-                  )}
+                    {p.links?.[0] && (
+                      <a
+                        className="btn-primary"
+                        href={p.links[0].url}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {p.links[0].label} <span aria-hidden>↗</span>
+                      </a>
+                    )}
 
-                  {p.tags?.length ? (
-                    <div className="badge-row">
-                      {p.tags.map((t) => (
-                        <span key={t} className="badge">
-                          {t}
-                        </span>
+                    {p.tags?.length ? (
+                      <div className="badge-row">
+                        {p.tags.map((t) => (
+                          <span key={t} className="badge">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+
+                  <motion.div className="card-media" layoutId={`project-media-${p.id}`}>
+                    <img src={p.cover} alt={p.title} loading="lazy" />
+                  </motion.div>
+
+                  {p.links?.length > 1 && (
+                    <div className="card-links">
+                      {p.links.slice(1).map((l) => (
+                        <a
+                          key={l.label}
+                          className="link-soft"
+                          href={l.url}
+                          target="_blank"
+                          rel="noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          {l.label} →
+                        </a>
                       ))}
                     </div>
-                  ) : null}
+                  )}
                 </div>
+              </article>
+            </motion.div>
+          ))}
+        </div>
+      </div>
 
-                <div className="card-media">
-                  <img src={p.cover} alt={p.title} loading="lazy" />
-                </div>
+      <AnimatePresence>
+        {activeProject && (
+          <motion.div
+            className="project-modal-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={() => setActiveId(null)}
+          >
+            <motion.div
+              className="project-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="project-modal-title"
+              onClick={(e) => e.stopPropagation()}
+              initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 24 }}
+              animate={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 16 }}
+              transition={{ duration: reduceMotion ? 0.15 : 0.3, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <button
+                type="button"
+                className="project-modal-close"
+                aria-label="Close project details"
+                onClick={() => setActiveId(null)}
+              >
+                ✕
+              </button>
 
-                {p.links?.length > 1 && (
-                  <div className="card-links">
-                    {p.links.slice(1).map((l) => (
+              <motion.div
+                className="project-modal-media"
+                layoutId={`project-media-${activeProject.id}`}
+              >
+                <img src={activeProject.cover} alt={activeProject.title} />
+              </motion.div>
+
+              <div className="project-modal-body">
+                <h3 id="project-modal-title" className="project-modal-title">
+                  {activeProject.title}
+                </h3>
+                <p className="project-modal-blurb">{activeProject.blurb}</p>
+
+                {activeProject.tags?.length ? (
+                  <div className="badge-row">
+                    {activeProject.tags.map((t) => (
+                      <span key={t} className="badge">
+                        {t}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+
+                {activeProject.links?.length ? (
+                  <div className="project-modal-links">
+                    {activeProject.links.map((l) => (
                       <a
                         key={l.label}
-                        className="link-soft"
+                        className="btn-primary"
                         href={l.url}
                         target="_blank"
                         rel="noreferrer"
                       >
-                        {l.label} →
+                        {l.label} <span aria-hidden>↗</span>
                       </a>
                     ))}
                   </div>
-                )}
+                ) : null}
               </div>
-            </article>
-          ))}
-        </div>
-      </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
