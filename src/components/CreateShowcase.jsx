@@ -133,25 +133,28 @@ export default function CreateShowcase() {
         }
         .cta.cta--lg.clean{
           display:inline-flex; align-items:center; justify-content:center;
+          gap: 8px;
           height: 44px;                   /* fixed height = consistent proportion */
           min-width: 160px;               /* consistent footprint across cards */
           padding: 0 18px;                /* slimmer */
-          border-radius: 22px;            /* matches height/2 */
-          background: linear-gradient(90deg, #6ca8ff 0%, #b18cff 100%);
+          border-radius: 10px;
+          background: #f2f4fb;
           color:#0b1220;
           font-weight: 700;               /* ↓ a touch lighter */
           font-size: 14.5px;              /* ↓ */
           letter-spacing:.2px;
-          border: 1px solid rgba(255,255,255,.14);
-          box-shadow: 0 4px 12px rgba(108,168,255,.18); /* lighter shadow */
-          transition: transform .12s ease, filter .15s ease, box-shadow .15s ease;
+          border: 1px solid transparent;
+          box-shadow: 0 8px 18px rgba(0,0,0,.3);
+          transition: transform .12s ease, background .15s ease, box-shadow .15s ease;
         }
-        .cta.cta--lg.clean:hover{ transform: translateY(-1px); filter: saturate(1.03); }
+        .cta.cta--lg.clean::after{ content: "→"; transition: transform .15s ease; }
+        .cta.cta--lg.clean:hover{ transform: translateY(-2px); background: #ffffff; box-shadow: 0 12px 24px rgba(0,0,0,.36); }
+        .cta.cta--lg.clean:hover::after{ transform: translateX(3px); }
         .cta.cta--lg.clean:active{ transform: translateY(0); }
 
         @media (max-width: 720px){
           .create-card.clean{ min-height: 220px; }           /* tighter on mobile */
-          .cta.cta--lg.clean{ height: 42px; min-width: 150px; border-radius: 21px; }
+          .cta.cta--lg.clean{ height: 42px; min-width: 150px; border-radius: 10px; }
         }
 
         @media (prefers-reduced-motion: reduce){
