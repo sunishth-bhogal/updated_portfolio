@@ -1004,13 +1004,18 @@ section{ scroll-margin-top: var(--nav-h); }
   .hero.hero--with-stack{
     position: relative;
     min-height: calc(100vh - var(--nav-h));
+    max-width: 1440px;
+    margin: 0 auto;
     display: grid;
-    grid-template-rows: 1fr var(--hero-marquee-h);
-    align-items: center;           /* vertical center row 1 */
-    justify-items: center;         /* horizontal center row 1 */
-    padding: 0;
+    grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.85fr);
+    align-items: center;
+    gap: clamp(24px, 4vw, 56px);
+    padding: 0 clamp(20px, 6vw, 90px);
     overflow: hidden;
     text-align: center;
+  }
+  @media (max-width: 1200px){
+    .hero.hero--with-stack{ grid-template-columns: 1fr; }
   }
   
   /* Canvas / particles layer sits behind and never blocks clicks */
@@ -1056,7 +1061,260 @@ section{ scroll-margin-top: var(--nav-h); }
     animation: caretBlink 1.05s steps(1, end) infinite;
   }
   @keyframes caretBlink{ 50%{ opacity: 0; } }
-  
+
+  /* Big display name treatment for the hero — the "hook".
+     Kept as one narrow editorial column (no right-side filler element) per
+     design feedback: a single clear focal point beats a name + CTAs + chip
+     competing against a decorative glow on a wide two-column layout. */
+  .hero__content--left{
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: auto;
+    max-width: 620px;
+    /* overrides the centered variant's optical nudge above with a smaller one */
+    transform: translateY(-1.2rem) !important;
+  }
+  .hero__badge{
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 18px;
+    border-radius: 16px;
+    background: hsl(150 40% 40% / .08);
+    border: 1px solid hsl(150 55% 50% / .3);
+    color: hsl(150 55% 78%);
+    font-size: 13.5px;
+    font-weight: 700;
+    margin: 0 0 clamp(16px, 2.4vw, 22px);
+  }
+  .hero__badge-dot{
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: hsl(150 70% 55%);
+    box-shadow: 0 0 0 0 hsl(150 70% 55% / .55);
+    animation: badge-pulse 2s ease-out infinite;
+  }
+  @keyframes badge-pulse{
+    0%   { box-shadow: 0 0 0 0 hsl(150 70% 55% / .55); }
+    70%  { box-shadow: 0 0 0 6px hsl(150 70% 55% / 0); }
+    100% { box-shadow: 0 0 0 0 hsl(150 70% 55% / 0); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero__badge-dot{ animation: none; }
+  }
+  .hero__eyebrow{
+    display: inline-block;
+    font-size: clamp(12px, 1.1vw, 14px);
+    font-weight: 800;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: hsl(220 70% 70%);
+    margin: 0 0 clamp(12px, 2vw, 18px);
+  }
+  .hero__bigname{
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .hero__bigname-line{
+    font-weight: 900;
+    letter-spacing: -.03em;
+    line-height: 0.98;
+    font-size: clamp(34px, 7.6vw, 96px);
+    color: #fff;
+  }
+  .hero__tagline{
+    margin: clamp(16px, 3vw, 24px) 0 0;
+    font-weight: 500;
+    font-style: normal;
+    font-size: clamp(16px, 2vw, 19px);
+    line-height: 1.5;
+    color: hsl(220 20% 82%);
+    max-width: 44ch;
+  }
+  @media (max-width: 640px){
+    .hero__bigname-line{ font-size: clamp(32px, 12vw, 60px); }
+  }
+
+  /* CTA row */
+  .hero__cta-row{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: clamp(22px, 3vw, 32px);
+  }
+  .hero__cta{
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 13px 24px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform .18s ease, background .18s ease, border-color .18s ease, filter .18s ease;
+  }
+  .hero__cta--primary{
+    background: linear-gradient(90deg, var(--accent-a, #6ca8ff), var(--accent-b, #b18cff));
+    color: #0b1220;
+    box-shadow: 0 10px 26px hsl(230 80% 60% / .25);
+  }
+  .hero__cta--primary:hover{ transform: translateY(-2px); filter: brightness(1.05); }
+  .hero__cta--ghost{
+    background: rgba(255,255,255,.05);
+    border-color: rgba(255,255,255,.18);
+    color: #e7eefc;
+  }
+  .hero__cta--ghost:hover{ background: rgba(255,255,255,.09); transform: translateY(-2px); }
+
+  /* Featured project card, replaces the old pair of unlabeled thumbnails */
+  .hero__feature{
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: clamp(14px, 2vw, 20px);
+    padding: 10px 18px 10px 10px;
+    border-radius: 16px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.1);
+    text-decoration: none;
+    transition: background .2s ease, border-color .2s ease, transform .2s ease;
+  }
+  .hero__feature:hover{
+    background: rgba(255,255,255,.07);
+    border-color: hsl(220 60% 60% / .35);
+    transform: translateY(-2px);
+  }
+  .hero__feature-thumb{
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    object-fit: cover;
+    display: block;
+  }
+  .hero__feature-text{ display: flex; flex-direction: column; gap: 2px; }
+  .hero__feature-kicker{
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: hsl(220 20% 65%);
+  }
+  .hero__feature-title{
+    font-size: 15px;
+    font-weight: 800;
+    color: #fff;
+  }
+
+  /* Compact tech line, replaces the big logo marquee in the hero */
+  .hero__stack-line{
+    margin: clamp(22px, 4vw, 34px) 0 0;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: .02em;
+    color: hsl(220 16% 52%);
+    max-width: 56ch;
+  }
+
+  /* Faint cursor-reactive glow — a quiet accent behind the name, not a
+     competing right-side focal point. */
+  .hero__glow{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: min(30vw, 380px);
+    height: min(30vw, 380px);
+    border-radius: 50%;
+    background: radial-gradient(circle, hsl(258 75% 55% / .16), transparent 72%);
+    filter: blur(90px);
+    pointer-events: none;
+    z-index: 1;
+    transition: transform .5s ease-out;
+    will-change: transform;
+  }
+  @media (max-width: 900px){
+    .hero__glow{ width: 60vw; height: 60vw; }
+  }
+
+  /* Right-column visual: one contained composition (not scenes scattered
+     across the whole section). The three scenes sit along a loose diagonal
+     within this box, hiking as the largest/central anchor. */
+  .hero__visual{
+    position: relative;
+    width: 100%;
+    height: min(560px, 66vh);
+    justify-self: stretch;
+  }
+  .hero__scene{
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    opacity: .92;
+  }
+  .hero__scene--code{
+    top: 0;
+    right: 0;
+  }
+  .hero__scene--hike{
+    top: 44%;
+    left: 38%;
+    transform: translate(-50%, -50%);
+  }
+  .hero__scene--pickleball{
+    bottom: 2%;
+    right: 4%;
+  }
+  @media (max-width: 1200px){
+    /* Below this width the visual column is too narrow to fit three scenes
+       without them crowding each other — fall back to the clean text-only
+       hero instead of forcing a cramped composition. */
+    .hero__visual{ display: none; }
+  }
+
+  /* Small scroll cue pinned to the bottom of the hero */
+  .hero__scroll-indicator{
+    position: absolute;
+    bottom: clamp(24px, 4vh, 32px);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    appearance: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: hsl(220 20% 70%);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    z-index: 2;
+  }
+  .hero__scroll-chevron{
+    width: 9px; height: 9px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    animation: hero-scroll-bounce 1.8s ease-in-out infinite;
+  }
+  @keyframes hero-scroll-bounce{
+    0%, 100% { transform: rotate(45deg) translate(0, 0); }
+    50%      { transform: rotate(45deg) translate(4px, 4px); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .hero__scroll-chevron{ animation: none; }
+    .hero__glow{ transition: none; }
+  }
+
   /* CTA */
   .hero__cta{ margin-top: clamp(14px, 2vh, 22px); }
   .hero__btn.resume-btn{
@@ -6391,17 +6649,15 @@ img.hero-img[style] { height: auto !important; width: auto !important; }
 }
 
 .hero__quick-links{
-  position: absolute;
-  left: 50%;
-  top: 55%;
-  transform: translateX(-50%);
+  position: relative;
+  margin-top: clamp(24px, 4vw, 40px);
   z-index: 4;
 
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 14px;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
 }
 
 .hero__image-button{
@@ -6447,7 +6703,6 @@ img.hero-img[style] { height: auto !important; width: auto !important; }
 
 @media (max-width: 900px){
   .hero__quick-links{
-    top: 73%;
     gap: 10px;
   }
 
@@ -6460,10 +6715,6 @@ img.hero-img[style] { height: auto !important; width: auto !important; }
 }
 
 @media (max-width: 640px){
-  .hero__quick-links{
-    top: 73%;
-  }
-
   .hero__image-button{
     width: 104px;
     height: 68px;

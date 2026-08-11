@@ -11,7 +11,7 @@ export default function Navbar() {
       { id: "about", label: "About" },
       { id: "experiences", label: "Experience" },
       { id: "projects", label: "Projects" },
-      { id: "create", label: "Creative Mind" },
+      { id: "create", label: "Creative" },
       { id: "contact", label: "Contact" },
     ],
     []
@@ -468,6 +468,27 @@ export default function Navbar() {
         }
         .nav-link.bare:hover::after{ opacity:.5; transform: scaleX(.45); }
         .nav-link.bare.active::after{ opacity:1; transform: scaleX(1); }
+
+        /* Give Contact its own bordered pill so it reads as an intentional CTA,
+           separated from the plain nav links. */
+        .nav-contact{
+          height: auto;
+          margin: auto 0;
+          padding: 8px 18px !important;
+          border: 1px solid rgba(255,255,255,.16);
+          border-radius: 999px;
+          background: rgba(255,255,255,.04);
+          transition: background .2s ease, border-color .2s ease;
+        }
+        .nav-contact:hover{
+          background: rgba(255,255,255,.09);
+          border-color: rgba(255,255,255,.28);
+        }
+        .nav-contact::after{ display: none; }
+        .nav-contact.active{
+          border-color: hsl(220 70% 62% / .5);
+          background: hsl(220 70% 62% / .12);
+        }
 
         .nav-progress{
           position:absolute; left:0; right:0; bottom:0; height:2px;

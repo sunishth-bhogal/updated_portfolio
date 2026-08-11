@@ -5,9 +5,9 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 
 import Navbar from "./components/Navbar";
 import CustomCursor from "./components/CustomCursor";
-
-import TypewriterText from "./components/Typewriter";
-import TechMarquee from "./components/TechMarquee";
+import CodingSetupAnimated from "./components/CodingSetupAnimated";
+import HikingAnimated from "./components/HikingAnimated";
+import PickleballAnimated from "./components/PickleballAnimated";
 
 import AboutV2 from "./components/AboutV2";
 import ExperienceTimeline from "./components/ExperienceTimeline";
@@ -19,6 +19,7 @@ import PhotoWall from "./components/PhotoWall";
 import DeepThoughtsSection from "./components/DeepThoughtsSection";
 import ScrollToTop from "./components/ScrollToTop";
 import MilestoneSection from "./components/MilestonesSection";
+import ResumePage from "./pages/ResumePage";
 import Reveal from "./components/Reveal";
 import { Analytics } from "@vercel/analytics/react";
 
@@ -87,6 +88,7 @@ export default function App() {
         <Route path="/photos" element={<PhotoWall />} />
         <Route path="/deep" element={<DeepThoughtsSection />} />
         <Route path="/growth" element={<MilestoneSection />} />
+        <Route path="/resume" element={<ResumePage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
 
@@ -98,6 +100,7 @@ export default function App() {
 /* -------------------- HOME (now inline) -------------------- */
 function HomePage() {
   const heroRef = React.useRef(null);
+  const glowRef = React.useRef(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -105,69 +108,148 @@ function HomePage() {
   });
   const heroOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
 
+  const scrollToId = (id) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const header = document.querySelector(".nav-header");
+    const headerH = header ? header.getBoundingClientRect().height : 0;
+    const y = el.getBoundingClientRect().top + window.pageYOffset - headerH - 6;
+    window.scrollTo({ top: y, behavior: "smooth" });
+  };
+
+  // Subtle cursor-reactive glow behind the name — plain DOM/CSS, not framer,
+  // so it can never collide with the transform rules noted below.
+  React.useEffect(() => {
+    if (reduceMotion) return;
+    const el = heroRef.current;
+    const glow = glowRef.current;
+    if (!el || !glow) return;
+    let raf = 0;
+    const onMove = (e) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const rect = el.getBoundingClientRect();
+        const dx = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
+        const dy = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
+        const maxShift = 26;
+        glow.style.transform = `translate(${dx * maxShift}px, ${dy * maxShift}px)`;
+      });
+    };
+    el.addEventListener("mousemove", onMove);
+    return () => {
+      cancelAnimationFrame(raf);
+      el.removeEventListener("mousemove", onMove);
+    };
+  }, [reduceMotion]);
+
   return (
     <>
       {/* HERO */}
       <section id="home" className="hero hero--with-stack" ref={heroRef}>
-        {/* NOTE: only `opacity` is animated here — `.hero__content` relies on its
-            own CSS `transform: translateY(-6vh)` to optically center the headline,
-            and framer-motion's `style.y` would silently overwrite that transform. */}
-        <motion.div className="hero__content" style={{ opacity: heroOpacity }}>
-          <motion.h1 className="hero__title" {...fadeUp(0.1, reduceMotion)}>
-            Hi, I’m Sunishth Bhogal!
+        <div className="hero__glow" ref={glowRef} aria-hidden="true" />
+
+        {/* NOTE: only `opacity` is animated here via framer — `.hero__content--left`
+            controls its own `transform` in CSS, and framer-motion's `style.y` would
+            silently overwrite that transform if it were animated here too. */}
+        <motion.div className="hero__content hero__content--left" style={{ opacity: heroOpacity }}>
+          <motion.span className="hero__badge" {...fadeUp(0, reduceMotion)}>
+            <span className="hero__badge-dot" aria-hidden="true" />
+            Incoming Software Engineer @ TD
+          </motion.span>
+
+          <motion.span className="hero__eyebrow" {...fadeUp(0.02, reduceMotion)}>
+            Tech | Sports | Gym
+          </motion.span>
+
+          <motion.h1 className="hero__bigname" {...fadeUp(0.1, reduceMotion)}>
+            <span className="hero__bigname-line">Sunishth</span>
+            <span className="hero__bigname-line">Bhogal</span>
           </motion.h1>
 
-          <motion.p className="hero__subtitle" aria-live="polite" {...fadeUp(0.24, reduceMotion)}>
-            <TypewriterText
-              words={[
-                "Honours Mathematics Student @ UWaterloo",
-                "Honours BBA Student @ WLU",
-                "A Software Engineer",
-                "A Stats Enthusiast",
-                "Figuring things out",
-                "A Creator",
-                "A Difference Maker",
-                "Building...",
-              ]}
-              typeSpeed={70}
-              deleteSpeed={45}
-              delayBetween={1100}
-              loop
-            />
-            <span className="cursor"></span>
+          <motion.p className="hero__tagline" {...fadeUp(0.24, reduceMotion)}>
+            Always looking to build something new.
           </motion.p>
-        </motion.div>
 
-        {/* Same reasoning: `.hero__quick-links` needs its CSS `transform: translateX(-50%)`
-            to stay centered, so only `opacity` is animated on it directly. The entrance
-            slide-up + hover lift live on plain wrapper spans so the buttons' own CSS
-            hover transform (see .hero__image-button:hover) is never clobbered by an
-            inline style left behind by framer-motion. */}
-        <motion.div className="hero__quick-links" style={{ opacity: heroOpacity }}>
-          <motion.span {...fadeUp(0.38, reduceMotion)} style={{ display: "inline-block" }}>
-            <a
-              href="https://uwstudyspots.vercel.app/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hero__image-button"
-              aria-label="Open UW Study Spots"
+          <motion.div className="hero__cta-row" {...fadeUp(0.36, reduceMotion)}>
+            <button
+              type="button"
+              className="hero__cta hero__cta--primary"
+              onClick={() => scrollToId("projects")}
             >
-              <img src="/uwstudyspots.png" alt="UW Study Spots" />
-            </a>
-          </motion.span>
-
-          <motion.span {...fadeUp(0.5, reduceMotion)} style={{ display: "inline-block" }}>
-            <Link
-              to="/photos"
-              className="hero__image-button"
-              aria-label="Open Photos"
-            >
-              <img src="/taking_photo.jpg" alt="Photos" />
+              View selected work
+            </button>
+            <Link to="/resume" className="hero__cta hero__cta--ghost">
+              View resume
             </Link>
-          </motion.span>
+          </motion.div>
+
+          <motion.a
+            className="hero__feature"
+            href="https://uwstudyspots.vercel.app/"
+            target="_blank"
+            rel="noopener noreferrer"
+            {...fadeUp(0.48, reduceMotion)}
+          >
+            <img src="/uwstudyspots.png" alt="" className="hero__feature-thumb" />
+            <span className="hero__feature-text">
+              <span className="hero__feature-kicker">Featured project</span>
+              <span className="hero__feature-title">
+                UW Study Spots · 200+ monthly users <span aria-hidden>↗</span>
+              </span>
+            </span>
+          </motion.a>
         </motion.div>
 
-        <TechMarquee speed={26} direction="left" />
+        {/* One contained composition instead of scenes scattered across the whole
+            section — arranged along a loose diagonal, hiking as the visual anchor. */}
+        <div className="hero__visual">
+          {/* Each scene's OWN position class controls its CSS `transform`
+              (the hike one needs translate(-50%,-50%) to center itself) —
+              so the framer fade-in lives on a plain inner child instead of
+              the positioned element, and the two `transform`s never fight. */}
+          <div className="hero__scene hero__scene--code">
+            <motion.div
+              aria-hidden="true"
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.8, delay: reduceMotion ? 0 : 0.4, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <CodingSetupAnimated width={130} height={118} />
+            </motion.div>
+          </div>
+
+          <div className="hero__scene hero__scene--hike">
+            <motion.div
+              aria-hidden="true"
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.8, delay: reduceMotion ? 0 : 0.52, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <HikingAnimated width={170} height={154} />
+            </motion.div>
+          </div>
+
+          <div className="hero__scene hero__scene--pickleball">
+            <motion.div
+              aria-hidden="true"
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.8, delay: reduceMotion ? 0 : 0.64, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <PickleballAnimated width={115} height={104} />
+            </motion.div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="hero__scroll-indicator"
+          aria-label="Scroll to About section"
+          onClick={() => scrollToId("about")}
+        >
+          <span>Scroll</span>
+          <span className="hero__scroll-chevron" aria-hidden="true" />
+        </button>
       </section>
 
       {/* MAIN */}
