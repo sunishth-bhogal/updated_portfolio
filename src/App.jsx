@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 
 import Navbar from "./components/Navbar";
 import CustomCursor from "./components/CustomCursor";
+import LanyardBadge from "./components/LanyardBadge";
 import CodingSetupAnimated from "./components/CodingSetupAnimated";
 import HikingAnimated from "./components/HikingAnimated";
 import PickleballAnimated from "./components/PickleballAnimated";
@@ -32,12 +33,50 @@ const fadeUp = (delay = 0, reduceMotion = false) => ({
 });
 
 /* ---------- Ambient animated background (sits behind everything) ---------- */
+// Fixed (not random-per-render) so particles don't jump around on re-render.
+const AMBIENT_PARTICLES = [
+  { x: 6, y: 12, size: 2, dur: 3.4, delay: 0 },
+  { x: 14, y: 68, size: 3, dur: 4.1, delay: 0.6 },
+  { x: 22, y: 30, size: 2, dur: 3.8, delay: 1.4 },
+  { x: 31, y: 84, size: 3, dur: 4.6, delay: 0.2 },
+  { x: 9, y: 46, size: 2, dur: 3.2, delay: 2.1 },
+  { x: 40, y: 8, size: 3, dur: 4.3, delay: 1.1 },
+  { x: 47, y: 55, size: 2, dur: 3.6, delay: 0.8 },
+  { x: 55, y: 20, size: 3, dur: 4.8, delay: 1.8 },
+  { x: 62, y: 72, size: 2, dur: 3.3, delay: 0.4 },
+  { x: 68, y: 40, size: 3, dur: 4.2, delay: 2.4 },
+  { x: 75, y: 90, size: 2, dur: 3.9, delay: 1.2 },
+  { x: 81, y: 15, size: 3, dur: 4.5, delay: 0.9 },
+  { x: 88, y: 60, size: 2, dur: 3.5, delay: 1.6 },
+  { x: 93, y: 33, size: 3, dur: 4.7, delay: 0.3 },
+  { x: 97, y: 78, size: 2, dur: 3.7, delay: 2.2 },
+  { x: 25, y: 95, size: 2, dur: 4.0, delay: 1.5 },
+  { x: 58, y: 4, size: 2, dur: 3.4, delay: 0.7 },
+  { x: 85, y: 88, size: 3, dur: 4.4, delay: 1.9 },
+];
+
 function AmbientBackground() {
   return (
     <div className="ambient-bg" aria-hidden="true">
       <span className="ambient-blob ambient-blob--a" />
       <span className="ambient-blob ambient-blob--b" />
       <span className="ambient-blob ambient-blob--c" />
+      <div className="ambient-particles">
+        {AMBIENT_PARTICLES.map((p, i) => (
+          <span
+            key={i}
+            className="ambient-particle"
+            style={{
+              left: `${p.x}%`,
+              top: `${p.y}%`,
+              "--p-size": `${p.size}px`,
+              "--p-dur": `${p.dur}s`,
+              "--p-delay": `${p.delay}s`,
+              "--p-max": 0.6 + (p.size - 2) * 0.2,
+            }}
+          />
+        ))}
+      </div>
       <span className="ambient-grain" />
     </div>
   );
@@ -147,6 +186,7 @@ function HomePage() {
       {/* HERO */}
       <section id="home" className="hero hero--with-stack" ref={heroRef}>
         <div className="hero__glow" ref={glowRef} aria-hidden="true" />
+        <LanyardBadge />
 
         {/* NOTE: only `opacity` is animated here via framer — `.hero__content--left`
             controls its own `transform` in CSS, and framer-motion's `style.y` would

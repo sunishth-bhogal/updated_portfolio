@@ -119,7 +119,7 @@ export default function ReactAIBuilder({ size = 240 }) {
             <g className="ai-sparks">
               <circle cx="34" cy="32" r="1.8" fill="#60a5fa" />
               <circle cx="120" cy="58" r="1.4" fill="#22d3ee" />
-              <circle cx="" cy="26" r="1.6" fill="#a78bfa" />
+              <circle cx="78" cy="26" r="1.6" fill="#a78bfa" />
             </g>
           </g>
 
