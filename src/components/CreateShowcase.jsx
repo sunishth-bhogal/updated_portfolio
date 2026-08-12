@@ -2,165 +2,299 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
+import BrooklynBridge from "./assets/BrooklynBridge.jpg";
+import NiagaraFalls from "./assets/NiagaraFalls.jpg";
+import EmpireState from "./assets/EmpireState.jpg";
 
-const ITEMS = [
-  { to: "/photos#top", icon: "📷", title: "Photo Journal", sub: "A collection of moments captured.", cta: "View Photos",  meta: { entries: 20, updated: "2d ago" } },
-  { to: "/Deep",       icon: "💬", title: "Thought Forest", sub: "Words can go a long way",        cta: "View Diary",   meta: { entries: 6,  updated: "today" } },
-  { to: "/growth",     icon: "🗺️", title: "Growth",         sub: "A log of things I want to grow", cta: "View Progress",meta: { entries: 18, updated: "5d ago" } },
-];
+function PeekingFigure() {
+  return (
+    <svg width="30" height="26" viewBox="0 0 30 26" className="tabs-peek" aria-hidden="true">
+      <circle cx="15" cy="15" r="10" fill="#161616" />
+      <ellipse cx="10.5" cy="13" rx="4.4" ry="2.7" fill="#fff" transform="rotate(-16 10.5 13)" />
+      <ellipse cx="19.5" cy="13" rx="4.4" ry="2.7" fill="#fff" transform="rotate(16 19.5 13)" />
+    </svg>
+  );
+}
 
 export default function CreateShowcase() {
   const reduceMotion = useReducedMotion();
+  const initial = (y = 22) => ({ opacity: 0, y: reduceMotion ? 0 : y });
+  const inView = { opacity: 1, y: 0 };
 
   return (
-    <section id="create" className="section-dark">
+    <div className="section-dark">
       <div className="container">
-        <div className="create-grid clean">
-          {ITEMS.map(({ to, icon, title, sub, cta, meta }, i) => (
-            <motion.div
-              key={to}
-              initial={{ opacity: 0, y: reduceMotion ? 0 : 26 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: reduceMotion ? 0 : 0.6, delay: reduceMotion ? 0 : i * 0.1, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <Link to={to} className="create-card clean" aria-label={title}>
-                <span className="card-watermark" aria-hidden="true">{icon}</span>
+        <div className="tabs-grid">
+          {/* Photo Journal — large */}
+          <motion.div
+            className="tabs-card tabs-card--photo"
+            initial={initial(30)}
+            whileInView={inView}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Link to="/photos#top" className="tabs-card-link" aria-label="Photo Journal">
+              <span className="tabs-tape" aria-hidden="true" />
+              <span className="tabs-label">PHOTO JOURNAL</span>
 
-                <div className="card-top">
-                  <span className="card-icon" aria-hidden="true">{icon}</span>
-                  <h3 className="card-title">{title}</h3>
-                  <p className="card-sub">{sub}</p>
+              <div className="tabs-collage">
+                <motion.img
+                  src={NiagaraFalls}
+                  alt=""
+                  className="tabs-photo tabs-photo--a"
+                  initial={{ opacity: 0, filter: "blur(6px)" }}
+                  whileInView={{ opacity: 1, filter: "blur(0px)" }}
+                  viewport={{ once: true, amount: 0.4 }}
+                  transition={{ duration: 0.7, delay: 0.05 }}
+                />
+                <motion.img
+                  src={BrooklynBridge}
+                  alt=""
+                  className="tabs-photo tabs-photo--b"
+                  initial={{ opacity: 0, filter: "blur(6px)" }}
+                  whileInView={{ opacity: 1, filter: "blur(0px)" }}
+                  viewport={{ once: true, amount: 0.4 }}
+                  transition={{ duration: 0.7, delay: 0.18 }}
+                />
+                <motion.img
+                  src={EmpireState}
+                  alt=""
+                  className="tabs-photo tabs-photo--c"
+                  initial={{ opacity: 0, filter: "blur(6px)" }}
+                  whileInView={{ opacity: 1, filter: "blur(0px)" }}
+                  viewport={{ once: true, amount: 0.4 }}
+                  transition={{ duration: 0.7, delay: 0.3 }}
+                />
+                <PeekingFigure />
+              </div>
 
-                  {meta && (
-                    <div className="card-meta">
-                      <span>{meta.entries} entries</span>
-                      <span className="meta-dot" />
-                      <span>Updated {meta.updated}</span>
-                    </div>
-                  )}
-                </div>
+              <p className="tabs-caption">"A collection of moments captured."</p>
+              <span className="tabs-open">
+                OPEN JOURNAL <i>↗</i>
+              </span>
+            </Link>
+          </motion.div>
 
-                <div className="card-actions">
-                  <span className="cta cta--lg clean">{cta}</span>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+          {/* Thought Forest */}
+          <motion.div
+            className="tabs-card tabs-card--thoughts"
+            initial={initial()}
+            whileInView={inView}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Link to="/Deep" className="tabs-card-link" aria-label="Thought Forest">
+              <span className="tabs-pin" aria-hidden="true" />
+              <span className="tabs-label">THOUGHT FOREST</span>
+
+              <motion.div
+                className="tabs-sticky"
+                initial={{ opacity: 0, y: 10, rotate: -3 }}
+                whileInView={{ opacity: 1, y: 0, rotate: -2 }}
+                viewport={{ once: true, amount: 0.5 }}
+                transition={{ duration: 0.4, delay: 0.25 }}
+              >
+                Words can go a long way
+              </motion.div>
+              <span className="tabs-count">06 notes</span>
+
+              <span className="tabs-open">
+                READ 06 THOUGHTS <i>↗</i>
+              </span>
+            </Link>
+          </motion.div>
+
+          {/* Growth */}
+          <motion.div
+            className="tabs-card tabs-card--growth"
+            initial={initial()}
+            whileInView={inView}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.5, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <Link to="/growth" className="tabs-card-link" aria-label="Growth">
+              <span className="tabs-tape tabs-tape--growth" aria-hidden="true" />
+              <span className="tabs-label">GROWTH</span>
+
+              <div className="tabs-ring-row">
+                <svg width="52" height="52" viewBox="0 0 52 52" className="tabs-ring">
+                  <circle cx="26" cy="26" r="21" fill="none" stroke="rgba(22,163,74,.16)" strokeWidth="5" />
+                  <motion.circle
+                    cx="26"
+                    cy="26"
+                    r="21"
+                    fill="none"
+                    stroke="#16A34A"
+                    strokeWidth="5"
+                    strokeLinecap="round"
+                    strokeDasharray="132"
+                    transform="rotate(-90 26 26)"
+                    initial={{ strokeDashoffset: 132 }}
+                    whileInView={{ strokeDashoffset: 42 }}
+                    viewport={{ once: true, amount: 0.6 }}
+                    transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+                  />
+                </svg>
+                <span className="tabs-count">18 entries logged</span>
+              </div>
+
+              <span className="tabs-open">
+                VIEW MY PROGRESS <i>↗</i>
+              </span>
+            </Link>
+          </motion.div>
         </div>
       </div>
 
       <style>{`
-        /* grid */
-        .create-grid.clean{
-          display:grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: clamp(18px, 2.2vw, 26px);
-          align-items: stretch;
+        .tabs-grid{
+          display: grid;
+          grid-template-columns: 1.35fr 1fr;
+          grid-auto-rows: min-content;
+          gap: clamp(18px, 2.4vw, 26px);
+        }
+        .tabs-card--photo{ grid-column: 1; grid-row: 1 / span 2; }
+        .tabs-card--thoughts{ grid-column: 2; grid-row: 1; }
+        .tabs-card--growth{ grid-column: 2; grid-row: 2; margin-top: clamp(10px, 2vw, 20px); }
+
+        @media (max-width: 780px){
+          .tabs-grid{ grid-template-columns: 1fr; }
+          .tabs-card--photo, .tabs-card--thoughts, .tabs-card--growth{
+            grid-column: 1; grid-row: auto; margin-top: 0;
+          }
         }
 
-        /* card */
-        .create-card.clean{
+        .tabs-card-link{
           position: relative;
-          overflow: hidden;
-          display:flex; flex-direction:column;
-          padding: 20px;
-          border-radius: 16px;
-          background: rgba(14,18,26,.65);
-          border: 1px solid rgba(255,255,255,.06);
-          box-shadow: 0 4px 14px rgba(0,0,0,.24);
-          min-height: 240px;           /* ↓ was 260; reduces empty bottom */
-          transition: border-color .2s ease, transform .2s ease, box-shadow .2s ease, background .2s ease;
-          text-decoration: none;
-        }
-        .create-card.clean:hover,
-        .create-card.clean:focus-visible{
-          border-color: hsl(220 70% 60% / .35);
-          background: rgba(18,23,34,.75);
-          transform: translateY(-4px);
-          box-shadow: 0 16px 34px rgba(0,0,0,.32), 0 0 0 1px hsl(220 70% 60% / .12);
-        }
-        .card-watermark{
-          position: absolute;
-          right: -18px;
-          bottom: -28px;
-          font-size: 140px;
-          line-height: 1;
-          opacity: .07;
-          filter: saturate(0.6);
-          pointer-events: none;
-          transition: transform .4s cubic-bezier(.16,1,.3,1), opacity .3s ease;
-        }
-        .create-card.clean:hover .card-watermark{
-          transform: scale(1.08) rotate(-4deg);
-          opacity: .1;
-        }
-
-        /* icon + text */
-        .card-icon{
-          position: relative;
-          display:inline-flex; align-items:center; justify-content:center;
-          width:48px; height:48px;
-          border-radius:14px;
-          background: linear-gradient(135deg, hsl(220 90% 60% / .18), hsl(266 80% 62% / .18));
-          border: 1px solid hsl(220 60% 65% / .25);
-          font-size: 22px; margin-bottom: 14px;
-        }
-        .card-title{
-          font-weight: 800;
-          font-size: 22px;               /* ↓ was 24 */
-          letter-spacing:-.2px;
-          margin: 6px 0 6px;
-        }
-        .card-sub{
-          color: rgba(225,235,255,.78);
-          font-size: 14px;               /* ↓ was 15 */
-          line-height: 1.45;
-          margin: 0 0 8px;
-        }
-        .card-meta{
-          display:flex; align-items:center; gap:10px;
-          color: rgba(225,235,255,.65);
-          font-size: 12px;               /* ↓ was 13 */
-          margin-bottom: 6px;
-        }
-        .meta-dot{ width:4px; height:4px; border-radius:50%; background: rgba(225,235,255,.45); display:inline-block; }
-
-        /* CTA — smaller & centered, consistent size */
-        .card-actions{
-          margin-top: auto;
-          display:flex; justify-content:center;
-        }
-        .cta.cta--lg.clean{
-          display:inline-flex; align-items:center; justify-content:center;
-          gap: 8px;
-          height: 44px;                   /* fixed height = consistent proportion */
-          min-width: 160px;               /* consistent footprint across cards */
-          padding: 0 18px;                /* slimmer */
+          display: flex; flex-direction: column;
+          height: 100%;
+          padding: 22px 20px 18px;
           border-radius: 10px;
-          background: #f2f4fb;
-          color:#0b1220;
-          font-weight: 700;               /* ↓ a touch lighter */
-          font-size: 14.5px;              /* ↓ */
-          letter-spacing:.2px;
-          border: 1px solid transparent;
-          box-shadow: 0 8px 18px rgba(0,0,0,.3);
-          transition: transform .12s ease, background .15s ease, box-shadow .15s ease;
+          background: var(--panel);
+          border: 1px solid var(--line);
+          box-shadow: 0 4px 14px rgba(17,24,39,.05);
+          text-decoration: none;
+          transition: transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s ease, border-color .25s ease;
         }
-        .cta.cta--lg.clean::after{ content: "→"; transition: transform .15s ease; }
-        .cta.cta--lg.clean:hover{ transform: translateY(-2px); background: #ffffff; box-shadow: 0 12px 24px rgba(0,0,0,.36); }
-        .cta.cta--lg.clean:hover::after{ transform: translateX(3px); }
-        .cta.cta--lg.clean:active{ transform: translateY(0); }
+        .tabs-card--photo .tabs-card-link{ transform: rotate(-0.6deg); }
+        .tabs-card--thoughts .tabs-card-link{ transform: rotate(0.8deg); min-height: 168px; }
+        .tabs-card--growth .tabs-card-link{ transform: rotate(-0.5deg); }
 
-        @media (max-width: 720px){
-          .create-card.clean{ min-height: 220px; }           /* tighter on mobile */
-          .cta.cta--lg.clean{ height: 42px; min-width: 150px; border-radius: 10px; }
+        .tabs-card--photo .tabs-card-link:hover{ transform: rotate(-0.6deg) translateY(-5px); border-color: rgba(234,140,44,.4); box-shadow: 0 18px 36px rgba(17,24,39,.1); }
+        .tabs-card--thoughts .tabs-card-link:hover{ transform: rotate(0.8deg) translateY(-5px); border-color: rgba(124,92,240,.4); box-shadow: 0 18px 36px rgba(17,24,39,.1); }
+        .tabs-card--growth .tabs-card-link:hover{ transform: rotate(-0.5deg) translateY(-5px); border-color: rgba(22,163,74,.4); box-shadow: 0 18px 36px rgba(17,24,39,.1); }
+
+        /* tape / pin accents */
+        .tabs-tape{
+          position: absolute; top: -8px; left: 26px;
+          width: 46px; height: 16px;
+          background: rgba(234,140,44,.5);
+          border: 1px solid rgba(234,140,44,.3);
+          transform: rotate(-4deg);
         }
+        .tabs-tape--growth{ background: rgba(22,163,74,.4); border-color: rgba(22,163,74,.28); left: 20px; }
+        .tabs-pin{
+          position: absolute; top: -6px; left: 30px;
+          width: 10px; height: 10px; border-radius: 50%;
+          background: #7C5CF0;
+          box-shadow: 0 2px 4px rgba(17,24,39,.25);
+        }
+
+        .tabs-label{
+          font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          font-size: 11px; font-weight: 700; letter-spacing: .1em;
+          color: var(--text-2);
+          margin-bottom: 14px;
+        }
+
+        /* photo collage */
+        .tabs-collage{
+          position: relative;
+          flex: 1;
+          min-height: 190px;
+          margin-bottom: 12px;
+        }
+        .tabs-photo{
+          position: absolute;
+          width: 58%;
+          aspect-ratio: 4 / 5;
+          object-fit: cover;
+          border-radius: 4px;
+          background: #fff;
+          padding: 6px 6px 18px;
+          box-shadow: 0 10px 22px rgba(17,24,39,.18);
+        }
+        .tabs-photo--a{ left: 2%; top: 4px; transform: rotate(-6deg); z-index: 1; }
+        .tabs-photo--b{ left: 26%; top: 26px; transform: rotate(4deg); z-index: 2; }
+        .tabs-photo--c{ left: 48%; top: 2px; transform: rotate(-2deg); z-index: 3; }
+        .tabs-card--photo .tabs-card-link:hover .tabs-photo--a{ transform: rotate(-9deg) translateY(-3px); }
+        .tabs-card--photo .tabs-card-link:hover .tabs-photo--b{ transform: rotate(6deg) translateY(-3px); }
+        .tabs-card--photo .tabs-card-link:hover .tabs-photo--c{ transform: rotate(-4deg) translateY(-3px); }
+        .tabs-photo, .tabs-card--photo .tabs-card-link:hover .tabs-photo--a,
+        .tabs-card--photo .tabs-card-link:hover .tabs-photo--b,
+        .tabs-card--photo .tabs-card-link:hover .tabs-photo--c{
+          transition: transform .35s cubic-bezier(.16,1,.3,1);
+        }
+        .tabs-peek{
+          position: absolute;
+          right: 6%; bottom: -4px;
+          z-index: 4;
+          transition: transform .3s ease;
+        }
+        .tabs-card--photo .tabs-card-link:hover .tabs-peek{ transform: translateY(-6px); }
+
+        .tabs-caption{
+          font-style: italic;
+          font-size: 13.5px;
+          color: var(--text-2);
+          margin: 0 0 4px;
+        }
+
+        /* thought forest */
+        .tabs-sticky{
+          align-self: flex-start;
+          background: #FBF3FF;
+          border: 1px solid rgba(124,92,240,.25);
+          color: #4C3A8A;
+          font-size: 13.5px;
+          font-weight: 600;
+          padding: 12px 14px;
+          border-radius: 3px;
+          box-shadow: 0 6px 14px rgba(124,92,240,.14);
+          margin-bottom: 10px;
+        }
+
+        .tabs-count{
+          font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          font-size: 12px;
+          color: var(--text-3);
+        }
+
+        /* growth */
+        .tabs-ring-row{
+          display: flex; align-items: center; gap: 14px;
+          margin: 4px 0 14px;
+        }
+
+        .tabs-open{
+          margin-top: auto;
+          padding-top: 12px;
+          font-size: 12.5px;
+          font-weight: 700;
+          letter-spacing: .04em;
+          color: var(--text-2);
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
+        .tabs-open i{ font-style: normal; transition: transform .2s ease; display: inline-block; }
+        .tabs-card-link:hover .tabs-open{ color: var(--text-1); text-decoration: underline; text-underline-offset: 3px; }
+        .tabs-card-link:hover .tabs-open i{ transform: translate(3px, -2px); }
 
         @media (prefers-reduced-motion: reduce){
-          .create-card.clean, .cta.cta--lg.clean { transition: none !important; }
+          .tabs-card-link, .tabs-photo, .tabs-peek, .tabs-open i{ transition: none !important; }
         }
       `}</style>
-    </section>
+    </div>
   );
 }

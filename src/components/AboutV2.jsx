@@ -1,81 +1,64 @@
 // AboutV2.jsx
 import React from "react";
 import HeadshotForPortfolio from "./assets/Cross_arms.png";
-import GymSceneAnimated from "./GymSceneAnimated";
-import CreativeSpark from "./CreativeSpark";
-import ReactAIBuilder from "./ReactAIBuilder";
 
 export default function AboutV2() {
   return (
     <div className="aboutv2">
-      <div className="container">
-        <h2 className="aboutv2-title">
-          A little bit <span className="aboutv2-grad">About Me</span>
-        </h2>
+      <div className="aboutv2-layout">
+        <span className="aboutv2-eyebrow">02 / ABOUT</span>
 
-        <div className="aboutv2-grid">
-          {/* Big left image card */}
-          <article className="about-card hero" tabIndex={0}>
-            <div
-              className="hero-media"
-              style={{ "--hero": `url(${HeadshotForPortfolio})` }}
-            >
-              <h3 className="card-title overlay">I love to take on new challenges</h3>
-            </div>
-          </article>
+        <div className="aboutv2-columns">
+          <div className="aboutv2-copy">
+            <h2 className="aboutv2-heading">
+              I like turning ideas
+              <br />
+              into <span className="aboutv2-grad">something real</span>
+            </h2>
 
-          {/* Top-right: code blurb */}
-          <article className="about-card code" tabIndex={0}>
-            <h3 className="card-title">
-              My expertise includes <br />
-              Software, AI, Web &amp; Data
-            </h3>
-            <div className="code-preview">
-              <pre className="codeblock">{`// Importing a single module
-import moduleName from 'modulePath';`}</pre>
-            </div>
-          </article>
-
-          {/* Bottom-right: health & lifting */}
-          <article className="about-card stacks" tabIndex={0}>
-            
-            <h3 className="card-title small">
-              I have a passion for weight-lifting, and I believe that health is wealth.
-              Leading a healthy lifestyle not only helps my physical health but also my
-              mental health.
-            </h3>
-            <img className="blob" src="/assets/about/blob.png" alt="" aria-hidden="true" />
-            <div style={{ display:"grid", placeItems:"center", paddingTop: 12 }}>
-  <GymSceneAnimated width={320} height={150} />
-</div>
-          </article>
-
-          {/* Bottom-left: short blurb */}
-          <article className="about-card blurb" tabIndex={0}>
-            <h3 className="card-title">
-              Innovative problem-solver passionate about building ideas that create real impact
-            </h3>
-            <p className="card-text">
-              I love connecting with people and learning more about what the world needs.
-              Outside work: lifting, outdoors, photos, and a bit of poetry.
+            <p className="aboutv2-p">
+              I'm Sunishth Bhogal, studying Math at the{" "}
+              <a href="https://uwaterloo.ca" target="_blank" rel="noopener noreferrer">
+                University of Waterloo
+              </a>{" "}
+              alongside a BBA at{" "}
+              <a href="https://wlu.ca" target="_blank" rel="noopener noreferrer">
+                Wilfrid Laurier University
+              </a>
+              . I like clean
+              interfaces, hard problems, and the moment a pile of scattered
+              ideas turns into something people actually use.
             </p>
 
-            <CreativeSpark size={180} color="#60a5fa" />
-          </article>
+            <p className="aboutv2-p">Currently: Incoming Software Engineer @ TD.</p>
 
-          {/* Bottom-middle/right: “now” card */}
-          <article className="about-card now" tabIndex={0}>
-  <div className="eyebrow">The Insider</div>
-  <h3 className="card-title">Currently building a React + AI project</h3>
-  <p className="card-text">
-    Exploring LLM tooling, lightweight analytics, and automation to save people time.
-  </p>
+            <p className="aboutv2-p">
+              My story started outside of code — sports and the gym taught me
+              discipline long before I ever wrote a line of it. Somewhere
+              between the reps and the late nights I started building things,
+              like{" "}
+              <a
+                href="https://uwstudyspots.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                UW Study Spots
+              </a>
+              , now used by 200+ students a month at Waterloo. I've liked
+              turning problems into products ever since.
+            </p>
+          </div>
 
-  {/* new wrapper */}
-  <div className="ai-wrap">
-    <ReactAIBuilder size={200} />
-  </div>
-</article>
+          <figure className="aboutv2-portrait">
+            <div className="aboutv2-portrait-frame">
+              <img src={HeadshotForPortfolio} alt="Sunishth Bhogal" />
+            </div>
+            <figcaption>SUNISHTH · BHOGAL</figcaption>
+          </figure>
+        </div>
+
+        <div className="aboutv2-coords">
+          43.4643° N, 80.5204° W &nbsp;/&nbsp; 43.6532° N, 79.3832° W
         </div>
       </div>
     </div>

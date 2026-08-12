@@ -24,7 +24,6 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const reduceMotion = useReducedMotion();
   const [visible, setVisible] = useState(true);
-  const [progress, setProgress] = useState(0);
 
   const lastY = useRef(0);
   const ticking = useRef(false);
@@ -42,6 +41,11 @@ export default function Navbar() {
       const cleanId = id.startsWith("#") ? id.slice(1) : id;
       const header = document.querySelector(HEADER_SEL);
       const headerH = header ? header.getBoundingClientRect().height : 0;
+      // A few sections have their own top padding baked in, so landing right
+      // at the section's edge leaves an awkward empty gap before the actual
+      // content — nudge those a bit further down so the heading lands closer
+      // to the header instead of the section boundary.
+      const extraOffset = cleanId === "about" ? 80 : 0;
 
       const doScroll = (el) => {
         if (!el) return;
@@ -53,7 +57,7 @@ export default function Navbar() {
           scroller = scroller.parentElement;
         }
         if (!scroller) {
-          const y = el.getBoundingClientRect().top + window.pageYOffset - headerH - 6;
+          const y = el.getBoundingClientRect().top + window.pageYOffset - headerH - 6 + extraOffset;
           window.scrollTo({ top: y, behavior: "smooth" });
         } else {
           const y =
@@ -61,7 +65,8 @@ export default function Navbar() {
             scroller.getBoundingClientRect().top +
             scroller.scrollTop -
             headerH -
-            6;
+            6 +
+            extraOffset;
           scroller.scrollTo({ top: y, behavior: "smooth" });
         }
       };
@@ -141,14 +146,10 @@ export default function Navbar() {
     };
   }, [isHome, sections, active]);
 
-  // Shadow on scroll + page progress
+  // Shadow on scroll
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 4);
-      const doc = document.documentElement;
-      const h = doc.scrollHeight - window.innerHeight;
-      const pct = h > 0 ? (window.scrollY / h) * 100 : 0;
-      setProgress(Math.max(0, Math.min(100, pct)));
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -290,10 +291,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        {/* Page progress bar */}
-        <div className="nav-progress">
-          <span style={{ width: `${progress}%` }} />
-        </div>
       </header>
 
       {/* Spacer so content doesn't jump when header is fixed */}
@@ -405,19 +402,19 @@ export default function Navbar() {
           --nav-h: 60px;
           --nav-gap: clamp(16px, 2.6vw, 32px);
           --nav-pad-x: clamp(12px, 2vw, 24px);
-          --accent-a: #6ca8ff;
-          --accent-b: #b18cff;
+          --accent-a: #2563EB;
+          --accent-b: #2563EB;
         }
 
         .nav-header{
           position: fixed; inset: 0 0 auto 0; height: var(--nav-h);
           z-index: 1001;
-          background: rgba(8,12,20,.55);
+          background: rgba(246,244,239,.85);
           -webkit-backdrop-filter: blur(10px);
           backdrop-filter: blur(10px);
           transition: transform .25s ease, box-shadow .25s ease;
         }
-        .nav-header.scrolled{ box-shadow: 0 1px 0 rgba(255,255,255,.06); }
+        .nav-header.scrolled{ box-shadow: 0 1px 0 rgba(17,24,39,.06); }
         .nav-header.is-hidden{ transform: translateY(calc(-1 * var(--nav-h))); }
 
         .nav-inner{
@@ -446,7 +443,7 @@ export default function Navbar() {
 
         .nav-link.bare{
           appearance:none; background:transparent; border:none;
-          color: #e7eefc; opacity:.95;
+          color: var(--text-1, #111827); opacity:.95;
           font-weight: 700;
           font-size: clamp(14px, 1vw, 16px);
           letter-spacing:.2px;
@@ -475,30 +472,19 @@ export default function Navbar() {
           height: auto;
           margin: auto 0;
           padding: 8px 18px !important;
-          border: 1px solid rgba(255,255,255,.16);
+          border: 1px solid rgba(17,24,39,.16);
           border-radius: 999px;
-          background: rgba(255,255,255,.04);
+          background: rgba(17,24,39,.03);
           transition: background .2s ease, border-color .2s ease;
         }
         .nav-contact:hover{
-          background: rgba(255,255,255,.09);
-          border-color: rgba(255,255,255,.28);
+          background: rgba(17,24,39,.06);
+          border-color: rgba(17,24,39,.28);
         }
         .nav-contact::after{ display: none; }
         .nav-contact.active{
-          border-color: hsl(220 70% 62% / .5);
-          background: hsl(220 70% 62% / .12);
-        }
-
-        .nav-progress{
-          position:absolute; left:0; right:0; bottom:0; height:2px;
-          background: rgba(255,255,255,.06);
-          overflow:hidden;
-        }
-        .nav-progress > span{
-          display:block; height:100%; width:0%;
-          background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
-          transition: width .15s ease;
+          border-color: rgba(37,99,235,.5);
+          background: rgba(37,99,235,.1);
         }
 
         .nav-spacer{ height: var(--nav-h); }
@@ -507,9 +493,9 @@ export default function Navbar() {
         .nav-menu-btn{
           display:none;
           appearance:none;
-          border: 1px solid rgba(255,255,255,.14);
-          background: rgba(255,255,255,.06);
-          color: #e7eefc;
+          border: 1px solid rgba(17,24,39,.14);
+          background: rgba(17,24,39,.04);
+          color: var(--text-1, #111827);
           border-radius: 12px;
           height: calc(var(--nav-h) - 18px);
           margin: 9px 0;
@@ -518,7 +504,7 @@ export default function Navbar() {
           cursor: pointer;
           transition: background .2s ease, transform .2s ease;
         }
-        .nav-menu-btn:hover{ background: rgba(255,255,255,.10); transform: translateY(-1px); }
+        .nav-menu-btn:hover{ background: rgba(17,24,39,.08); transform: translateY(-1px); }
 
         /* Drawer */
         .drawer-root{
@@ -529,7 +515,7 @@ export default function Navbar() {
         .drawer-overlay{
           position: absolute;
           inset: 0;
-          background: rgba(0,0,0,.6);
+          background: rgba(17,24,39,.45);
           -webkit-backdrop-filter: blur(3px);
           backdrop-filter: blur(3px);
           cursor: pointer;
@@ -541,11 +527,9 @@ export default function Navbar() {
           right: 0;
           height: 100%;
           width: min(88vw, 420px);
-          background: linear-gradient(165deg, rgba(14,18,30,.96), rgba(9,12,20,.97));
-          -webkit-backdrop-filter: blur(14px);
-          backdrop-filter: blur(14px);
-          border-left: 1px solid rgba(255,255,255,.10);
-          box-shadow: -20px 0 60px rgba(0,0,0,.5);
+          background: #FFFFFF;
+          border-left: 1px solid var(--line, #DDDAD3);
+          box-shadow: -20px 0 60px rgba(17,24,39,.12);
           display: grid;
           grid-template-rows: auto 1fr auto;
           overflow: hidden;
@@ -557,7 +541,7 @@ export default function Navbar() {
           width: 340px;
           height: 340px;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(108,168,255,.3), rgba(177,140,255,.16) 55%, transparent 72%);
+          background: radial-gradient(circle, rgba(37,99,235,.14), transparent 72%);
           pointer-events: none;
           filter: blur(2px);
         }
@@ -567,8 +551,8 @@ export default function Navbar() {
           pointer-events: none;
           opacity: .5;
           background-image:
-            linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+            linear-gradient(rgba(17,24,39,.035) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(17,24,39,.035) 1px, transparent 1px);
           background-size: 28px 28px;
           -webkit-mask-image: linear-gradient(180deg, rgba(0,0,0,.9), transparent 70%);
           mask-image: linear-gradient(180deg, rgba(0,0,0,.9), transparent 70%);
@@ -580,14 +564,14 @@ export default function Navbar() {
           align-items:center;
           justify-content: space-between;
           padding: 18px 18px 14px;
-          border-bottom: 1px solid rgba(255,255,255,.10);
+          border-bottom: 1px solid var(--line, #DDDAD3);
         }
         .drawer-logo{ height: 28px; width:auto; border-radius: 10px; }
         .drawer-close{
           appearance:none;
-          border: 1px solid rgba(255,255,255,.14);
-          background: rgba(255,255,255,.06);
-          color: #e7eefc;
+          border: 1px solid rgba(17,24,39,.14);
+          background: rgba(17,24,39,.04);
+          color: var(--text-1, #111827);
           border-radius: 999px;
           width: 34px;
           height: 34px;
@@ -596,7 +580,7 @@ export default function Navbar() {
           cursor: pointer;
           transition: background .2s ease, transform .2s ease;
         }
-        .drawer-close:hover{ background: rgba(255,255,255,.10); transform: rotate(90deg); }
+        .drawer-close:hover{ background: rgba(17,24,39,.08); transform: rotate(90deg); }
 
         .drawer-scroll{
           position: relative;
@@ -610,7 +594,7 @@ export default function Navbar() {
           font-weight: 800;
           letter-spacing: .16em;
           text-transform: uppercase;
-          color: hsl(220 40% 55%);
+          color: var(--text-2, #5F6672);
           margin: 0 6px 14px;
         }
         .drawer-links{ position: relative; display: flex; flex-direction: column; gap: 2px; }
@@ -623,7 +607,7 @@ export default function Navbar() {
           text-align:left;
           appearance:none;
           background: transparent;
-          color: #e7eefc;
+          color: var(--text-1, #111827);
           border: 1px solid transparent;
           border-radius: 14px;
           padding: 18px 16px;
@@ -638,25 +622,25 @@ export default function Navbar() {
           left: 0; top: 12px; bottom: 12px;
           width: 3px;
           border-radius: 999px;
-          background: linear-gradient(180deg, var(--accent-a), var(--accent-b));
+          background: var(--accent-a);
           transform: scaleY(0);
           transition: transform .22s cubic-bezier(.16,1,.3,1);
         }
         .drawer .sheet-link:hover{
-          background: rgba(255,255,255,.055);
-          border-color: rgba(255,255,255,.10);
+          background: rgba(17,24,39,.04);
+          border-color: rgba(17,24,39,.08);
           padding-left: 20px;
         }
         .drawer .sheet-link.active{
-          background: rgba(255,255,255,.07);
-          border-color: rgba(255,255,255,.12);
+          background: rgba(37,99,235,.08);
+          border-color: rgba(37,99,235,.14);
         }
         .drawer .sheet-link.active::before{ transform: scaleY(1); }
         .sheet-link-index{
           font-size: 13px;
           font-weight: 800;
           letter-spacing: .04em;
-          color: hsl(220 70% 70%);
+          color: var(--accent, #2563EB);
           opacity: .65;
           flex: 0 0 auto;
         }
@@ -672,7 +656,7 @@ export default function Navbar() {
           opacity: 0;
           transform: translate(-4px, 4px);
           transition: opacity .2s ease, transform .2s ease;
-          color: hsl(220 80% 72%);
+          color: var(--accent, #2563EB);
         }
         .drawer .sheet-link:hover .sheet-link-arrow,
         .drawer .sheet-link.active .sheet-link-arrow{
@@ -687,13 +671,13 @@ export default function Navbar() {
           flex-wrap: wrap;
           gap: 8px;
           padding: 16px 18px 20px;
-          border-top: 1px solid rgba(255,255,255,.10);
+          border-top: 1px solid var(--line, #DDDAD3);
         }
         .drawer-social{
           appearance: none;
-          border: 1px solid rgba(255,255,255,.12);
-          background: rgba(255,255,255,.04);
-          color: hsl(220 20% 88%);
+          border: 1px solid rgba(17,24,39,.12);
+          background: rgba(17,24,39,.03);
+          color: var(--text-1, #111827);
           border-radius: 999px;
           padding: 8px 14px;
           font-size: 12.5px;
@@ -702,8 +686,8 @@ export default function Navbar() {
           transition: background .2s ease, border-color .2s ease, transform .2s ease;
         }
         .drawer-social:hover{
-          background: rgba(255,255,255,.09);
-          border-color: rgba(255,255,255,.2);
+          background: rgba(17,24,39,.06);
+          border-color: rgba(17,24,39,.2);
           transform: translateY(-1px);
         }
 

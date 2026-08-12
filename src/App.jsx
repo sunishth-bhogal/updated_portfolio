@@ -5,6 +5,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 
 import Navbar from "./components/Navbar";
 import CustomCursor from "./components/CustomCursor";
+import SwingingFigure from "./components/SwingingFigure";
 import LanyardBadge from "./components/LanyardBadge";
 import CodingSetupAnimated from "./components/CodingSetupAnimated";
 import HikingAnimated from "./components/HikingAnimated";
@@ -31,57 +32,6 @@ const fadeUp = (delay = 0, reduceMotion = false) => ({
   animate: { opacity: 1, y: 0 },
   transition: { duration: reduceMotion ? 0 : 0.7, delay: reduceMotion ? 0 : delay, ease: [0.16, 1, 0.3, 1] },
 });
-
-/* ---------- Ambient animated background (sits behind everything) ---------- */
-// Fixed (not random-per-render) so particles don't jump around on re-render.
-const AMBIENT_PARTICLES = [
-  { x: 6, y: 12, size: 2, dur: 3.4, delay: 0 },
-  { x: 14, y: 68, size: 3, dur: 4.1, delay: 0.6 },
-  { x: 22, y: 30, size: 2, dur: 3.8, delay: 1.4 },
-  { x: 31, y: 84, size: 3, dur: 4.6, delay: 0.2 },
-  { x: 9, y: 46, size: 2, dur: 3.2, delay: 2.1 },
-  { x: 40, y: 8, size: 3, dur: 4.3, delay: 1.1 },
-  { x: 47, y: 55, size: 2, dur: 3.6, delay: 0.8 },
-  { x: 55, y: 20, size: 3, dur: 4.8, delay: 1.8 },
-  { x: 62, y: 72, size: 2, dur: 3.3, delay: 0.4 },
-  { x: 68, y: 40, size: 3, dur: 4.2, delay: 2.4 },
-  { x: 75, y: 90, size: 2, dur: 3.9, delay: 1.2 },
-  { x: 81, y: 15, size: 3, dur: 4.5, delay: 0.9 },
-  { x: 88, y: 60, size: 2, dur: 3.5, delay: 1.6 },
-  { x: 93, y: 33, size: 3, dur: 4.7, delay: 0.3 },
-  { x: 97, y: 78, size: 2, dur: 3.7, delay: 2.2 },
-  { x: 25, y: 95, size: 2, dur: 4.0, delay: 1.5 },
-  { x: 58, y: 4, size: 2, dur: 3.4, delay: 0.7 },
-  { x: 85, y: 88, size: 3, dur: 4.4, delay: 1.9 },
-];
-
-function AmbientBackground() {
-  return (
-    <div className="ambient-bg" aria-hidden="true">
-      <span className="ambient-blob ambient-blob--a" />
-      <span className="ambient-blob ambient-blob--b" />
-      <span className="ambient-blob ambient-blob--c" />
-      <div className="ambient-particles">
-        {AMBIENT_PARTICLES.map((p, i) => (
-          <span
-            key={i}
-            className="ambient-particle"
-            style={{
-              left: `${p.x}%`,
-              top: `${p.y}%`,
-              "--p-size": `${p.size}px`,
-              "--p-dur": `${p.dur}s`,
-              "--p-delay": `${p.delay}s`,
-              "--p-max": 0.6 + (p.size - 2) * 0.2,
-            }}
-          />
-        ))}
-      </div>
-      <span className="ambient-grain" />
-    </div>
-  );
-}
-/* ---------------------------------------------------------------- */
 
 /* ---------- Scroll to hash targets (keeps SPA smooth) ---------- */
 function ScrollManager() {
@@ -116,8 +66,8 @@ function ScrollManager() {
 export default function App() {
   return (
     <>
-      <AmbientBackground />
       <CustomCursor />
+      <SwingingFigure />
       <ScrollToTop />
       <Navbar />
       <ScrollManager />
@@ -139,7 +89,6 @@ export default function App() {
 /* -------------------- HOME (now inline) -------------------- */
 function HomePage() {
   const heroRef = React.useRef(null);
-  const glowRef = React.useRef(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -152,40 +101,17 @@ function HomePage() {
     if (!el) return;
     const header = document.querySelector(".nav-header");
     const headerH = header ? header.getBoundingClientRect().height : 0;
-    const y = el.getBoundingClientRect().top + window.pageYOffset - headerH - 6;
+    // About's own top padding leaves a gap when landing right at the section
+    // edge, so nudge it a bit further down — mirrors the same offset in Navbar.
+    const extraOffset = id === "about" ? 80 : 0;
+    const y = el.getBoundingClientRect().top + window.pageYOffset - headerH - 6 + extraOffset;
     window.scrollTo({ top: y, behavior: "smooth" });
   };
-
-  // Subtle cursor-reactive glow behind the name — plain DOM/CSS, not framer,
-  // so it can never collide with the transform rules noted below.
-  React.useEffect(() => {
-    if (reduceMotion) return;
-    const el = heroRef.current;
-    const glow = glowRef.current;
-    if (!el || !glow) return;
-    let raf = 0;
-    const onMove = (e) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const rect = el.getBoundingClientRect();
-        const dx = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
-        const dy = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
-        const maxShift = 26;
-        glow.style.transform = `translate(${dx * maxShift}px, ${dy * maxShift}px)`;
-      });
-    };
-    el.addEventListener("mousemove", onMove);
-    return () => {
-      cancelAnimationFrame(raf);
-      el.removeEventListener("mousemove", onMove);
-    };
-  }, [reduceMotion]);
 
   return (
     <>
       {/* HERO */}
       <section id="home" className="hero hero--with-stack" ref={heroRef}>
-        <div className="hero__glow" ref={glowRef} aria-hidden="true" />
         <LanyardBadge />
 
         {/* NOTE: only `opacity` is animated here via framer — `.hero__content--left`
@@ -305,7 +231,7 @@ function HomePage() {
         <section id="experiences" className="section section-dark anchor-offset">
           <div className="section__container">
             <Reveal as="h2" className="section__title" data-underline="true" y={16}>
-              Professional Experience
+              Experience
             </Reveal>
             <Reveal className="section__content" delay={0.12}>
               <ExperienceTimeline />
@@ -329,7 +255,10 @@ function HomePage() {
         <section id="create" className="section section-dark anchor-offset">
           <div className="section__container">
             <Reveal as="h2" className="section__title" data-underline="true" y={16}>
-              Creative Mind
+              The Other Tabs
+            </Reveal>
+            <Reveal as="p" className="section__subtitle" y={12} delay={0.06}>
+              Photos I take, thoughts I keep, and things I'm working toward.
             </Reveal>
             <Reveal className="section__content" delay={0.12}>
               <CreateShowcase />
@@ -338,7 +267,7 @@ function HomePage() {
         </section>
 
         {/* Contact */}
-        <section id="contact" className="section section-dark anchor-offset">
+        <section id="contact" className="section section-dark anchor-offset contact-sep">
           <div className="section__container">
             <Reveal className="section__content">
               <Contacts />
