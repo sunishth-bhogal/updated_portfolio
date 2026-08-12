@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 
 import chicago from  "../components/assets/Chicago.jpg";
 import bp from "../components/assets/BostonPizza.jpg";
@@ -43,7 +44,6 @@ import MadisonGarden from "../components/assets/MadisonGarden.jpg"
 import NYCathedral from "../components/assets/NYCathedral.jpg";
 import NetsRaptors from "../components/assets/NetsRaptors.jpg"
 
-
 const PHOTOS = [
   chicago, bp, home, Elora, Naplesil, LittleIsland,
   BrooklynBridge, Lugano, LuganoFog, MilanoTrain, SLCmorning, WTCsunset,
@@ -53,182 +53,330 @@ const PHOTOS = [
   EmpireState, BrooklynBridgeNight, CentralParkIce, MadisonGarden, NYCathedral, NetsRaptors
 ];
 
+// location + memory come from the same real captions as before, just split
+// into two fields; `cat` groups them for the filter row (Ontario vs
+// everywhere else — "travel").
 const CAPTIONS = [
-  "Chicago, IL · beauty in the rain",
-  "Mississauga, ON · sunlight in the rain",
-  "Brampton, ON · cotton-candy sky",
-  "Elora, ON · stream in the forest",
-  "Naples, IL · evening walks",
-  "Little Island, NYC · the world is our stage",
-  "Brooklyn Bridge, NYC · cecconi's",
-  "Lugano, Switzerland · view from the villa",
-  "Lugano, Switzerland · fog rolling in",
-  "Milano, Italy · vintage train",
-  "Waterloo, ON · sunrise",
-  "Exchange Place, NJ · sunset views",
-  "Bryant Park, NYC · christmas in nyc",
-  "Milano, Italy · spring flowers",
-  "Niagara Falls, ON · shining rays",
-  "Waterloo, ON · foggy nights",
-  "White Rock, BC · sunrise by the pier",
-  "Copenhagen, Denmark · above the clouds",
-  "Lugano, Switzerland · evening rain",
-  "Toronto, ON · landmark",
-  "Brampton, ON · temple ",
-  "Waterloo, ON · train track ",
-  "The Blue Mountains, ON · amongst the trees ",
-  "The Blue Mountains, ON · golden nights ",
-  "Waterloo, ON · super moon ",
-  "The Blue Mountains, ON · light pollutionless skies ",
-  "The Blue Mountains, ON · fall nights ",
-  "The Blue Mountains, ON · late night walks",
-  "Brampton, ON · fluffy sunsets",
-  "Toronto, ON · city on their backs",
-  "Toronto, ON · blue and white",
-  "Toronto, ON · AL champions 2025",
-  "Nizamuddin, India · history",
-  "Delhi, India · tranquility",
-  "Toronto, ON · branches",
-  "Manhattan, NYC · empire state",
-  "Brooklyn, NYC · bridge",
-  "Manhattan, NYC · central ice",
-  "Manhattan, NYC · christmas lights",
-  "Manhattan, NYC · cathedral",
-  "Brooklyn, NYC · barclays",
-
-
-
+  { location: "Chicago, IL", memory: "beauty in the rain", cat: "travel" },
+  { location: "Mississauga, ON", memory: "sunlight in the rain", cat: "on" },
+  { location: "Brampton, ON", memory: "cotton-candy sky", cat: "on" },
+  { location: "Elora, ON", memory: "stream in the forest", cat: "on" },
+  { location: "Naples, IL", memory: "evening walks", cat: "travel" },
+  { location: "Little Island, NYC", memory: "the world is our stage", cat: "travel" },
+  { location: "Brooklyn Bridge, NYC", memory: "cecconi's", cat: "travel" },
+  { location: "Lugano, Switzerland", memory: "view from the villa", cat: "travel" },
+  { location: "Lugano, Switzerland", memory: "fog rolling in", cat: "travel" },
+  { location: "Milano, Italy", memory: "vintage train", cat: "travel" },
+  { location: "Waterloo, ON", memory: "sunrise", cat: "on" },
+  { location: "Exchange Place, NJ", memory: "sunset views", cat: "travel" },
+  { location: "Bryant Park, NYC", memory: "christmas in nyc", cat: "travel" },
+  { location: "Milano, Italy", memory: "spring flowers", cat: "travel" },
+  { location: "Niagara Falls, ON", memory: "shining rays", cat: "on" },
+  { location: "Waterloo, ON", memory: "foggy nights", cat: "on" },
+  { location: "White Rock, BC", memory: "sunrise by the pier", cat: "travel" },
+  { location: "Copenhagen, Denmark", memory: "above the clouds", cat: "travel" },
+  { location: "Lugano, Switzerland", memory: "evening rain", cat: "travel" },
+  { location: "Toronto, ON", memory: "landmark", cat: "on" },
+  { location: "Brampton, ON", memory: "temple", cat: "on" },
+  { location: "Waterloo, ON", memory: "train track", cat: "on" },
+  { location: "The Blue Mountains, ON", memory: "amongst the trees", cat: "on" },
+  { location: "The Blue Mountains, ON", memory: "golden nights", cat: "on" },
+  { location: "Waterloo, ON", memory: "super moon", cat: "on" },
+  { location: "The Blue Mountains, ON", memory: "light pollutionless skies", cat: "on" },
+  { location: "The Blue Mountains, ON", memory: "fall nights", cat: "on" },
+  { location: "The Blue Mountains, ON", memory: "late night walks", cat: "on" },
+  { location: "Brampton, ON", memory: "fluffy sunsets", cat: "on" },
+  { location: "Toronto, ON", memory: "city on their backs", cat: "on" },
+  { location: "Toronto, ON", memory: "blue and white", cat: "on" },
+  { location: "Toronto, ON", memory: "AL champions 2025", cat: "on" },
+  { location: "Nizamuddin, India", memory: "history", cat: "travel" },
+  { location: "Delhi, India", memory: "tranquility", cat: "travel" },
+  { location: "Toronto, ON", memory: "branches", cat: "on" },
+  { location: "Manhattan, NYC", memory: "empire state", cat: "travel" },
+  { location: "Brooklyn, NYC", memory: "bridge", cat: "travel" },
+  { location: "Manhattan, NYC", memory: "central ice", cat: "travel" },
+  { location: "Manhattan, NYC", memory: "christmas lights", cat: "travel" },
+  { location: "Manhattan, NYC", memory: "cathedral", cat: "travel" },
+  { location: "Brooklyn, NYC", memory: "barclays", cat: "travel" },
 ];
 
-const DATA = PHOTOS.map((src, i) => ({ src, cap: CAPTIONS[i] ?? `Photo ${i+1}` }));
+const DATA = PHOTOS.map((src, i) => ({ src, id: i, ...CAPTIONS[i] }));
+
+const FILTERS = [
+  { id: "all", label: "ALL" },
+  { id: "on", label: "ON" },
+  { id: "travel", label: "TRAVEL" },
+];
 
 export default function PhotoWall() {
-  const [idx, setIdx] = useState(0);
-  const heroRef = useRef(null);
-  const touch = useRef({ x: 0, y: 0 });
+  const reduceMotion = useReducedMotion();
+  const [filter, setFilter] = useState("all");
+  const [openAt, setOpenAt] = useState(null); // index within `filtered`
 
-  const next  = useCallback(() => setIdx(i => (i + 1) % DATA.length), []);
-  const prev  = useCallback(() => setIdx(i => (i - 1 + DATA.length) % DATA.length), []);
+  const filtered = useMemo(
+    () => (filter === "all" ? DATA : DATA.filter((d) => d.cat === filter)),
+    [filter]
+  );
 
-  const cur   = useMemo(() => DATA[idx], [idx]);
-  const nextI = (idx + 1) % DATA.length;
-  const prevI = (idx - 1 + DATA.length) % DATA.length;
+  const close = useCallback(() => setOpenAt(null), []);
+  const next = useCallback(
+    () => setOpenAt((i) => (i === null ? null : (i + 1) % filtered.length)),
+    [filtered.length]
+  );
+  const prev = useCallback(
+    () => setOpenAt((i) => (i === null ? null : (i - 1 + filtered.length) % filtered.length)),
+    [filtered.length]
+  );
 
-  // keyboard nav
   useEffect(() => {
+    if (openAt === null) return undefined;
     const onKey = (e) => {
+      if (e.key === "Escape") close();
       if (e.key === "ArrowRight") next();
-      if (e.key === "ArrowLeft")  prev();
+      if (e.key === "ArrowLeft") prev();
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev]);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [openAt, close, next, prev]);
 
-  // touch swipe on hero
-  const onTouchStart = (e) => { touch.current.x = e.touches[0].clientX; touch.current.y = e.touches[0].clientY; };
-  const onTouchEnd = (e) => {
-    const dx = e.changedTouches[0].clientX - touch.current.x;
-    const dy = e.changedTouches[0].clientY - touch.current.y;
-    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) (dx < 0 ? next : prev)();
-  };
+  const current = openAt !== null ? filtered[openAt] : null;
 
   return (
-    <section id="photos" className="photos-sec" aria-labelledby="photos-title">
-      <div className="photos-wrap">
-        <h2 id="photos-title" className="photos-title">Time Capsule</h2>
-        <p id="caption" className="caption">
-          A picture tells a thousand words. Its a phrase we have been hearing since we were kids, but I did not realize the true
-          meaning of it until I started taking photos of my own. Not only is it a blessing to be able to catch a moment in time, 
-          but also be able to relive it by just looking at it. It reminds us how much beauty there is even in the simplest moments. 
-          Here's a couple of moments that remind me that I am living. So just remember YOU'RE ALIVE!
-        </p>
-
-        {/* ---------- HERO + PREVIEW PANEL ROW ---------- */}
-        <div className="hero-row">
-          {/* Left: hero */}
-          <div className="hero-frame" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-            <button className="hero-nav left" onClick={prev} aria-label="Previous">‹</button>
-
-            <div className="hero-stage">
-              {/* left preview (clickable) */}
-              <img
-                className="hero-peek left"
-                src={DATA[prevI].src}
-                alt=""
-                aria-hidden="true"
-                onClick={prev}
-              />
-
-              {/* main image (uncropped) */}
-              <img
-                ref={heroRef}
-                className="hero-img"
-                src={cur.src}
-                alt={cur.cap}
-              />
-
-              {/* right preview (clickable) */}
-              <img
-                className="hero-peek right"
-                src={DATA[nextI].src}
-                alt=""
-                aria-hidden="true"
-                onClick={next}
-              />
-
-              <div className="hero-caption">{cur.cap}</div>
-            </div>
-
-            <button className="hero-nav right" onClick={next} aria-label="Next">›</button>
+    <section id="photos" className="pj">
+      <div className="pj-wrap">
+        <div className="pj-intro">
+          <span className="pj-eyebrow">PHOTO JOURNAL</span>
+          <h1 className="pj-heading">Small moments I wanted to keep.</h1>
+          <p className="pj-sub">Cities, light, weather, and whatever made me stop walking.</p>
+          <div className="pj-meta-row">
+            <span className="pj-count">{DATA.length} photographs ↓</span>
           </div>
-
-          {/* Right: preview panel */}
-          <aside className="peek-panel">
-            <h3 className="peek-title">Up next</h3>
-
-            {/* big preview card */}
-            <button className="peek-card" onClick={next} aria-label="Open next photo">
-              <img src={DATA[nextI].src} alt="" loading="lazy" />
-              <span className="peek-cap">{DATA[nextI].cap}</span>
-            </button>
-
-            {/* quick jump strip (next 4) */}
-            <div className="peek-strip" role="list">
-              {Array.from({ length: 4 }).map((_, k) => {
-                const j = (idx + 2 + k) % DATA.length;
-                return (
-                  <button
-                    key={j}
-                    role="listitem"
-                    className="peek-thumb"
-                    onClick={() => setIdx(j)}
-                    aria-label={`Jump to photo ${j + 1}`}
-                    title={DATA[j].cap}
-                  >
-                    <img src={DATA[j].src} alt="" loading="lazy" />
-                  </button>
-                );
-              })}
-            </div>
-          </aside>
         </div>
-        {/* ---------- /HERO + PREVIEW PANEL ROW ---------- */}
 
-        {/* Thumbnails */}
-        <div className="photo-grid" role="list">
-          {DATA.map((p, i) => (
+        <div className="pj-filters" role="group" aria-label="Filter photos by place">
+          {FILTERS.map((f) => (
             <button
-              key={i}
-              role="listitem"
-              className={`photo-tile ${i === idx ? "active" : ""}`}
-              onClick={() => setIdx(i)}
-              aria-label={`Show photo ${i + 1}`}
+              key={f.id}
+              type="button"
+              className={`pj-filter ${filter === f.id ? "is-active" : ""}`}
+              onClick={() => setFilter(f.id)}
             >
-              <img src={p.src} alt={p.cap} loading="lazy" />
+              {f.label}
             </button>
           ))}
         </div>
+
+        <div className="pj-masonry">
+          <AnimatePresence>
+            {filtered.map((p, i) => (
+              <motion.button
+                key={p.id}
+                type="button"
+                className="pj-item"
+                onClick={() => setOpenAt(i)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: reduceMotion ? 0 : 0.3 }}
+                aria-label={`${p.location} — ${p.memory}`}
+              >
+                <span className="pj-num">{String(i + 1).padStart(2, "0")}</span>
+                <img src={p.src} alt={`${p.location} — ${p.memory}`} loading="lazy" />
+                <span className="pj-hover">
+                  <span className="pj-hover-loc">{p.location.toUpperCase()}</span>
+                  <span className="pj-hover-memory">{p.memory}</span>
+                </span>
+              </motion.button>
+            ))}
+          </AnimatePresence>
+        </div>
       </div>
+
+      <AnimatePresence>
+        {current && (
+          <motion.div
+            className="pj-lightbox"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            onClick={close}
+            role="dialog"
+            aria-modal="true"
+          >
+            <button className="pj-lb-close" onClick={close} aria-label="Close">
+              ✕
+            </button>
+            <button
+              className="pj-lb-nav pj-lb-nav--prev"
+              onClick={(e) => {
+                e.stopPropagation();
+                prev();
+              }}
+              aria-label="Previous photo"
+            >
+              ‹
+            </button>
+
+            <motion.figure
+              className="pj-lb-figure"
+              onClick={(e) => e.stopPropagation()}
+              key={current.id}
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.25 }}
+            >
+              <img src={current.src} alt={`${current.location} — ${current.memory}`} />
+              <figcaption>
+                <span className="pj-lb-loc">{current.location.toUpperCase()}</span>
+                <span className="pj-lb-memory">{current.memory}</span>
+              </figcaption>
+            </motion.figure>
+
+            <button
+              className="pj-lb-nav pj-lb-nav--next"
+              onClick={(e) => {
+                e.stopPropagation();
+                next();
+              }}
+              aria-label="Next photo"
+            >
+              ›
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <style>{`
+        .pj{ background: var(--bg-1); padding: clamp(96px, 12vw, 140px) 0 clamp(60px, 8vw, 100px); min-height: 100vh; }
+        .pj-wrap{ width: min(1400px, 94vw); margin: 0 auto; }
+
+        .pj-intro{ margin-bottom: clamp(28px, 4vw, 44px); }
+        .pj-intro-row{
+          display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+          font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          margin-bottom: 14px;
+        }
+        .pj-eyebrow{ font-size: 12.5px; font-weight: 700; letter-spacing: .14em; color: var(--accent); }
+        .pj-range{ font-size: 12.5px; color: var(--text-3); }
+        .pj-heading{ margin: 0 0 8px; font-size: clamp(24px, 3.4vw, 36px); font-weight: 800; letter-spacing: -.01em; color: var(--text-1); }
+        .pj-sub{ margin: 0 0 16px; font-size: clamp(14px, 1.3vw, 16px); color: var(--text-2); max-width: 56ch; }
+        .pj-meta-row{
+          display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+          padding-top: 14px; border-top: 1px solid var(--line);
+        }
+        .pj-places{ font-size: 13px; color: var(--text-2); }
+        .pj-count{ font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12px; color: var(--text-3); }
+
+        .pj-filters{ display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: clamp(20px, 3vw, 30px); }
+        .pj-filter{
+          appearance: none; cursor: pointer;
+          padding: 7px 14px; border-radius: 999px;
+          border: 1px solid var(--line); background: transparent; color: var(--text-2);
+          font-size: 12px; font-weight: 700; letter-spacing: .04em;
+          transition: border-color .18s ease, color .18s ease, background .18s ease;
+        }
+        .pj-filter:hover{ border-color: rgba(37,99,235,.35); color: var(--text-1); }
+        .pj-filter.is-active{ background: var(--accent); border-color: var(--accent); color: #fff; }
+
+        /* masonry via CSS columns — each photo keeps its natural aspect ratio */
+        .pj-masonry{ columns: 4 260px; column-gap: 16px; }
+        .pj-item{
+          position: relative;
+          display: block; width: 100%; margin: 0 0 16px;
+          break-inside: avoid;
+          border: none; padding: 0; background: none; cursor: pointer;
+          border-radius: 6px; overflow: hidden;
+        }
+        .pj-item img{ display: block; width: 100%; height: auto; border-radius: 6px; }
+        .pj-num{
+          position: absolute; top: 8px; left: 8px; z-index: 2;
+          font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          font-size: 10.5px; font-weight: 700; color: #fff;
+          background: rgba(17,24,39,.45);
+          padding: 2px 6px; border-radius: 4px;
+          opacity: 0; transition: opacity .2s ease;
+        }
+        .pj-item:hover .pj-num, .pj-item:focus-visible .pj-num{ opacity: 1; }
+
+        .pj-hover{
+          position: absolute; inset: auto 0 0 0; z-index: 2;
+          padding: 22px 12px 10px;
+          background: linear-gradient(180deg, transparent, rgba(17,24,39,.72));
+          display: flex; flex-direction: column; align-items: flex-start; gap: 2px;
+          opacity: 0; transform: translateY(4px);
+          transition: opacity .22s ease, transform .22s ease;
+        }
+        .pj-item:hover .pj-hover, .pj-item:focus-visible .pj-hover{ opacity: 1; transform: translateY(0); }
+        .pj-hover-loc{
+          font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          font-size: 10.5px; font-weight: 700; letter-spacing: .06em; color: #fff;
+        }
+        .pj-hover-memory{ font-size: 12.5px; color: rgba(255,255,255,.85); }
+
+        @media (max-width: 900px){ .pj-masonry{ columns: 2 220px; } }
+        @media (max-width: 560px){ .pj-masonry{ columns: 1; } }
+
+        /* lightbox */
+        .pj-lightbox{
+          position: fixed; inset: 0; z-index: 4000;
+          background: rgba(10,12,16,.94);
+          display: flex; align-items: center; justify-content: center;
+          padding: clamp(16px, 4vw, 48px);
+        }
+        .pj-lb-figure{
+          max-width: min(92vw, 1100px);
+          max-height: 86vh;
+          display: flex; flex-direction: column; align-items: center;
+          margin: 0;
+        }
+        .pj-lb-figure img{
+          display: block;
+          max-width: 100%; max-height: 74vh;
+          width: auto; height: auto;
+          border-radius: 4px;
+          object-fit: contain;
+        }
+        .pj-lb-figure figcaption{
+          margin-top: 14px; text-align: center;
+        }
+        .pj-lb-loc{
+          display: block;
+          font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          font-size: 12px; font-weight: 700; letter-spacing: .08em; color: rgba(255,255,255,.55);
+          margin-bottom: 4px;
+        }
+        .pj-lb-memory{ font-size: 15px; color: #fff; }
+
+        .pj-lb-close{
+          position: absolute; top: 18px; right: 18px;
+          width: 38px; height: 38px; border-radius: 999px;
+          display: grid; place-items: center;
+          background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+          color: #fff; font-size: 16px; cursor: pointer;
+        }
+        .pj-lb-close:hover{ background: rgba(255,255,255,.16); }
+
+        .pj-lb-nav{
+          position: absolute; top: 50%; transform: translateY(-50%);
+          width: 44px; height: 44px; border-radius: 999px;
+          display: grid; place-items: center;
+          background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+          color: #fff; font-size: 22px; cursor: pointer;
+        }
+        .pj-lb-nav:hover{ background: rgba(255,255,255,.16); }
+        .pj-lb-nav--prev{ left: clamp(10px, 3vw, 28px); }
+        .pj-lb-nav--next{ right: clamp(10px, 3vw, 28px); }
+
+        @media (max-width: 640px){
+          .pj-lb-nav{ width: 38px; height: 38px; font-size: 18px; }
+        }
+      `}</style>
     </section>
   );
 }

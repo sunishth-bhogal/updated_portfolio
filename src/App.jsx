@@ -64,10 +64,13 @@ function ScrollManager() {
 /* ---------------------------------------------------------------- */
 
 export default function App() {
+  const location = useLocation();
+  const isHome = location.pathname === "/";
+
   return (
     <>
       <CustomCursor />
-      <SwingingFigure />
+      {isHome && <SwingingFigure />}
       <ScrollToTop />
       <Navbar />
       <ScrollManager />
