@@ -22,8 +22,8 @@ export default function CreateShowcase() {
   const inView = { opacity: 1, y: 0 };
 
   return (
-    <div className="section-dark">
-      <div className="container">
+    <div className="tabs-outer">
+      <div className="tabs-container">
         <div className="tabs-grid">
           {/* Photo Journal — large */}
           <motion.div
@@ -147,6 +147,15 @@ export default function CreateShowcase() {
       </div>
 
       <style>{`
+        /* Scoped, uniquely-named wrappers — the old .section-dark/.container
+           names are reused elsewhere in the global stylesheet for the
+           previous dark theme (full-viewport min-height, dark gradient
+           background, large padding), and colliding with them here was
+           padding this section out to nearly a full screen of empty space
+           below the cards. */
+        .tabs-outer{ background: transparent; }
+        .tabs-container{ max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
         .tabs-grid{
           display: grid;
           grid-template-columns: 1.35fr 1fr;
