@@ -350,7 +350,7 @@ export default function Navbar() {
           <div className="nav-group nav-group--right">
             <span className="nav-status">
               <span className="nav-status-dot" aria-hidden="true" />
-              <span className="nav-status-label">AVAILABLE</span>
+              <span className="nav-status-label"></span>
             </span>
 
             <MagneticButton className="nav-cta" onClick={() => scrollTo("contact")}>

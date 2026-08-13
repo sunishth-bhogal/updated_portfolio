@@ -9,9 +9,9 @@ export default function AboutV2() {
         <div className="aboutv2-columns">
           <div className="aboutv2-copy">
             <h2 className="aboutv2-heading">
-              I like turning ideas
+              I build things
               <br />
-              into <span className="aboutv2-grad">something real</span>
+              people <span className="aboutv2-grad">connect with</span>
             </h2>
 
             <p className="aboutv2-p">
@@ -31,10 +31,10 @@ export default function AboutV2() {
             <p className="aboutv2-p">Currently: Incoming Software Engineer @ TD.</p>
 
             <p className="aboutv2-p">
-              My story started outside of code — sports and the gym taught me
-              discipline long before I ever wrote a line of it. Somewhere
-              between the reps and the late nights I started building things,
-              like{" "}
+              Growing up, I was always drawn to building things—from robots to solutions for everyday problems. 
+              As I got older, that curiosity evolved into a passion for building digital experiences through code. 
+              Sports were also a major part of my life, teaching me how people think, compete, and connect. 
+              Together, these interests inspired me to build technology that is both useful and deeply human: {" "}
               <a
                 href="https://uwstudyspots.vercel.app/"
                 target="_blank"
