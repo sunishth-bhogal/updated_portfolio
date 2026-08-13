@@ -5,8 +5,6 @@ import HeadshotForPortfolio from "./assets/Cross_arms.png";
 export default function AboutV2() {
   return (
     <div className="aboutv2">
-      <div className="aboutv2-layout">
-        <span className="aboutv2-eyebrow">02 / ABOUT</span>
 
         <div className="aboutv2-columns">
           <div className="aboutv2-copy">
@@ -61,6 +59,5 @@ export default function AboutV2() {
           43.4643° N, 80.5204° W &nbsp;/&nbsp; 43.6532° N, 79.3832° W
         </div>
       </div>
-    </div>
   );
 }

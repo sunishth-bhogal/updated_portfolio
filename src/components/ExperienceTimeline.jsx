@@ -8,11 +8,6 @@ import TDLogo from "./assets/TD.jpg";
 import ShipdLogo from "./assets/shipd.jpeg";
 
 
-const FILTERS = [
-  { id: "engineering", label: "Engineering" },
-  { id: "product", label: "Product" },
-  { id: "customer", label: "Customer-facing" },
-];
 
 const EXPERIENCES = [
   {
@@ -26,7 +21,6 @@ const EXPERIENCES = [
     logo: TDLogo,
     color: "#0F8A3C",
     motif: "grid",
-    categories: ["engineering"],
     highlights: [],
   },
   {
@@ -40,21 +34,19 @@ const EXPERIENCES = [
     logo: ShipdLogo,
     color: "#F5A623",
     motif: "grid",
-    categories: ["product"],
     highlights: [],
   },
   {
     id: "stealth",
     company: "Stealth Startup",
     status: "8 mo",
-    role: "Full-Stack Engineer Intern",
+    role: "AI Software Engineer Intern",
     location: "Toronto, Canada",
     dates: "Jan – Aug 2025",
     year: "2025",
     logo: stealthLogo,
     color: "#6C5CE7",
     motif: "redacted",
-    categories: ["engineering", "product"],
     highlights: [
       "Built 4 backend services and 6 data pipelines for a product taken from zero to launch",
       "Reduced MTTR by 35% across 15+ production incidents",
@@ -65,14 +57,13 @@ const EXPERIENCES = [
     id: "remax",
     company: "RE/MAX Real Estate Centre",
     status: "4 mo",
-    role: "Full-Stack Developer Intern",
+    role: "Software Engineer Intern",
     location: "Mississauga, Canada",
     dates: "May – Aug 2023",
     year: "2023",
     logo: remaxLogo,
     color: "#003DA5",
     motif: "map",
-    categories: ["engineering", "product"],
     highlights: [
       "Built and optimized real-estate web experiences for property listings",
       "Improved property discovery through performance and UX work",
@@ -90,7 +81,6 @@ const EXPERIENCES = [
     logo: shoppersLogo,
     color: "#E4002B",
     motif: "receipt",
-    categories: ["customer"],
     highlights: [
       "Managed prescription processing in a high-volume pharmacy",
       "Maintained inventory accuracy and stock levels",
@@ -101,7 +91,6 @@ const EXPERIENCES = [
 
 export default function ExperienceTimeline() {
   const reduceMotion = useReducedMotion();
-  const [activeFilter, setActiveFilter] = React.useState(null);
   const [pinned, setPinned] = React.useState(null);
   const listRef = React.useRef(null);
   const { scrollYProgress } = useScroll({
@@ -112,19 +101,6 @@ export default function ExperienceTimeline() {
 
   return (
     <div className="xp2">
-      <div className="xp2-filters" role="group" aria-label="Filter experience by skill area">
-        {FILTERS.map((f) => (
-          <button
-            key={f.id}
-            type="button"
-            className={`xp2-filter ${activeFilter === f.id ? "is-active" : ""}`}
-            onClick={() => setActiveFilter((cur) => (cur === f.id ? null : f.id))}
-          >
-            {f.label}
-          </button>
-        ))}
-      </div>
-
       <div className="xp2-list" ref={listRef}>
         <span className="xp2-rail-track" aria-hidden="true" />
         <motion.span
@@ -135,17 +111,10 @@ export default function ExperienceTimeline() {
 
         {EXPERIENCES.map((e, i) => {
           const isPinned = pinned === e.id;
-          const matches = !activeFilter || e.categories.includes(activeFilter);
           return (
             <motion.article
               key={e.id}
-              className={[
-                "xp2-card",
-                `xp2-card--${e.motif}`,
-                isPinned ? "is-pinned" : "",
-                activeFilter && matches ? "is-matched" : "",
-                activeFilter && !matches ? "is-dimmed" : "",
-              ]
+              className={["xp2-card", `xp2-card--${e.motif}`, isPinned ? "is-pinned" : ""]
                 .filter(Boolean)
                 .join(" ")}
               style={{ "--brand": e.color }}
@@ -204,26 +173,6 @@ export default function ExperienceTimeline() {
       <style>{`
         .xp2{ width: 100%; }
 
-        /* ---- filters ---- */
-        .xp2-filters{
-          display: flex; flex-wrap: wrap; gap: 8px;
-          margin-bottom: clamp(28px, 4vw, 44px);
-        }
-        .xp2-filter{
-          appearance: none; cursor: pointer;
-          padding: 8px 16px;
-          border-radius: 999px;
-          border: 1px solid var(--line);
-          background: var(--panel);
-          color: var(--text-2);
-          font-size: 13px; font-weight: 700;
-          transition: border-color .18s ease, color .18s ease, background .18s ease;
-        }
-        .xp2-filter:hover{ border-color: rgba(37,99,235,.35); color: var(--text-1); }
-        .xp2-filter.is-active{
-          background: var(--accent); border-color: var(--accent); color: #fff;
-        }
-
         /* ---- list / rail ---- */
         .xp2-list{ position: relative; padding-left: clamp(28px, 4vw, 40px); }
         .xp2-rail-track, .xp2-rail{
@@ -262,12 +211,6 @@ export default function ExperienceTimeline() {
           background:
             linear-gradient(135deg, color-mix(in srgb, var(--brand) 7%, var(--panel)), var(--panel) 60%);
         }
-        .xp2-card.is-matched{
-          border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
-          box-shadow: 0 10px 26px rgba(37,99,235,.1);
-        }
-        .xp2-card.is-dimmed{ opacity: .45; }
-
         .xp2-year{
           position: absolute;
           right: clamp(6px, 1.5vw, 18px);

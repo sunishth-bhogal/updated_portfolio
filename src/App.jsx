@@ -10,6 +10,7 @@ import LanyardBadge from "./components/LanyardBadge";
 import CodingSetupAnimated from "./components/CodingSetupAnimated";
 import HikingAnimated from "./components/HikingAnimated";
 import PickleballAnimated from "./components/PickleballAnimated";
+import CurrentActivity from "./components/CurrentActivity";
 
 import AboutV2 from "./components/AboutV2";
 import ExperienceTimeline from "./components/ExperienceTimeline";
@@ -23,6 +24,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import MilestoneSection from "./components/MilestonesSection";
 import ResumePage from "./pages/ResumePage";
 import Reveal from "./components/Reveal";
+import { NavInteractionProvider } from "./context/NavInteractionContext";
 import { Analytics } from "@vercel/analytics/react";
 
 import "./styles.css";
@@ -68,7 +70,7 @@ export default function App() {
   const isHome = location.pathname === "/";
 
   return (
-    <>
+    <NavInteractionProvider>
       <CustomCursor />
       {isHome && <SwingingFigure />}
       <ScrollToTop />
@@ -85,7 +87,7 @@ export default function App() {
       </Routes>
 
       <Analytics mode="production" />
-    </>
+    </NavInteractionProvider>
   );
 }
 
@@ -127,7 +129,7 @@ function HomePage() {
           </motion.span>
 
           <motion.span className="hero__eyebrow" {...fadeUp(0.02, reduceMotion)}>
-            Tech | Sports | Gym
+            Learner · Coder · Lifter
           </motion.span>
 
           <motion.h1 className="hero__bigname" {...fadeUp(0.1, reduceMotion)}>
@@ -136,20 +138,15 @@ function HomePage() {
           </motion.h1>
 
           <motion.p className="hero__tagline" {...fadeUp(0.24, reduceMotion)}>
-            Always looking to build something new.
+            Always looking to build and learn.
           </motion.p>
 
-          <motion.div className="hero__cta-row" {...fadeUp(0.36, reduceMotion)}>
-            <button
-              type="button"
-              className="hero__cta hero__cta--primary"
-              onClick={() => scrollToId("projects")}
-            >
-              View selected work
-            </button>
-            <Link to="/resume" className="hero__cta hero__cta--ghost">
-              View resume
-            </Link>
+          {/* align-self:stretch here too — this wrapper exists only to carry
+              the fade-in animation, but being an unstyled block it would
+              otherwise shrink-to-fit around CurrentActivity's own natural
+              content width and silently cap it below the intended 580px. */}
+          <motion.div style={{ alignSelf: "stretch" }} {...fadeUp(0.36, reduceMotion)}>
+            <CurrentActivity />
           </motion.div>
 
           <motion.a

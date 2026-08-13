@@ -247,7 +247,7 @@ function useScopedStyles() {
 
 const CSS_TEXT = `
 .notebook{
-  background: var(--bg-1);
+  background: var(--bg-1) !important;
   padding: clamp(64px, 9vw, 96px) clamp(20px, 6vw, 60px) clamp(60px, 8vw, 100px);
   min-height: 100vh;
 }

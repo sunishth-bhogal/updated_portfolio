@@ -253,7 +253,7 @@ export default function PhotoWall() {
       </AnimatePresence>
 
       <style>{`
-        .pj{ background: var(--bg-1); padding: clamp(96px, 12vw, 140px) 0 clamp(60px, 8vw, 100px); min-height: 100vh; }
+        .pj{ background: var(--bg-1) !important; padding: clamp(96px, 12vw, 140px) 0 clamp(60px, 8vw, 100px); min-height: 100vh; }
         .pj-wrap{ width: min(1400px, 94vw); margin: 0 auto; }
 
         .pj-intro{ margin-bottom: clamp(28px, 4vw, 44px); }

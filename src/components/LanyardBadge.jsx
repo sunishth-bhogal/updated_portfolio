@@ -10,13 +10,18 @@
 import React from "react";
 import { motion, useMotionValue, animate, useReducedMotion } from "framer-motion";
 import Logo from "./assets/SBLOGO.png";
+import { useNavInteraction } from "../context/NavInteractionContext";
 
 const IDLE_KEYFRAMES = [0, 4, -4, 3, -3, 0];
+// Kept tiny on purpose — the badge should acknowledge the hovered nav link,
+// not perform for it.
+const HOVER_TILT = (index) => index * 0.7 - 1.5;
 
 export default function LanyardBadge() {
   const reduceMotion = useReducedMotion();
   const rotate = useMotionValue(0);
   const idleControls = React.useRef(null);
+  const { hoverIndex, swing } = useNavInteraction();
 
   const startIdle = React.useCallback(() => {
     if (reduceMotion) return;
@@ -32,6 +37,45 @@ export default function LanyardBadge() {
     startIdle();
     return () => idleControls.current && idleControls.current.stop();
   }, [startIdle]);
+
+  // The nav's currently-hovered link (if any) gently tilts the badge toward
+  // it; leaving the nav lets it fall back to its idle sway.
+  React.useEffect(() => {
+    if (reduceMotion) return;
+    if (hoverIndex == null) {
+      animate(rotate, 0, {
+        type: "spring",
+        stiffness: 180,
+        damping: 14,
+        onComplete: startIdle,
+      });
+      return;
+    }
+    if (idleControls.current) {
+      idleControls.current.stop();
+      idleControls.current = null;
+    }
+    animate(rotate, HOVER_TILT(hoverIndex), { type: "spring", stiffness: 180, damping: 14 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hoverIndex, reduceMotion]);
+
+  // A click swings the badge through the hovered link's direction before
+  // settling — a small physical "acknowledgment" of the navigation.
+  React.useEffect(() => {
+    if (!swing || reduceMotion) return;
+    if (idleControls.current) {
+      idleControls.current.stop();
+      idleControls.current = null;
+    }
+    const base = HOVER_TILT(swing.index);
+    const overshoot = base + (base >= 0 ? 14 : -14);
+    animate(rotate, [rotate.get(), overshoot, base], {
+      duration: 0.6,
+      times: [0, 0.4, 1],
+      ease: ["easeOut", "easeInOut"],
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [swing, reduceMotion]);
 
   const handlePan = (_e, info) => {
     if (idleControls.current) idleControls.current.stop();

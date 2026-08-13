@@ -1064,7 +1064,12 @@ section{ scroll-margin-top: var(--nav-h); }
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    width: auto;
+    /* Definite width (not auto/shrink-to-fit): children default to their
+       own natural size regardless (align-items:flex-start), but the two
+       activity/feature children opt into align-self:stretch to span the
+       full column — that only has a definite value to stretch into if this
+       container's own width is definite too. */
+    width: 100%;
     max-width: 620px;
     /* overrides the centered variant's optical nudge above with a smaller one */
     transform: translateY(-1.2rem) !important;
@@ -1178,18 +1183,27 @@ section{ scroll-margin-top: var(--nav-h); }
   }
   .hero__cta--ghost:hover{ background: rgba(17,24,39,.07); border-color: rgba(17,24,39,.32); transform: translateY(-2px); }
 
-  /* Featured project card, replaces the old pair of unlabeled thumbnails */
+  /* Featured project card, replaces the old pair of unlabeled thumbnails.
+     Full width to match the activity module row above it. */
   .hero__feature{
-    display: inline-flex;
+    box-sizing: border-box;
+    display: flex;
     align-items: center;
     gap: 14px;
-    margin-top: clamp(14px, 2vw, 20px);
+    /* align-self, not width:100% — see the matching note in
+       CurrentActivity.jsx's .activity-module rule for why. */
+    align-self: stretch;
+    max-width: 580px;
+    margin-top: clamp(8px, 1.1vw, 12px);
     padding: 10px 18px 10px 10px;
     border-radius: 16px;
     background: rgba(17,24,39,.04);
     border: 1px solid rgba(17,24,39,.1);
     text-decoration: none;
     transition: background .2s ease, border-color .2s ease, transform .2s ease;
+  }
+  @media (max-width: 640px){
+    .hero__feature{ max-width: 420px; }
   }
   .hero__feature:hover{
     background: rgba(17,24,39,.07);

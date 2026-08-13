@@ -1,8 +1,55 @@
 // src/components/Navbar.jsx
 import React, { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion, useMotionValue, useSpring } from "framer-motion";
 import Logo from "../components/assets/SBLOGO.png";
+import { useNavInteraction } from "../context/NavInteractionContext";
+
+function torontoTime() {
+  return new Date().toLocaleTimeString("en-CA", {
+    timeZone: "America/Toronto",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+// A button that leans a few px toward the cursor while it's inside — reset
+// with a spring the moment the cursor leaves. Skips the offset entirely
+// under reduced motion.
+function MagneticButton({ className, onClick, children }) {
+  const ref = useRef(null);
+  const reduceMotion = useReducedMotion();
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const springX = useSpring(x, { stiffness: 300, damping: 20, mass: 0.4 });
+  const springY = useSpring(y, { stiffness: 300, damping: 20, mass: 0.4 });
+
+  const onMouseMove = (e) => {
+    if (reduceMotion || !ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    x.set((e.clientX - (rect.left + rect.width / 2)) * 0.3);
+    y.set((e.clientY - (rect.top + rect.height / 2)) * 0.3);
+  };
+  const onMouseLeave = () => {
+    x.set(0);
+    y.set(0);
+  };
+
+  return (
+    <motion.button
+      ref={ref}
+      type="button"
+      className={className}
+      style={reduceMotion ? undefined : { x: springX, y: springY }}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      onClick={onClick}
+    >
+      {children}
+    </motion.button>
+  );
+}
 
 export default function Navbar() {
   const sections = useMemo(
@@ -11,13 +58,20 @@ export default function Navbar() {
       { id: "about", label: "About" },
       { id: "experiences", label: "Experience" },
       { id: "projects", label: "Projects" },
-      { id: "create", label: "Creative" },
+      { id: "create", label: "Lab" },
       { id: "contact", label: "Contact" },
     ],
     []
   );
 
   const centerLinks = useMemo(() => sections.filter((s) => s.id !== "contact"), [sections]);
+  const { setHoverIndex, triggerSwing } = useNavInteraction();
+
+  const [clock, setClock] = useState(torontoTime);
+  useEffect(() => {
+    const id = setInterval(() => setClock(torontoTime()), 30000);
+    return () => clearInterval(id);
+  }, []);
 
   const [active, setActive] = useState("home");
   const [open, setOpen] = useState(false); // ✅ now used (mobile drawer)
@@ -240,43 +294,68 @@ export default function Navbar() {
       />
 
       <header className={`nav-header ${scrolled ? "scrolled" : ""} ${visible ? "" : "is-hidden"}`}>
-        <div className="nav-inner">
-          {/* LEFT: Brand (LOGO) */}
-          <a
-            href="#home"
-            className="brand-link"
-            onClick={(e) => {
-              e.preventDefault();
-              scrollTo("home");
-            }}
-            aria-label="Back to top"
-          >
-            <img src={Logo} alt="Sunishth Bhogal" className="brand-logo" />
-          </a>
+        <div className="nav-dock">
+          {/* LEFT: brand + year + live Toronto time */}
+          <div className="nav-group nav-group--left">
+            <a
+              href="#home"
+              className="brand-link"
+              onClick={(e) => {
+                e.preventDefault();
+                scrollTo("home");
+              }}
+              aria-label="Back to top"
+            >
+              <img src={Logo} alt="Sunishth Bhogal" className="brand-logo" />
+              <span className="brand-suffix">/26</span>
+            </a>
+            <span className="nav-clock">TORONTO · {clock}</span>
+          </div>
 
-          {/* CENTER: desktop text-only links */}
+          {/* CENTER: numbered utility-bar links */}
           <nav className="nav-center" aria-label="Primary">
-            {centerLinks.map((s) => (
-              <button
-                key={s.id}
-                type="button"
-                className={`nav-link bare ${isHome && active === s.id ? "active" : ""}`}
-                onClick={() => scrollTo(s.id)}
-              >
-                {s.label}
-              </button>
-            ))}
+            {centerLinks.map((s, i) => {
+              const isActive = isHome && active === s.id;
+              return (
+                <button
+                  key={s.id}
+                  type="button"
+                  className={`nav-link ${isActive ? "active" : ""}`}
+                  onClick={() => {
+                    triggerSwing(i);
+                    scrollTo(s.id);
+                  }}
+                  onMouseEnter={() => setHoverIndex(i)}
+                  onFocus={() => setHoverIndex(i)}
+                  onMouseLeave={() => setHoverIndex(null)}
+                  onBlur={() => setHoverIndex(null)}
+                >
+                  {isActive && (
+                    <motion.span
+                      className="nav-link-bg"
+                      layoutId="nav-active-bg"
+                      transition={
+                        reduceMotion ? { duration: 0 } : { type: "spring", stiffness: 380, damping: 32 }
+                      }
+                    />
+                  )}
+                  <span className="nav-index">{String(i + 1).padStart(2, "0")}</span>
+                  <span className="nav-label">{s.label}</span>
+                </button>
+              );
+            })}
           </nav>
 
-          {/* RIGHT: Contact (desktop) + mobile menu button */}
-          <div className="nav-right">
-            <button
-              type="button"
-              className={`nav-link bare nav-contact ${isHome && active === "contact" ? "active" : ""}`}
-              onClick={() => scrollTo("contact")}
-            >
-              Contact
-            </button>
+          {/* RIGHT: availability + CTA (desktop) + mobile menu button */}
+          <div className="nav-group nav-group--right">
+            <span className="nav-status">
+              <span className="nav-status-dot" aria-hidden="true" />
+              <span className="nav-status-label">AVAILABLE</span>
+            </span>
+
+            <MagneticButton className="nav-cta" onClick={() => scrollTo("contact")}>
+              LET&apos;S TALK <span aria-hidden="true">↗</span>
+            </MagneticButton>
 
             <button
               type="button"
@@ -290,7 +369,6 @@ export default function Navbar() {
             </button>
           </div>
         </div>
-
       </header>
 
       {/* Spacer so content doesn't jump when header is fixed */}
@@ -399,94 +477,203 @@ export default function Navbar() {
       {/* ---- INLINE NAVBAR CSS (compact) ---- */}
       <style>{`
         :root{
-          --nav-h: 60px;
-          --nav-gap: clamp(16px, 2.6vw, 32px);
-          --nav-pad-x: clamp(12px, 2vw, 24px);
+          --nav-h: 70px;
+          /* Resting state: full-width bar flush with the top of the page. */
+          --nav-top-gap: 0px;
+          --nav-margin-x: 0px;
+          --nav-max-w: none;
+          --nav-radius: 0px;
+          --nav-border-color: transparent;
+          --nav-shadow: none;
+          --nav-bg: rgba(246,244,239,.92);
+          --nav-pad-x: clamp(18px, 2vw, 28px);
+          --nav-gap: clamp(8px, 1vw, 12px);
           --accent-a: #2563EB;
           --accent-b: #2563EB;
+          --nav-mono: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+          --nav-sans: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+        }
+
+        /* Scrolled state: the same bar collapses into a smaller, centered,
+           floating capsule. Both states use the exact same box-sizing:
+           border-box + calc(100% - 2*margin) + max-width sizing mechanism —
+           only these custom properties change — so there's no dependency on
+           the browser correctly guessing an intrinsic content width (that
+           approach caused real bugs earlier). */
+        .nav-header.scrolled{
+          --nav-top-gap: clamp(16px, 2.2vw, 24px);
+          --nav-margin-x: clamp(24px, 3vw, 32px);
+          --nav-max-w: 1380px;
+          --nav-radius: 26px;
+          --nav-border-color: var(--line, #DDDAD3);
+          --nav-shadow: 0 16px 36px rgba(17,24,39,.12);
+          --nav-bg: rgba(255,255,255,.97);
         }
 
         .nav-header{
-          position: fixed; inset: 0 0 auto 0; height: var(--nav-h);
+          position: fixed; top: 0; left: 0; right: 0;
           z-index: 1001;
-          background: rgba(246,244,239,.85);
-          -webkit-backdrop-filter: blur(10px);
-          backdrop-filter: blur(10px);
-          transition: transform .25s ease, box-shadow .25s ease;
+          padding-top: var(--nav-top-gap);
+          pointer-events: none;
+          transition: transform .25s ease, padding-top .3s ease;
         }
-        .nav-header.scrolled{ box-shadow: 0 1px 0 rgba(17,24,39,.06); }
-        .nav-header.is-hidden{ transform: translateY(calc(-1 * var(--nav-h))); }
+        .nav-header.is-hidden{ transform: translateY(calc(-1 * (var(--nav-h) + var(--nav-top-gap) + 20px))); }
 
-        .nav-inner{
-          width: 100%;
+        .nav-dock{
+          pointer-events: auto;
+          position: relative;
+          box-sizing: border-box;
+          width: calc(100% - (2 * var(--nav-margin-x)));
+          max-width: var(--nav-max-w);
+          margin: 0 auto;
           height: var(--nav-h);
           padding: 0 var(--nav-pad-x);
-          display: grid;
-          grid-template-columns: auto 1fr auto; /* logo | center | right */
+          display: flex;
           align-items: center;
+          justify-content: space-between; /* left/right groups only — center is positioned independently below */
+          border-radius: var(--nav-radius);
+          border: 1px solid var(--nav-border-color);
+          background: var(--nav-bg);
+          box-shadow: var(--nav-shadow);
+          transition: max-width .3s ease, margin .3s ease, border-radius .3s ease,
+                      border-color .3s ease, box-shadow .3s ease, background .3s ease;
         }
 
-        .brand-link{ display:inline-flex; align-items:center; height:var(--nav-h); }
-        .brand-logo{ height:26px; width:auto; display:block; border-radius:10px; }
+        .nav-group{ display: flex; align-items: center; min-width: 0; }
+        .nav-group--left{ gap: 16px; }
+        .nav-group--right{ gap: 14px; }
 
-        .nav-center{
-          grid-column: 2;
-          justify-self: center;
-          display:inline-flex; align-items:stretch; gap: var(--nav-gap);
-          height: var(--nav-h);
-        }
-        .nav-right{
-          grid-column: 3; justify-self: end;
-          display:inline-flex; align-items:stretch; height: var(--nav-h);
-          gap: 8px;
+        .brand-link{ display:inline-flex; align-items:baseline; gap: 4px; flex: 0 0 auto; }
+        .brand-logo{ height:26px; width:auto; display:block; border-radius:8px; align-self: center; }
+        .brand-suffix{
+          font-family: var(--nav-mono);
+          font-size: 11px; font-weight: 600;
+          color: var(--text-3, #8A8F98);
+          letter-spacing: .02em;
         }
 
-        .nav-link.bare{
+        .nav-clock{
+          font-family: var(--nav-mono);
+          font-size: 11.5px;
+          color: var(--text-3, #8A8F98);
+          letter-spacing: .02em;
+          white-space: nowrap;
+          padding-left: 14px;
+          border-left: 1px solid var(--line, #DDDAD3);
+        }
+
+        /* CENTER — plain numbered link row, pinned to the true midpoint of
+           the capsule via absolute positioning rather than a grid 1fr
+           track. The left and right groups are different widths (logo+time
+           vs. status+CTA), and a 1fr-track-centered middle column drifts
+           toward whichever side is narrower — this keeps it exactly
+           centered regardless of that asymmetry. The active tab's highlight
+           is a framer-motion layoutId element (see .nav-link-bg below), so
+           this strip itself needs no track/border trickery to look right.
+           Scoped as .nav-dock .nav-center (not just .nav-center) and
+           translate explicitly reset: the global stylesheet has an older,
+           unrelated .nav-center rule elsewhere that sets both
+           transform:translateX(-50%) and a separate translate:0 -50%.
+           translate is its own CSS property that composes with transform
+           rather than being overridden by it, so that stray rule was
+           stacking an extra -50% vertical shift on top of this one, which
+           is what pushed the links up out of the middle of the bar. */
+        .nav-dock .nav-center{
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          translate: none;
+          transform: translate(-50%, -50%);
+          display:flex; align-items:center; flex-wrap: nowrap; gap: var(--nav-gap);
+        }
+
+        .nav-link{
           appearance:none; background:transparent; border:none;
-          color: var(--text-1, #111827); opacity:.95;
-          font-weight: 700;
-          font-size: clamp(14px, 1vw, 16px);
-          letter-spacing:.2px;
-          padding: 0 14px;
-          display: flex; align-items: center;
-          height: var(--nav-h);
+          color: var(--text-2, #5F6672);
+          font-weight: 600;
+          font-size: 13.5px;
+          padding: 10px 14px;
+          display: flex; align-items: center; gap: 7px;
           position: relative;
           cursor: pointer;
-        }
-        .nav-link.bare:hover{ opacity: 1; }
-        .nav-link.bare::after{
-          content:""; position:absolute; left:14px; right:14px; bottom: 8px; height: 2px;
-          background: linear-gradient(90deg, var(--accent-a), var(--accent-b));
-          border-radius: 2px;
-          transform: scaleX(0);
-          transform-origin: left;
-          opacity: 0;
-          transition: transform .18s ease, opacity .18s ease;
-        }
-        .nav-link.bare:hover::after{ opacity:.5; transform: scaleX(.45); }
-        .nav-link.bare.active::after{ opacity:1; transform: scaleX(1); }
-
-        /* Give Contact its own bordered pill so it reads as an intentional CTA,
-           separated from the plain nav links. */
-        .nav-contact{
-          height: auto;
-          margin: auto 0;
-          padding: 8px 18px !important;
-          border: 1px solid rgba(17,24,39,.16);
           border-radius: 999px;
-          background: rgba(17,24,39,.03);
-          transition: background .2s ease, border-color .2s ease;
+          white-space: nowrap;
+          transition: color .15s ease;
         }
-        .nav-contact:hover{
-          background: rgba(17,24,39,.06);
-          border-color: rgba(17,24,39,.28);
-        }
-        .nav-contact::after{ display: none; }
-        .nav-contact.active{
-          border-color: rgba(37,99,235,.5);
-          background: rgba(37,99,235,.1);
+        .nav-link:hover{ color: var(--text-1, #111827); }
+
+        .nav-label{ font-family: var(--nav-sans); position: relative; z-index: 1; }
+
+        .nav-index{
+          color: var(--accent-a);
+          font-family: var(--nav-mono);
+          font-size: 10px;
+          opacity: .75;
+          position: relative;
+          z-index: 1;
         }
 
+        /* Shared layoutId element — framer-motion animates this single node
+           between whichever button currently renders it, producing the
+           sliding "active tab" effect. Sized by inset, so it can never
+           escape the link's own padding box (no more dropping below the
+           navbar). */
+        .nav-link-bg{
+          position: absolute;
+          inset: 0;
+          border-radius: 999px;
+          background: var(--text-1, #111827);
+          z-index: 0;
+        }
+        .nav-link.active{ color: var(--bg-1, #F6F4EF); }
+        .nav-link.active .nav-index{ color: #8FB4FF; opacity: 1; }
+
+        .nav-status{
+          display: inline-flex; align-items: center; gap: 6px;
+          font-family: var(--nav-mono);
+          font-size: 11px; font-weight: 600;
+          letter-spacing: .04em;
+          color: var(--text-2, #5F6672);
+          white-space: nowrap;
+        }
+        .nav-status-dot{
+          width: 7px; height: 7px; border-radius: 50%;
+          background: #16A34A;
+          box-shadow: 0 0 0 0 rgba(22,163,74,.5);
+          animation: nav-pulse 2.2s ease-out infinite;
+          flex: 0 0 auto;
+        }
+        @keyframes nav-pulse{
+          0%{ box-shadow: 0 0 0 0 rgba(22,163,74,.45); }
+          70%{ box-shadow: 0 0 0 6px rgba(22,163,74,0); }
+          100%{ box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+        }
+        @media (prefers-reduced-motion: reduce){
+          .nav-status-dot{ animation: none; }
+        }
+
+        .nav-cta{
+          appearance: none; border: none; cursor: pointer;
+          display: inline-flex; align-items: center; gap: 6px;
+          background: var(--accent-a);
+          color: #fff;
+          font-family: var(--nav-mono);
+          font-size: 12px; font-weight: 600;
+          letter-spacing: .03em;
+          padding: 10px 16px;
+          border-radius: 999px;
+          white-space: nowrap;
+          flex: 0 0 auto;
+          transition: background .2s ease, box-shadow .2s ease;
+        }
+        .nav-cta:hover{ background: #1d4fd1; box-shadow: 0 6px 18px rgba(37,99,235,.28); }
+
+        /* Reserve space for the fixed, floating capsule + its top gap so
+           page content is never covered. */
+        /* Matches the resting (flush, no top-gap) state — the only one that
+           matters for preventing an initial content jump under the fixed
+           header; once scrolled, the header just floats over content that's
+           already scrolled past this point. */
         .nav-spacer{ height: var(--nav-h); }
 
         /* Mobile menu button */
@@ -497,11 +684,12 @@ export default function Navbar() {
           background: rgba(17,24,39,.04);
           color: var(--text-1, #111827);
           border-radius: 12px;
-          height: calc(var(--nav-h) - 18px);
-          margin: 9px 0;
-          padding: 0 12px;
+          height: 38px;
+          width: 38px;
+          padding: 0;
           font-size: 18px;
           cursor: pointer;
+          flex: 0 0 auto;
           transition: background .2s ease, transform .2s ease;
         }
         .nav-menu-btn:hover{ background: rgba(17,24,39,.08); transform: translateY(-1px); }
@@ -691,16 +879,27 @@ export default function Navbar() {
           transform: translateY(-1px);
         }
 
-        @media (max-width: 720px){
-          :root{ --nav-h: 56px; --nav-gap: 14px; }
-          .brand-logo{ height:24px; }
-          .nav-link.bare{ font-size: 14px; padding: 0 10px; }
-          .nav-link.bare::after{ left:10px; right:10px; bottom:7px; }
+        /* Tablet: the Toronto/time detail goes first as room gets tight —
+           the outer margin/padding also shrink with viewport width (they're
+           clamp()s), so the "AVAILABLE" word has to go in this same tier
+           too, not a lower one, or there's a gap where things still wrap. */
+        @media (max-width: 980px){
+          .nav-clock{ display:none; border-left:none; padding-left:0; }
+          .nav-status-label{ display:none; }
+          .nav-link{ padding: 10px 11px; }
+          .nav-dock .nav-center{ gap: 2px; }
+        }
 
-          /* Hide desktop nav; show menu button */
-          .nav-center{ display:none; }
-          .nav-contact{ display:none; }
-          .nav-menu-btn{ display:inline-flex; align-items:center; }
+        /* Mobile: keep logo, availability dot, CTA and the menu button —
+           numbered links move into the drawer below. */
+        @media (max-width: 720px){
+          :root{ --nav-h: 60px; --nav-margin-x: 14px; --nav-pad-x: 14px; --nav-radius: 20px; }
+          .brand-logo{ height:24px; }
+          .brand-suffix{ display:none; }
+
+          .nav-dock .nav-center{ display:none; }
+          .nav-cta{ padding: 9px 14px; font-size: 11px; }
+          .nav-menu-btn{ display:inline-flex; align-items:center; justify-content:center; }
         }
       `}</style>
     </>

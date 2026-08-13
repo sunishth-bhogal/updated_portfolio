@@ -1,539 +1,411 @@
-import React, { useMemo, useRef, useEffect, useState, useCallback } from "react";
-import JayShetty from "../components/assets/JayShetty.jpg"
-import AtomicHabits from "../components/assets/AtomicHabits.jpg"
-import Masters from "../components/assets/Masters.jpg"
-import Jung from "../components/assets/JUNG.jpg"
+import React, { useRef, useEffect, useState } from "react";
+import { motion, useScroll, useReducedMotion } from "framer-motion";
+import WorldMap from "react-svg-worldmap";
+import JayShetty from "../components/assets/JayShetty.jpg";
+import AtomicHabits from "../components/assets/AtomicHabits.jpg";
+import Masters from "../components/assets/Masters.jpg";
+import Jung from "../components/assets/JUNG.jpg";
+import MilanoFlowers from "../components/assets/MilanoFlowers.jpg";
 
-/** ──────────────────────────────────────────────────────────────
- * Helpers for country flags
- * ──────────────────────────────────────────────────────────────*/
-const CODE3_TO_ISO2 = {
-  CAN: "CA",
-  USA: "US",
-  IT: "ITA", ITA: "IT",
-  SWI: "CH", CHE: "CH", SUI: "CH",
-  DEN: "DK",
-  IND: "IN",
-  ENG: "GB", // England → UK fallback
-  KUW: "KW",
-  FRA: "FR",
-  BAH: "BS",
-  HAI: "HT",
-  JAM: "JM",
-  UAE: "AE",
+// Full country names only from here on — the old badge showed raw codes
+// like "ENG" next to proper names, which reads as the UK when it actually
+// meant England specifically. iso2 below is just what the map component
+// needs to draw the country; it's never shown to the user.
+const ISO2 = {
+  Canada: "ca",
+  India: "in",
+  "United States": "us",
+  Italy: "it",
+  Switzerland: "ch",
+  Denmark: "dk",
+  Bahamas: "bs",
+  Haiti: "ht",
+  Jamaica: "jm",
+  England: "gb",
+  Kuwait: "kw",
+  France: "fr",
+  UAE: "ae",
 };
 
-function iso2ToEmoji(code2 = "") {
-  const up = (code2 || "").toUpperCase();
-  if (!/^[A-Z]{2}$/.test(up)) return "🌍";
-  const base = 0x1f1e6; // 'A'
-  return String.fromCodePoint(...[...up].map(c => base + (c.charCodeAt(0) - 65)));
-}
-function flagUrlFromCode(displayCode = "") {
-  const code2 = CODE3_TO_ISO2[displayCode?.toUpperCase()] || displayCode?.slice(0, 2)?.toUpperCase();
-  if (!/^[A-Z]{2}$/.test(code2)) return null;
-  return `https://flagcdn.com/${code2.toLowerCase()}.svg`;
-}
-
-/**
- * MilestonesSection
- */
 export default function MilestonesSection({
   gym = {
     lifts: [
-      { key: "bench",   label: "Bench",   unit: "lb",   best: 255, lastUpdated: "2025-09-25", points: [170,185,195,205,215,225,255], target: 275 },
-      { key: "squat",   label: "Squat",   unit: "lb",   best: 325, lastUpdated: "2025-09-25", points: [225,245,265,285,295,305,325], target: 365 },
-      { key: "pullups", label: "Pullups", unit: "reps", best: 10,  lastUpdated: "2025-09-20", points: [0,0,1,4,8,10],                target: 12 },
+      { key: "bench", label: "Bench", unit: "lb", best: 255, lastUpdated: "2025-09-25", points: [170, 185, 195, 205, 215, 225, 255], target: 275 },
+      { key: "squat", label: "Squat", unit: "lb", best: 325, lastUpdated: "2025-09-25", points: [225, 245, 265, 285, 295, 305, 325], target: 365 },
+      { key: "pullups", label: "Pull-ups", unit: "reps", best: 10, lastUpdated: "2025-09-20", points: [0, 0, 1, 4, 8, 10], target: 12 },
     ],
   },
   travel = {
     countries: [
-      { code: "CAN", name: "Canada" },
-      { code: "IND", name: "India", year: 2025 },
-      { code: "USA", name: "United States", year: 2025 },
-      { code: "ITA",  name: "Italy", year: 2025 },
-      { code: "SWI", name: "Switzerland", year: 2025 },
-      { code: "DEN", name: "Denmark", year: 2025 },
-      { code: "BAH", name: "Bahamas", year: 2022 },
-      { code: "HAI", name: "Haiti", year: 2022 },
-      { code: "JAM", name: "Jamaica", year: 2022 },
-      { code: "ENG", name: "England", year: 2012 },
-      { code: "KUW", name: "Kuwait", year: 2012 },
-      { code: "FRA", name: "France", year: 2012 },
-      { code: "UAE", name: "UAE", year: 2012 },
+      { name: "Canada" },
+      { name: "India", year: 2025 },
+      { name: "United States", year: 2025 },
+      { name: "Italy", year: 2025 },
+      { name: "Switzerland", year: 2025 },
+      { name: "Denmark", year: 2025 },
+      { name: "Bahamas", year: 2022 },
+      { name: "Haiti", year: 2022 },
+      { name: "Jamaica", year: 2022 },
+      { name: "England", year: 2012 },
+      { name: "Kuwait", year: 2012 },
+      { name: "France", year: 2012 },
+      { name: "UAE", year: 2012 },
     ],
     goal: 25,
+    mostRecent: { name: "Italy", year: 2025, photo: MilanoFlowers },
   },
   shelf = {
     items: [
-      { type: "Podcast",    title: "On Purpose with Jay Shetty", by: "Jay Shetty", cover: JayShetty, progress: 0.7 },
+      { type: "Podcast", title: "On Purpose with Jay Shetty", by: "Jay Shetty", cover: JayShetty, progress: 0.7 },
       { type: "Book", title: "Many Lives, Many Masters", by: "Dr. Brian L. Weiss", cover: Masters, progress: 0.35 },
-      { type: "Book",    title: "Atomic Habits", by: "James Clear", cover: AtomicHabits, progress: 0.15 },
-      { type: "Book",    title: "Man and His Symbols", by: "C. G. Jung", cover: Jung, progress: 1 },
+      { type: "Book", title: "Atomic Habits", by: "James Clear", cover: AtomicHabits, progress: 0.15 },
+      { type: "Book", title: "Man and His Symbols", by: "C. G. Jung", cover: Jung, progress: 1 },
     ],
   },
-  title = "Growth",
-  subtitle = "Movement comes above all. Progress I’m proud of for my body, my adventurous self, and my mind.",
+  title = "Life in Progress",
+  subtitle = "You are made of an assortment of habits, experiences, and knowledge. Here's what I want to keep improving.",
 }) {
   useScopedStyles();
+  const reduceMotion = useReducedMotion();
+  const railRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: railRef,
+    offset: ["start 0.25", "end 0.75"],
+  });
 
-  const [activeLift, setActiveLift] = useState(gym.lifts[0].key);
-  const active = useMemo(() => gym.lifts.find(l => l.key === activeLift) ?? gym.lifts[0], [activeLift, gym.lifts]);
-
+  const [activeLift, setActiveLift] = useState(null);
   const countriesCount = travel.countries.length;
-  const pct = Math.min(100, Math.round((countriesCount / travel.goal) * 100));
-
-  // keyboard support for tabs
-  const tabRefs = useRef({});
-  const onTabsKey = useCallback((e) => {
-    const idx = gym.lifts.findIndex(l => l.key === activeLift);
-    if (e.key === "ArrowRight") {
-      e.preventDefault();
-      const next = gym.lifts[(idx + 1) % gym.lifts.length].key;
-      setActiveLift(next);
-      tabRefs.current[next]?.focus();
-    } else if (e.key === "ArrowLeft") {
-      e.preventDefault();
-      const prev = gym.lifts[(idx - 1 + gym.lifts.length) % gym.lifts.length].key;
-      setActiveLift(prev);
-      tabRefs.current[prev]?.focus();
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      const key = gym.lifts[0].key;
-      setActiveLift(key);
-      tabRefs.current[key]?.focus();
-    } else if (e.key === "End") {
-      e.preventDefault();
-      const key = gym.lifts[gym.lifts.length - 1].key;
-      setActiveLift(key);
-      tabRefs.current[key]?.focus();
-    }
-  }, [activeLift, gym.lifts]);
+  const finishedBooks = shelf.items.filter((b) => b.progress === 1).length;
 
   return (
-    <section className="mile">
-      <header className="mile__hdr">
-        <h2 className="mile__title">{title}</h2>
-        <p className="mile__subtitle">{subtitle}</p>
-      </header>
+    <section className="lip">
+      <div className="lip__hdr">
+        <div className="lip__hdr-row">
+          <span className="lip__eyebrow">LIFE IN PROGRESS</span>
+          <span className="lip__year">2026</span>
+        </div>
+        <p className="lip__subtitle">{subtitle}</p>
+      </div>
 
-      <div className="mile__grid">
-        {/* GYM GROWTH */}
-        <article className="card card--gym">
-          <div className="card__hdr">
-            <span className="chip">Gym Growth</span>
-            <div className="tabs" role="tablist" aria-label="Lifts" onKeyDown={onTabsKey}>
-              {gym.lifts.map(lift => (
-                <button
-                  key={lift.key}
-                  ref={el => (tabRefs.current[lift.key] = el)}
-                  role="tab"
-                  aria-selected={activeLift === lift.key}
-                  aria-controls={`lift-panel-${lift.key}`}
-                  id={`lift-tab-${lift.key}`}
-                  className={`tab ${activeLift === lift.key ? "is-active" : ""}`}
-                  onClick={() => setActiveLift(lift.key)}
-                  type="button"
-                >
-                  {lift.label}
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className="lip__rail-wrap" ref={railRef}>
+        <div className="lip__rail-track" aria-hidden="true" />
+        <motion.div
+          className="lip__rail"
+          aria-hidden="true"
+          style={{ scaleY: reduceMotion ? 1 : scrollYProgress }}
+        />
 
-          <div className="card__body" id={`lift-panel-${active.key}`} role="tabpanel" aria-labelledby={`lift-tab-${active.key}`}>
-            <div className="stat">
-              <div className="stat__num">
-                {active.best}
-                <span className="stat__unit">{active.unit}</span>
-              </div>
-              <div className="stat__lbl">Current Best</div>
-              <div className="stat__meta">Updated {fmtDate(active.lastUpdated)}</div>
-            </div>
+        {/* 01 / BODY */}
+        <section className="lip__chapter">
+          <div className="lip__chapter-num">01</div>
+          <div className="lip__chapter-body">
+            <span className="lip__chapter-kicker">PHYSICAL</span>
+            <h2 className="lip__chapter-headline">
+              Stronger than last year. <span className="lip__accent">Stronger next year.</span>
+            </h2>
+            <p className="lip__note">
+              Training taught me that progress is usually invisible until suddenly it isn't.
+            </p>
 
-            <MiniLineChart
-              points={active.points}
-              unit={active.unit}
-              target={active.target}
-            />
-
-            <ul className="legend" aria-hidden="true">
-              <li><span className="dot" /> Previous PR</li>
-              <li className="muted">Trend is illustrative</li>
-            </ul>
-          </div>
-        </article>
-
-        {/* COUNTRIES */}
-        <article className="card card--travel">
-          <div className="card__hdr">
-            <span className="chip">Countries Visited (25 by 25)</span>
-            <span className="count">{countriesCount} / {travel.goal}</span>
-          </div>
-
-          <div className="card__body card__body--travel">
-            <div className="ring-wrap">
-              <ProgressRing value={pct} label={`${pct}% of goal`} />
-            </div>
-
-            <ul className="stamps" aria-label="Visited countries">
-              {travel.countries.map((c) => {
-                const url = flagUrlFromCode(c.code);
-                const code2 = CODE3_TO_ISO2[c.code?.toUpperCase()] || c.code?.slice(0,2)?.toUpperCase();
+            <div className="lip__tiles">
+              {gym.lifts.map((lift) => {
+                const pct = Math.min(100, Math.round((lift.best / lift.target) * 100));
+                const isOpen = activeLift === lift.key;
                 return (
-                  <li key={`${c.code}-${c.year || "na"}`} className="stamp" title={`${c.name}${c.year ? ` (${c.year})` : ""}`}>
-                    <span className="flag-box" aria-hidden="true">
-                      {url ? (
-                        <img className="flag-img" src={url} alt="" loading="lazy" referrerPolicy="no-referrer" />
-                      ) : (
-                        <span className="flag-emoji">{iso2ToEmoji(code2)}</span>
-                      )}
+                  <button
+                    key={lift.key}
+                    type="button"
+                    className={`lip__tile ${isOpen ? "is-open" : ""}`}
+                    onClick={() => setActiveLift((cur) => (cur === lift.key ? null : lift.key))}
+                    aria-expanded={isOpen}
+                  >
+                    <span className="lip__tile-label">{lift.label}</span>
+                    <span className="lip__tile-num">
+                      {lift.best}
+                      <span className="lip__tile-unit">{lift.unit}</span>
                     </span>
-                    <span className="code" aria-hidden="true">{c.code}</span>
-                    {c.year ? <span className="year">{c.year}</span> : <span className="year muted">—</span>}
-                  </li>
+                    <span className="lip__tile-goal">Goal: {lift.target}</span>
+
+                    <span className="lip__tile-bar-track">
+                      <motion.span
+                        className="lip__tile-bar-fill"
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${pct}%` }}
+                        viewport={{ once: true, amount: 0.6 }}
+                        transition={{ duration: reduceMotion ? 0 : 0.9, ease: "easeOut" }}
+                      />
+                    </span>
+
+                    <span className={`lip__tile-progression ${isOpen ? "is-open" : ""}`}>
+                      {lift.points.join(` → `)} {lift.unit}
+                      <span className="lip__tile-updated">Updated {fmtDate(lift.lastUpdated)}</span>
+                    </span>
+                  </button>
                 );
               })}
-            </ul>
+            </div>
           </div>
-        </article>
+        </section>
 
-        {/* SHELF */}
-        <article className="card card--shelf">
-          <div className="card__hdr">
-            <span className="chip">On My Shelf</span>
-            <span className="hint">Scroll ▸</span>
-          </div>
+        {/* 02 / WORLD */}
+        <section className="lip__chapter">
+          <div className="lip__chapter-num">02</div>
+          <div className="lip__chapter-body">
+            <span className="lip__chapter-kicker">SPIRITUAL</span>
 
-          <div className="shelf" role="list">
-            {shelf.items.map((it, i) => (
-              <div className="tile" role="listitem" key={`${it.title}-${i}`}>
-                <div className="cover">
-                  <img src={it.cover} alt={`${it.type} cover for ${it.title}`} />
-                </div>
-                <div className="tile__meta">
-                  <div className="eyebrow">{it.type}</div>
-                  <div className="t">{it.title}</div>
-                  <div className="by">{it.by}</div>
-                  <div className="bar" aria-label={`Progress ${Math.round(it.progress * 100)}%`}>
-                    <div className="fill" style={{ width: `${Math.round(it.progress * 100)}%` }} />
-                  </div>
-                </div>
+            <div className="lip__world-grid">
+              <div className="lip__map-wrap">
+                <WorldMap
+                  size="responsive"
+                  color="var(--lip-amber)"
+                  backgroundColor="transparent"
+                  borderColor="var(--lip-line)"
+                  strokeOpacity={0.6}
+                  data={travel.countries.map((c) => ({ country: ISO2[c.name], value: 1 }))}
+                  tooltipTextFunction={(ctx) => {
+                    const c = travel.countries.find((c) => ISO2[c.name] === ctx.countryCode.toLowerCase());
+                    return c ? `${c.name}${c.year ? ` · ${c.year}` : ""}` : ctx.countryName;
+                  }}
+                  styleFunction={(ctx) =>
+                    ctx.countryValue !== undefined
+                      ? {
+                          fill: "var(--lip-amber)",
+                          fillOpacity: 0.85,
+                          stroke: "var(--lip-line)",
+                          strokeWidth: 0.6,
+                          cursor: "pointer",
+                        }
+                      : {
+                          fill: "var(--lip-line)",
+                          fillOpacity: 1,
+                          stroke: "var(--lip-bg)",
+                          strokeWidth: 0.6,
+                        }
+                  }
+                />
               </div>
-            ))}
+
+              <aside className="lip__world-side">
+                <div className="lip__world-count">
+                  <span className="lip__world-count-num">{String(countriesCount).padStart(2, "0")}</span>
+                  <span className="lip__world-count-goal">/ {travel.goal}</span>
+                </div>
+                <div className="lip__world-goal-label">Countries before 25</div>
+
+                {travel.mostRecent && (
+                  <div className="lip__trip">
+                    <img src={travel.mostRecent.photo} alt="" className="lip__trip-photo" />
+                    <div className="lip__trip-meta">
+                      <span className="lip__trip-kicker">Most recent</span>
+                      <span className="lip__trip-name">
+                        {travel.mostRecent.name} · {travel.mostRecent.year}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </aside>
+            </div>
           </div>
-        </article>
+        </section>
+
+        {/* 03 / MIND */}
+        <section className="lip__chapter lip__chapter--mind">
+          <div className="lip__chapter-num">03</div>
+          <div className="lip__chapter-body">
+            <span className="lip__chapter-kicker">MENTAL</span>
+            <h2 className="lip__chapter-headline">
+              {finishedBooks} finished, {shelf.items.length - finishedBooks} in progress.
+            </h2>
+
+            <div className="lip__shelf">
+              {shelf.items.map((it, i) => {
+                const status = it.progress === 1 ? "Finished" : "Reading";
+                return (
+                  <div className="lip__book" key={`${it.title}-${i}`} style={{ "--r": i % 2 === 0 ? "-3deg" : "3deg" }}>
+                    <img src={it.cover} alt={`${it.type} cover for ${it.title}`} className="lip__book-cover" />
+                    <div className="lip__book-meta">
+                      <span className="lip__book-type">{it.type}</span>
+                      <span className="lip__book-title">{it.title}</span>
+                      <span className="lip__book-by">{it.by}</span>
+                      <span className="lip__book-status">{status}</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="lip__shelf-line" aria-hidden="true" />
+          </div>
+        </section>
       </div>
     </section>
   );
 }
 
-/* =============================
-   PRESENTATION UTILITIES
-============================= */
-function useScopedStyles() {
-  const styleRef = useRef(null);
-  useEffect(() => {
-    if (styleRef.current) return; // once
-    const el = document.createElement("style");
-    el.setAttribute("data-milestones", "");
-    el.textContent = CSS_TEXT;
-    document.head.appendChild(el);
-    styleRef.current = el;
-    return () => { if (styleRef.current) document.head.removeChild(styleRef.current); };
-  }, []);
-}
+/* ---------------- helpers + scoped styles ---------------- */
 function fmtDate(iso) {
   try {
     const d = new Date(iso);
     return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-  } catch { return iso; }
+  } catch {
+    return iso;
+  }
 }
 
-/* =============================
-   MINI LINE CHART (SVG) — with target, PR tag, tooltip
-============================= */
-function MiniLineChart({ points = [], unit = "", target }) {
-  const w = 400, h = 140, pad = 10;
-  const min = Math.min(...points);
-  const max = Math.max(...points, target ?? -Infinity);
-  const scaleX = (i) => pad + (i * (w - pad * 2)) / Math.max(1, points.length - 1);
-  const scaleY = (v) => pad + (h - pad * 2) - ((v - min) / Math.max(1, (max - min) || 1)) * (h - pad * 2);
-  const d = points.map((v, i) => `${i === 0 ? "M" : "L"}${scaleX(i)},${scaleY(v)}`).join(" ");
-  const area = `M${pad},${h - pad} ${points.map((v, i) => `L${scaleX(i)},${scaleY(v)}`).join(" ")} L${w - pad},${h - pad} Z`;
-
-  // tooltip
-  const wrapRef = useRef(null);
-  const [hover, setHover] = useState(null); // {x,y,val,idx}
-
-  const onMove = (e) => {
-    const rect = wrapRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    // find nearest point by x
-    const xs = points.map((_, i) => scaleX(i));
-    let idx = 0, best = Infinity;
-    xs.forEach((vx, i) => {
-      const diff = Math.abs(vx - x);
-      if (diff < best) { best = diff; idx = i; }
-    });
-    const val = points[idx];
-    setHover({ x: xs[idx], y: scaleY(val), val, idx });
-  };
-  const onLeave = () => setHover(null);
-
-  // target y
-  const ty = target != null ? scaleY(target) : null;
-
-  return (
-    <div className="mini-wrap" ref={wrapRef} onMouseMove={onMove} onMouseLeave={onLeave}>
-      <svg className="mini" viewBox={`0 0 ${w} ${h}`} width="100%" height="150" role="img" aria-label="progress chart">
-        <defs>
-          <linearGradient id="miniArea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="currentColor" stopOpacity="0.22"/>
-            <stop offset="100%" stopColor="currentColor" stopOpacity="0"/>
-          </linearGradient>
-        </defs>
-
-        {ty != null && (
-          <>
-            <line x1={pad} x2={w - pad} y1={ty} y2={ty} className="mini__target"/>
-            <text x={pad + 4} y={ty - 6} className="mini__target-label">Target {target} {unit}</text>
-          </>
-        )}
-
-        <path className="mini__area" d={area} />
-        <path className="mini__line" d={d} />
-
-        {points.map((v, i) => (
-          <g key={i}>
-            <circle cx={scaleX(i)} cy={scaleY(v)} r={3.6} className="mini__pt" />
-            {i === points.length - 1 && <text x={scaleX(i) + 8} y={scaleY(v) - 8} className="mini__pr">PR</text>}
-          </g>
-        ))}
-
-        {hover && (
-          <>
-            <line x1={hover.x} x2={hover.x} y1={pad} y2={h - pad} className="mini__hover-line"/>
-            <circle cx={hover.x} cy={hover.y} r="5" className="mini__pt mini__pt--hover" />
-          </>
-        )}
-      </svg>
-
-      {hover && (
-        <div className="mini__tip" style={{ left: hover.x, top: hover.y }}>
-          <div className="mini__tip-val">{hover.val}<span className="u">{unit}</span></div>
-          <div className="mini__tip-sub">Session {hover.idx + 1}</div>
-        </div>
-      )}
-    </div>
-  );
+function useScopedStyles() {
+  const styleRef = useRef(null);
+  useEffect(() => {
+    if (styleRef.current) return;
+    const el = document.createElement("style");
+    el.setAttribute("data-life-in-progress", "");
+    el.textContent = CSS_TEXT;
+    document.head.appendChild(el);
+    styleRef.current = el;
+    return () => {
+      if (styleRef.current) document.head.removeChild(styleRef.current);
+    };
+  }, []);
 }
 
-/* =============================
-   PROGRESS RING (SVG)
-============================= */
-function ProgressRing({ value = 0, size = 120, label = "" }) {
-  const r = 52, c = 2 * Math.PI * r;
-  const clamped = Math.max(0, Math.min(100, value));
-  const dash = (clamped / 100) * c;
-  return (
-    <div className="ring" aria-label={label}>
-      <svg width={size} height={size} viewBox="0 0 120 120">
-        <circle className="ring__bg" cx="60" cy="60" r={r} />
-        <circle className="ring__fg" cx="60" cy="60" r={r} strokeDasharray={`${dash} ${c - dash}`} transform="rotate(-90 60 60)" />
-      </svg>
-      <div className="ring__txt">
-        <div className="ring__num">{clamped}%</div>
-        <div className="ring__lbl">to goal</div>
-      </div>
-    </div>
-  );
-}
-
-/* =============================
-   SCOPED CSS
-============================= */
 const CSS_TEXT = `
-:root{
-  --brand: hsl(208 100% 62%);
-  --brand-2: hsl(190 95% 62%);
-  --bg-0: hsl(220 18% 9%);
-  --bg-1: hsl(220 18% 12%);
-  --bg-2: hsl(220 16% 16%);
-  --txt-1: hsl(210 30% 96%);
-  --txt-2: hsl(215 20% 78%);
-  --muted: hsl(215 14% 64%);
-  --ok: hsl(151 68% 44%);
-  --shadow: 0 10px 30px hsl(220 50% 2% / 0.35);
-  --radius: 18px;
+.lip{
+  /* Deliberately dark (per design brief) but built from the site's own
+     tokens instead of an unrelated custom navy — --text-1 (the site's
+     near-black) as the background, --bg-1 (the site's off-white) as the
+     inverted primary text, so this page reads as "this site, inverted"
+     rather than a different palette bolted on. Amber stays a one-off —
+     it's the deliberate single warm accent against all the blue. */
+  /* Same light palette as the rest of the site — this page just reuses the
+     global tokens directly rather than inventing its own theme. */
+  --lip-bg: var(--bg-1);
+  --lip-panel: var(--panel);
+  --lip-panel-hover: var(--highlight);
+  --lip-line: var(--line);
+  --lip-track: var(--line);
+  --lip-txt1: var(--text-1);
+  --lip-txt2: var(--text-2);
+  --lip-txt3: var(--text-3);
+  --lip-blue: var(--accent);
+  --lip-amber: #b45309;
 
-  --flag-w: 28px;
-  --flag-h: 20px;
-  --flag-pad: 2px;
+  /* !important: a legacy global rule forces every bare <section> tag to
+     background:transparent!important (see styles.css, "keep sections clear
+     so the global background shows through"), which would otherwise let the
+     page's real background bleed through unpredictably here. */
+  background: var(--lip-bg) !important;
+  color: var(--lip-txt1);
+  padding: clamp(96px, 12vw, 140px) clamp(20px, 6vw, 60px) clamp(80px, 10vw, 120px);
+  min-height: 100vh;
 }
 
-.mile{
-  position: relative;
-  display: grid;
-  gap: clamp(18px, 3vw, 28px);
-  padding: clamp(16px, 3.2vw, 28px);
-  color: var(--txt-1);
-  background: linear-gradient(180deg, var(--bg-0), var(--bg-1));
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+.lip__hdr{ max-width: 1200px; margin: 0 auto clamp(48px, 7vw, 80px); }
+.lip__hdr-row{ display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
+.lip__eyebrow{
+  font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px; font-weight: 700; letter-spacing: .14em; color: var(--lip-blue);
+}
+.lip__year{
+  font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px; color: var(--lip-txt3);
+}
+.lip__subtitle{
+  max-width: 52ch; font-size: clamp(20px, 2.6vw, 28px); font-weight: 700;
+  letter-spacing: -.01em; color: var(--lip-txt1); margin: 0;
 }
 
-.mile__hdr{ display: grid; gap: 6px; }
-.mile__title{ font-size: clamp(24px, 3.4vw, 40px); line-height: 1.05; letter-spacing: -0.02em; font-weight: 800; }
-.mile__subtitle{ color: var(--txt-2); font-size: clamp(14px, 1.7vw, 16px); }
-
-.mile__grid{ display: grid; grid-template-columns: repeat(12, 1fr); gap: clamp(16px, 2.4vw, 24px); }
-.card{ grid-column: span 12; }
-@media (min-width: 760px){
-  .card--gym{ grid-column: span 7; }
-  .card--travel{ grid-column: span 5; }
-  .card--shelf{ grid-column: span 12; }
+.lip__rail-wrap{ position: relative; max-width: 1200px; margin: 0 auto; padding-left: clamp(48px, 6vw, 76px); }
+.lip__rail-track, .lip__rail{
+  position: absolute; left: 8px; top: 6px; bottom: 6px; width: 2px; border-radius: 2px;
 }
+.lip__rail-track{ background: var(--lip-line); }
+.lip__rail{ background: linear-gradient(180deg, var(--lip-blue), var(--lip-amber)); transform-origin: top; }
 
-.card{
-  background: linear-gradient(180deg, var(--bg-1), var(--bg-2));
-  border: 1px solid hsl(220 18% 20% / 0.7);
-  border-radius: var(--radius);
-  padding: clamp(14px, 2.2vw, 22px);
-  box-shadow: var(--shadow);
+.lip__chapter{ position: relative; padding: clamp(48px, 7vw, 76px) 0; border-top: 1px solid var(--lip-line); }
+.lip__chapter:first-child{ border-top: none; }
+.lip__chapter-num{
+  position: absolute; left: clamp(-48px, -6vw, -76px); top: clamp(48px, 7vw, 76px);
+  font-size: clamp(48px, 7vw, 84px); font-weight: 900; color: var(--lip-txt1);
+  opacity: .06; line-height: 1; user-select: none; pointer-events: none;
 }
-.card__hdr{ display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
-.chip{
-  font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 10px; border-radius: 999px;
-  background: linear-gradient(90deg, var(--brand), var(--brand-2)); color: white; box-shadow: 0 4px 14px hsl(200 100% 50% / 0.35);
+.lip__chapter-kicker{
+  display: block;
+  font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px; font-weight: 700; letter-spacing: .14em; color: var(--lip-txt3);
+  margin-bottom: 14px;
 }
-
-/* Tabs */
-.tabs{ display: flex; gap: 6px; }
-.tab{
-  cursor: pointer;
-  background: hsl(220 18% 20% / 0.55);
-  color: var(--txt-2);
-  border: 1px solid hsl(220 18% 22% / 0.7);
-  padding: 8px 12px;
-  border-radius: 10px;
-  font-size: 13px;
-  transition: 200ms ease;
+.lip__chapter-headline{
+  font-size: clamp(24px, 3.2vw, 34px); font-weight: 800; letter-spacing: -.01em;
+  max-width: 26ch; margin: 0 0 14px;
 }
-.tab:hover{ filter: brightness(1.12); }
-.tab.is-active{ color: white; background: linear-gradient(90deg, var(--brand), var(--brand-2)); border-color: transparent; }
+.lip__accent{ color: var(--lip-amber); }
+.lip__note{ max-width: 52ch; color: var(--lip-txt2); font-size: 15px; line-height: 1.6; margin: 0 0 32px; font-style: italic; }
 
-.card__body{ display: grid; gap: 10px; }
-
-/* Stat */
-.stat{ display: grid; gap: 4px; }
-.stat__num{ font-size: 42px; font-weight: 800; letter-spacing: -0.02em; }
-.stat__unit{ font-size: 16px; margin-left: 6px; color: var(--txt-2); font-weight: 600; }
-.stat__lbl{ color: var(--txt-2); font-weight: 600; }
-.stat__meta{ color: var(--muted); font-size: 12px; }
-
-/* Legend */
-.legend{ display: flex; gap: 14px; align-items: center; color: var(--muted); font-size: 12px; }
-.legend .dot{ width: 8px; height: 8px; border-radius: 999px; background: var(--brand); display: inline-block; box-shadow: 0 0 0 4px hsl(200 100% 50% / 0.14); margin-right: 6px; }
-.legend .muted{ opacity: 0.8; }
-
-/* Mini chart */
-.mini-wrap{ position: relative; }
-.mini{ overflow: visible; color: var(--brand); }
-.mini__line{ fill: none; stroke: currentColor; stroke-width: 3; filter: drop-shadow(0 2px 6px hsl(200 100% 50% / 0.35)); }
-.mini__area{ fill: url(#miniArea); }
-.mini__pt{ fill: white; stroke: currentColor; stroke-width: 2; }
-.mini__pt--hover{ r: 6; }
-.mini__pr{ font-size: 10px; fill: var(--txt-2); }
-.mini__hover-line{ stroke: hsl(210 20% 70% / .25); stroke-width: 1; }
-.mini__target{ stroke: hsl(210 20% 70% / .35); stroke-dasharray: 5 5; }
-.mini__target-label{ font-size: 10px; fill: var(--txt-2); }
-.mini__tip{
-  position: absolute; transform: translate(-50%, -120%); pointer-events: none;
-  background: hsl(220 18% 18%); border: 1px solid hsl(220 18% 26% / .7); padding: 6px 8px; border-radius: 8px;
-  box-shadow: var(--shadow); white-space: nowrap;
+/* strength tiles */
+.lip__tiles{ display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; }
+.lip__tile{
+  all: unset; box-sizing: border-box; cursor: pointer;
+  display: flex; flex-direction: column; gap: 6px;
+  padding: 20px; border-radius: 12px;
+  background: var(--lip-panel); border: 1px solid var(--lip-line);
+  box-shadow: 0 4px 14px rgba(17,24,39,.05);
+  transition: border-color .2s ease, background .2s ease;
 }
-.mini__tip-val{ font-weight: 800; }
-.mini__tip-val .u{ margin-left: 3px; color: var(--txt-2); font-weight: 600; }
-.mini__tip-sub{ color: var(--txt-2); font-size: 12px; margin-top: 2px; }
-
-/* Travel */
-.card__body--travel{ display: grid; grid-template-columns: 140px 1fr; gap: 16px; align-items: start; }
-.count{ color: var(--txt-2); font-weight: 700; }
-.ring-wrap{ position: sticky; top: 12px; }
-
-.ring{ position: relative; width: 120px; height: 120px; display: grid; place-items: center; }
-.ring__bg{ fill: none; stroke: hsl(220 14% 25%); stroke-width: 10; }
-.ring__fg{ fill: none; stroke: var(--ok); stroke-width: 10; stroke-linecap: round; filter: drop-shadow(0 4px 12px hsl(151 68% 44% / 0.25)); }
-.ring__txt{ position: absolute; text-align: center; }
-.ring__num{ font-size: 22px; font-weight: 800; }
-.ring__lbl{ color: var(--txt-2); font-size: 12px; }
-
-.stamps{ display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
-.stamp{
-  background: linear-gradient(180deg, hsl(220 18% 18%), hsl(220 18% 14%));
-  border: 1px dashed hsl(210 30% 96% / 0.25);
-  box-shadow: inset 0 0 0 8px hsl(200 100% 50% / 0.04);
-  padding: 10px 12px;
-  border-radius: 14px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 8px;
-  transform: rotate(calc(var(--tw) * 1deg));
-  transition: transform 200ms ease, filter 200ms ease;
+.lip__tile:hover, .lip__tile.is-open{ border-color: var(--lip-line); background: var(--lip-panel-hover); }
+.lip__tile-label{ font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--lip-txt3); }
+.lip__tile-num{ font-size: clamp(30px, 3.4vw, 38px); font-weight: 800; letter-spacing: -.02em; }
+.lip__tile-unit{ font-size: 14px; margin-left: 4px; color: var(--lip-txt2); font-weight: 600; }
+.lip__tile-goal{ font-size: 12.5px; color: var(--lip-txt3); margin-bottom: 6px; }
+.lip__tile-bar-track{ display: block; height: 4px; border-radius: 999px; background: var(--lip-track); overflow: hidden; }
+.lip__tile-bar-fill{ display: block; height: 100%; background: linear-gradient(90deg, var(--lip-blue), var(--lip-amber)); }
+.lip__tile-progression{
+  display: block; text-align: left;
+  font-family: "Fira Code", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11.5px; color: var(--lip-txt3);
+  max-height: 0; opacity: 0; overflow: hidden;
+  transition: max-height .3s ease, opacity .25s ease, margin-top .3s ease;
 }
-.stamp:hover{ transform: rotate(0deg) translateY(-3px); filter: brightness(1.05); }
+.lip__tile-progression.is-open{ max-height: 80px; opacity: 1; margin-top: 10px; }
+.lip__tile-updated{ display: block; margin-top: 4px; color: var(--lip-txt3); opacity: .7; }
 
-/* Flags */
-.flag-box{
-  width: var(--flag-w);
-  height: var(--flag-h);
-  padding: var(--flag-pad);
-  display: grid; place-items: center;
-  border-radius: 6px;
-  background: hsl(220 18% 20% / 0.6);
-  box-shadow: 0 0 0 1px hsl(220 18% 22% / .55), 0 2px 6px hsl(220 50% 2% / .35);
+/* world */
+.lip__world-grid{ display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(220px, 1fr); gap: clamp(24px, 4vw, 48px); align-items: center; }
+@media (max-width: 760px){ .lip__world-grid{ grid-template-columns: 1fr; } }
+.lip__map-wrap{ width: 100%; }
+.lip__map-wrap svg{ width: 100%; height: auto; }
+
+.lip__world-side{ display: flex; flex-direction: column; gap: 4px; }
+.lip__world-count{ display: flex; align-items: baseline; gap: 6px; }
+.lip__world-count-num{ font-size: clamp(36px, 4.4vw, 48px); font-weight: 800; letter-spacing: -.02em; }
+.lip__world-count-goal{ font-size: 18px; color: var(--lip-txt3); }
+.lip__world-goal-label{ font-size: 12.5px; letter-spacing: .04em; text-transform: uppercase; color: var(--lip-txt3); margin-bottom: 24px; }
+
+.lip__trip{ display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; background: var(--lip-panel); border: 1px solid var(--lip-line); }
+.lip__trip-photo{ width: 56px; height: 56px; object-fit: cover; border-radius: 6px; }
+.lip__trip-meta{ display: flex; flex-direction: column; gap: 2px; }
+.lip__trip-kicker{ font-size: 10.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--lip-txt3); }
+.lip__trip-name{ font-size: 14px; font-weight: 700; }
+
+/* shelf */
+.lip__shelf{ display: flex; gap: clamp(16px, 3vw, 28px); flex-wrap: wrap; align-items: flex-end; padding-top: 8px; }
+.lip__book{
+  --r: 0deg;
+  position: relative; width: 108px;
+  display: flex; flex-direction: column; align-items: center;
+  transform: rotate(var(--r));
+  transition: transform .25s cubic-bezier(.16,1,.3,1);
 }
-.flag-img{ width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
-.flag-emoji{ font-size: 14px; line-height: 1; }
+.lip__book:hover{ transform: rotate(0deg) translateY(-8px); z-index: 2; }
+.lip__book-cover{ width: 100%; aspect-ratio: 2/3; object-fit: cover; border-radius: 4px; box-shadow: 0 10px 22px rgba(0,0,0,.4); }
+.lip__book-meta{ margin-top: 10px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; opacity: 0; transform: translateY(4px); transition: opacity .2s ease, transform .2s ease; }
+.lip__book:hover .lip__book-meta{ opacity: 1; transform: translateY(0); }
+.lip__book-type{ font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: var(--lip-txt3); }
+.lip__book-title{ font-size: 12.5px; font-weight: 700; line-height: 1.3; }
+.lip__book-by{ font-size: 11px; color: var(--lip-txt3); }
+.lip__book-status{ font-size: 10.5px; font-weight: 700; color: var(--lip-amber); margin-top: 2px; }
+.lip__shelf-line{ height: 2px; background: var(--lip-line); margin-top: 12px; border-radius: 2px; }
 
-.stamp .code{ font-weight: 800; letter-spacing: 0.08em; }
-.stamp .year{ color: var(--muted); font-size: 12px; }
-.stamp .year.muted{ opacity: .6; }
-.stamp:nth-child(odd){ --tw: -1.6; }
-.stamp:nth-child(even){ --tw: 1.2; }
-
-/* Shelf */
-.card--shelf{ overflow: hidden; }
-.hint{ color: var(--txt-2); font-size: 12px; }
-.shelf{
-  display: grid;
-  grid-auto-flow: column;
-  gap: 14px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scroll-snap-type: x mandatory;
+@media (max-width: 640px){
+  .lip__chapter-num{ display: none; }
+  .lip__rail-wrap{ padding-left: 0; }
+  .lip__rail-track, .lip__rail{ display: none; }
 }
-.shelf::-webkit-scrollbar{ height: 10px; }
-.shelf::-webkit-scrollbar-thumb{ background: hsl(220 18% 30%); border-radius: 999px; }
-
-.tile{
-  scroll-snap-align: start;
-  min-width: min(280px, 78vw);
-  background: linear-gradient(180deg, hsl(220 18% 18%), hsl(220 18% 14%));
-  border: 1px solid hsl(220 18% 20% / 0.7);
-  border-radius: 16px;
-  overflow: hidden;
-  box-shadow: var(--shadow);
-}
-.cover{ aspect-ratio: 16/10; overflow: hidden; }
-.cover img{ width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); transition: transform 300ms ease; }
-.tile:hover .cover img{ transform: scale(1.1); }
-.tile__meta{ padding: 12px; display: grid; gap: 6px; }
-.eyebrow{ text-transform: uppercase; letter-spacing: 0.09em; font-size: 11px; color: var(--txt-2); }
-.t{ font-weight: 800; letter-spacing: -0.01em; }
-.by{ color: var(--muted); font-size: 13px; }
-.bar{ height: 8px; background: hsl(220 18% 22%); border-radius: 999px; overflow: hidden; margin-top: 4px; }
-.fill{ height: 100%; background: linear-gradient(90deg, var(--brand), var(--brand-2)); box-shadow: 0 6px 16px hsl(200 100% 50% / 0.35); }
 `;
