@@ -35,6 +35,17 @@ const fadeUp = (delay = 0, reduceMotion = false) => ({
   transition: { duration: reduceMotion ? 0 : 0.7, delay: reduceMotion ? 0 : delay, ease: [0.16, 1, 0.3, 1] },
 });
 
+// The name leads the hero now — a springier, more physical "pop" (slight
+// scale + rise) instead of the plain fade the rest of the hero uses, so it
+// reads as the first, most alive thing on the page.
+const namePop = (delay = 0, reduceMotion = false) => ({
+  initial: { opacity: 0, y: reduceMotion ? 0 : 46, scale: reduceMotion ? 1 : 0.9 },
+  animate: { opacity: 1, y: 0, scale: 1 },
+  transition: reduceMotion
+    ? { duration: 0, delay: 0 }
+    : { type: "spring", stiffness: 260, damping: 20, delay },
+});
+
 /* ---------- Scroll to hash targets (keeps SPA smooth) ---------- */
 function ScrollManager() {
   const { pathname, hash } = useLocation();
@@ -123,21 +134,28 @@ function HomePage() {
             controls its own `transform` in CSS, and framer-motion's `style.y` would
             silently overwrite that transform if it were animated here too. */}
         <motion.div className="hero__content hero__content--left" style={{ opacity: heroOpacity }}>
-          <motion.span className="hero__badge" {...fadeUp(0, reduceMotion)}>
+          {/* Name pops in first (delay 0, spring) — badge/eyebrow/tagline
+              below keep their normal top-to-bottom visual order, they just
+              each land a beat after the name has already landed. */}
+          <motion.span className="hero__badge" {...fadeUp(0.34, reduceMotion)}>
             <span className="hero__badge-dot" aria-hidden="true" />
             Incoming Software Engineer @ TD
           </motion.span>
 
-          <motion.span className="hero__eyebrow" {...fadeUp(0.02, reduceMotion)}>
+          <motion.span className="hero__eyebrow" {...fadeUp(0.4, reduceMotion)}>
             Learner · Coder · Lifter
           </motion.span>
 
-          <motion.h1 className="hero__bigname" {...fadeUp(0.1, reduceMotion)}>
-            <span className="hero__bigname-line">Sunishth</span>
-            <span className="hero__bigname-line">Bhogal</span>
-          </motion.h1>
+          <h1 className="hero__bigname">
+            <motion.span className="hero__bigname-line" {...namePop(0, reduceMotion)}>
+              Sunishth
+            </motion.span>
+            <motion.span className="hero__bigname-line" {...namePop(0.09, reduceMotion)}>
+              Bhogal
+            </motion.span>
+          </h1>
 
-          <motion.p className="hero__tagline" {...fadeUp(0.24, reduceMotion)}>
+          <motion.p className="hero__tagline" {...fadeUp(0.46, reduceMotion)}>
             Always looking to build and learn.
           </motion.p>
 
@@ -145,7 +163,7 @@ function HomePage() {
               the fade-in animation, but being an unstyled block it would
               otherwise shrink-to-fit around CurrentActivity's own natural
               content width and silently cap it below the intended 580px. */}
-          <motion.div style={{ alignSelf: "stretch" }} {...fadeUp(0.36, reduceMotion)}>
+          <motion.div style={{ alignSelf: "stretch" }} {...fadeUp(0.56, reduceMotion)}>
             <CurrentActivity />
           </motion.div>
 

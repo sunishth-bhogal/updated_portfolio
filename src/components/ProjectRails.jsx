@@ -130,41 +130,57 @@ export default function ProjectTabs() {
                 const abs = Math.abs(offset);
                 const isActive = offset === 0;
                 const hidden = abs > 3;
+                // The inner card's own transform/opacity are recomputed
+                // imperatively on every navigation (the 3D coverflow math),
+                // so the entrance stagger lives on this plain, unpositioned
+                // outer wrapper instead — animating it only on opacity/y
+                // means it can never fight the inner div's own transform.
                 return (
-                  <div
+                  <motion.div
                     key={p.id}
-                    className={`coverflow-card ${isActive ? "is-active" : ""}`}
-                    role="button"
-                    tabIndex={hidden ? -1 : 0}
-                    aria-hidden={hidden}
-                    aria-label={isActive ? `Open ${p.title}` : `Show ${p.title}`}
-                    style={{
-                      transform: `translate(-50%, -50%) translateX(${offset * 58}%) translateZ(${
-                        -abs * 120
-                      }px) rotateY(${-offset * 26}deg) scale(${Math.max(0.72, 1 - abs * 0.13)})`,
-                      opacity: hidden ? 0 : Math.max(0.22, 1 - abs * 0.3),
-                      zIndex: 50 - abs,
-                      pointerEvents: hidden ? "none" : "auto",
-                    }}
-                    onClick={() => (isActive ? setActiveId(p.id) : goTo(i))}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        isActive ? setActiveId(p.id) : goTo(i);
-                      }
+                    initial={{ opacity: 0, y: reduceMotion ? 0 : 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, amount: 0.3 }}
+                    transition={{
+                      duration: reduceMotion ? 0 : 0.5,
+                      delay: reduceMotion ? 0 : 0.08 * i,
+                      ease: [0.16, 1, 0.3, 1],
                     }}
                   >
-                    <motion.div className="card-media coverflow-media" layoutId={`project-media-${p.id}`}>
-                      <img src={p.cover} alt={p.title} loading="lazy" />
-                    </motion.div>
-                    <div className="coverflow-card-face">
-                      <span className="coverflow-index">{String(i + 1).padStart(2, "0")}</span>
-                      <h3 className="coverflow-title">{p.title}</h3>
-                      <span className="coverflow-open">
-                        Open Project <span aria-hidden>↗</span>
-                      </span>
+                    <div
+                      className={`coverflow-card ${isActive ? "is-active" : ""}`}
+                      role="button"
+                      tabIndex={hidden ? -1 : 0}
+                      aria-hidden={hidden}
+                      aria-label={isActive ? `Open ${p.title}` : `Show ${p.title}`}
+                      style={{
+                        transform: `translate(-50%, -50%) translateX(${offset * 58}%) translateZ(${
+                          -abs * 120
+                        }px) rotateY(${-offset * 26}deg) scale(${Math.max(0.72, 1 - abs * 0.13)})`,
+                        opacity: hidden ? 0 : Math.max(0.22, 1 - abs * 0.3),
+                        zIndex: 50 - abs,
+                        pointerEvents: hidden ? "none" : "auto",
+                      }}
+                      onClick={() => (isActive ? setActiveId(p.id) : goTo(i))}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          isActive ? setActiveId(p.id) : goTo(i);
+                        }
+                      }}
+                    >
+                      <motion.div className="card-media coverflow-media" layoutId={`project-media-${p.id}`}>
+                        <img src={p.cover} alt={p.title} loading="lazy" />
+                      </motion.div>
+                      <div className="coverflow-card-face">
+                        <span className="coverflow-index">{String(i + 1).padStart(2, "0")}</span>
+                        <h3 className="coverflow-title">{p.title}</h3>
+                        <span className="coverflow-open">
+                          Open Project <span className="coverflow-open-arrow" aria-hidden>↗</span>
+                        </span>
+                      </div>
                     </div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>

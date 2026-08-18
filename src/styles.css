@@ -4706,6 +4706,9 @@ html { scroll-behavior: auto; }
   border-color: var(--accent);
   box-shadow: 0 26px 60px rgba(17,24,39,.14), 0 0 0 1px rgba(37,99,235,.18);
 }
+.coverflow-card.is-active:hover{
+  box-shadow: 0 32px 70px rgba(17,24,39,.18), 0 0 0 1px rgba(37,99,235,.24);
+}
 .coverflow-card:focus-visible{
   outline: 2px solid var(--accent);
   outline-offset: 2px;
@@ -4745,6 +4748,16 @@ html { scroll-behavior: auto; }
   font-weight: 700;
   color: var(--accent);
   white-space: nowrap;
+}
+.coverflow-open-arrow{
+  display: inline-block;
+  transition: transform .2s ease;
+}
+.coverflow-card.is-active:hover .coverflow-open-arrow{
+  transform: translate(3px, -2px);
+}
+@media (prefers-reduced-motion: reduce){
+  .coverflow-open-arrow{ transition: none; }
 }
 .coverflow-arrow{
   flex: 0 0 auto;
