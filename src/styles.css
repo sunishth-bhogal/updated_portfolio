@@ -570,9 +570,14 @@
      OPTIONAL: custom cursor hooks (minimal)
      ======================================================= */
   .custom-cursor{ position: fixed; left: 0; top: 0; width: 12px; height: 12px; border-radius: 50%;
-    background: #fff; border: 0; pointer-events: none; z-index: 2147483647; opacity: 0; box-shadow: 0 0 0 1px rgba(0,0,0,.12), 0 0 8px rgba(0,0,0,.08); transition: opacity .12s ease;
+    background: #fff; border: 0; pointer-events: none; z-index: 2147483647; opacity: 0; box-shadow: 0 0 0 1px rgba(0,0,0,.12), 0 0 8px rgba(0,0,0,.08);
+    transition: opacity .12s ease, width .15s ease, height .15s ease;
   }
   .custom-cursor.is-visible{ opacity: 1; }
+  /* Shrunk over the interactive world map so the country/tooltip underneath
+     is actually visible instead of being covered by the dot. Same
+     top-left-anchored positioning as the default dot, just smaller. */
+  .custom-cursor.is-over-map{ width: 5px; height: 5px; box-shadow: 0 0 0 1px rgba(0,0,0,.25); }
   
   /* =======================================================
      END
@@ -4780,8 +4785,16 @@ html { scroll-behavior: auto; }
   background: var(--accent);
 }
 @media (max-width: 640px){
-  .coverflow-arrow{ width: 36px; height: 36px; font-size: 18px; }
-  .coverflow-card{ width: min(86vw, 340px); }
+  /* The prev/next arrows were eating enough width out of the flex row that
+     .coverflow-track (the card's actual containing block) was left far
+     narrower than the card itself, which .coverflow's overflow:hidden then
+     clipped on both sides. Hiding the arrows here gives the track the full
+     row width; the dots below (and tapping a peeking neighbor card) still
+     provide navigation. */
+  .coverflow-arrow{ display: none; }
+  /* % of .coverflow-track (the card's actual containing block), not vw —
+     guarantees it fits the real available width instead of guessing it. */
+  .coverflow-card{ width: min(320px, 92%); }
 }
 
 /* If you still have the old tabs styles, scope or remove them to avoid collisions */

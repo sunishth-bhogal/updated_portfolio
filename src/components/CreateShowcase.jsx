@@ -167,13 +167,18 @@ export default function CreateShowcase() {
         .tabs-card--growth{ grid-column: 2; grid-row: 2; margin-top: clamp(10px, 2vw, 20px); }
 
         @media (max-width: 780px){
-          .tabs-grid{ grid-template-columns: 1fr; }
+          .tabs-grid{ grid-template-columns: 1fr; gap: clamp(28px, 6vw, 36px); }
           .tabs-card--photo, .tabs-card--thoughts, .tabs-card--growth{
             grid-column: 1; grid-row: auto; margin-top: 0;
           }
         }
 
         .tabs-card-link{
+          /* height:100% + padding with the default content-box sizing made
+             this ~40px (its own padding) taller than its parent grid item —
+             the parent's own min-content row sizing was based on this same
+             child, so the two were fighting: the real fix. */
+          box-sizing: border-box;
           position: relative;
           display: flex; flex-direction: column;
           height: 100%;
@@ -192,6 +197,27 @@ export default function CreateShowcase() {
         .tabs-card--photo .tabs-card-link:hover{ transform: rotate(-0.6deg) translateY(-5px); border-color: rgba(234,140,44,.4); box-shadow: 0 18px 36px rgba(17,24,39,.1); }
         .tabs-card--thoughts .tabs-card-link:hover{ transform: rotate(0.8deg) translateY(-5px); border-color: rgba(124,92,240,.4); box-shadow: 0 18px 36px rgba(17,24,39,.1); }
         .tabs-card--growth .tabs-card-link:hover{ transform: rotate(-0.5deg) translateY(-5px); border-color: rgba(22,163,74,.4); box-shadow: 0 18px 36px rgba(17,24,39,.1); }
+
+        /* The subtle rotation above reads as intentional "scattered
+           stickies" on a wide desktop grid, but a rotated box's visual
+           bounding height is taller than its layout height — stacked
+           tightly in a single mobile column, that was enough to visually
+           overlap the card below it. Flat + a bigger gap (see the grid
+           media query above) keeps them cleanly apart. Placed after the
+           unconditional rotation rules above (same specificity, so source
+           order decides) so this actually wins on narrow screens. */
+        @media (max-width: 780px){
+          .tabs-card--photo .tabs-card-link,
+          .tabs-card--thoughts .tabs-card-link,
+          .tabs-card--growth .tabs-card-link{
+            transform: none;
+          }
+          .tabs-card--photo .tabs-card-link:hover,
+          .tabs-card--thoughts .tabs-card-link:hover,
+          .tabs-card--growth .tabs-card-link:hover{
+            transform: translateY(-5px);
+          }
+        }
 
         /* tape / pin accents */
         .tabs-tape{

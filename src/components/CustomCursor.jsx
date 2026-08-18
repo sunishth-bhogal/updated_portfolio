@@ -6,6 +6,7 @@ export default function CustomCursor() {
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
   const [active, setActive] = useState(false);
+  const [overMap, setOverMap] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -42,6 +43,9 @@ export default function CustomCursor() {
         "a,button,[role='button'],input,textarea,select,label,.clickable"
       );
       setActive(Boolean(isInteractive));
+      // Shrink over the interactive world map (Growth page) — countries are
+      // small enough that the normal-size dot hides whatever's underneath it.
+      setOverMap(Boolean(e.target.closest(".lip__map-wrap")));
     };
 
     const hide = () => setVisible(false);
@@ -65,7 +69,9 @@ export default function CustomCursor() {
   return createPortal(
     <div
       ref={dotRef}
-      className={`custom-cursor ${visible ? "is-visible" : ""} ${active ? "is-active" : ""}`}
+      className={`custom-cursor ${visible ? "is-visible" : ""} ${active ? "is-active" : ""} ${
+        overMap ? "is-over-map" : ""
+      }`}
       aria-hidden="true"
     />,
     document.body

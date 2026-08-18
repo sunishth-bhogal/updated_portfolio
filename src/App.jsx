@@ -170,7 +170,7 @@ function HomePage() {
             section — arranged along a loose diagonal, hiking as the visual anchor. */}
         <div className="hero__visual">
           {/* Each scene's OWN position class controls its CSS `transform`
-              (the hike one needs translate(-50%,-50%) to center itself) —
+              (the hike one needs translate(-50%,-50%) to center itself) — 
               so the framer fade-in lives on a plain inner child instead of
               the positioned element, and the two `transform`s never fight. */}
           <div className="hero__scene hero__scene--code">
