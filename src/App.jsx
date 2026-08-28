@@ -20,7 +20,7 @@ import Contacts from "./components/Contacts";
 
 import PhotoWall from "./components/PhotoWall";
 import DeepThoughtsSection from "./components/DeepThoughtsSection";
-import ScrollToTop from "./components/ScrollToTop";
+import ScrollRestoration from "./components/ScrollRestoration";
 import MilestoneSection from "./components/MilestonesSection";
 import ResumePage from "./pages/ResumePage";
 import Reveal from "./components/Reveal";
@@ -84,7 +84,7 @@ export default function App() {
     <NavInteractionProvider>
       <CustomCursor />
       {isHome && <SwingingFigure />}
-      <ScrollToTop />
+      <ScrollRestoration />
       <Navbar />
       <ScrollManager />
 
