@@ -6398,12 +6398,6 @@ img.hero-img[style] { height: auto !important; width: auto !important; }
   margin-bottom: 0 !important;
 }
 
-/* Close up the gap between the heading and the bento grid below it —
-   .section__content's margin-top is shared by every section, so it's
-   tightened here for Projects only. */
-#projects .section__content {
-  margin-top: 6px;
-}
 
 /* Kill bottom margin on the last child inside Projects (in case ProjectRails adds one) */
 #projects .section__content > *:last-child {

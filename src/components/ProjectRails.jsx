@@ -6,63 +6,66 @@ import Stock from "../components/assets/Stock.jpg";
 import Portfolio from "../components/assets/Portfolio.jpg";
 import UWStudySpots from "../components/assets/UWStudySpots.jpg";
 
-// `video` is left undefined until real screen-recording clips exist for
-// each project — see the note at the bottom of this file for the format
-// BentoMedia expects. Until then every card falls back to its still cover
-// image, which is why none of these show `video: "..."` yet.
+// `video` stays undefined until real screen-recording clips exist — see the
+// note at the bottom of this file. Draftfolio has no screenshot yet, so it
+// renders a branded preview (preview: "draftfolio") instead of a raw image.
 const PROJECTS = [
   {
     id: "draftfolio",
-    slot: "hero",
+    slot: "featured",
     title: "Draftfolio",
-    // Real thesis from the project — a virtual brokerage ledger that
-    // enforces its own invariants, so this line is accurate, not a claim.
+    // Real thesis from the project — accurate, not a claim.
     tagline: "A ledger you can't lose or invent money in.",
     blurb:
       "Risk-aware fantasy investing built on an append-only, property-tested brokerage ledger — with live scoring, a leaderboard, and a deterministic “why did my portfolio move?” explainer.",
     metric: null,
-    cover: undefined, // no screenshot yet — BentoMedia shows a placeholder
+    cover: undefined,
     video: undefined,
+    preview: "draftfolio",
     tags: ["FastAPI", "Postgres", "Next.js", "Hypothesis"],
     url: "https://github.com/sunishth-bhogal/Draftfolio",
+    cta: "View on GitHub",
   },
   {
     id: "uw-study-spots",
-    slot: "large",
+    slot: "tall",
     title: "UW Study Spots",
     blurb:
-      "Live study-space finder for University of Waterloo students with occupancy data, campus maps, and student-submitted reports.",
+      "Live study-space finder for University of Waterloo students — occupancy data, campus maps, and student-submitted reports.",
     metric: "1,000+ users in 5 days",
     cover: UWStudySpots,
     video: undefined,
     tags: ["Next.js", "TypeScript", "Supabase", "UX"],
     url: "https://uw-study-spots.vercel.app/",
+    cta: "Visit site",
+  },
+  {
+    id: "xg",
+    slot: "half",
+    title: "NHL Predictions",
+    blurb: "A model that predicts outcomes for the rest of the NHL season.",
+    metric: null,
+    cover: TML,
+    video: undefined,
+    tags: ["Python", "Pandas", "Modeling"],
+    url: "https://github.com/sunishth-bhogal/NHL-Game-Predictor",
+    cta: "View on GitHub",
   },
   {
     id: "stock",
-    slot: "stack",
+    slot: "half",
     title: "New Stock Movers",
     blurb: "A market-tracking project currently in progress.",
     metric: null,
     cover: Stock,
     video: undefined,
     tags: ["Python", "Pandas", "Finance"],
-    url: null, // no live destination yet — rendered as a non-link card
-  },
-  {
-    id: "xg",
-    slot: "stack",
-    title: "NHL Predictions",
-    blurb: "Predicts outcomes for the rest of the NHL season.",
-    metric: null,
-    cover: TML,
-    video: undefined,
-    tags: ["Python", "Pandas", "Modeling"],
-    url: "https://github.com/sunishth-bhogal/NHL-Game-Predictor",
+    url: null, // no live destination yet — non-link "In progress" card
+    cta: null,
   },
   {
     id: "sitev3",
-    slot: "wide",
+    slot: "more",
     title: "Personal Site",
     blurb: "Portfolio website showcasing my experience, projects, and background.",
     metric: null,
@@ -70,14 +73,51 @@ const PROJECTS = [
     video: undefined,
     tags: ["React", "Routing", "UX"],
     url: "https://github.com/sunishth-bhogal/Portfolio",
+    cta: "View on GitHub",
   },
 ];
 
-// Plays a muted, looping clip once the card scrolls into view, pauses it
-// once the card leaves — a still cover image is used whenever a project
-// has no `video` yet, so the layout never depends on assets that don't
-// exist.
-function BentoMedia({ src, video, alt }) {
+// A tasteful, clearly-decorative brand panel for projects with no screenshot
+// yet — an abstract rising "equity curve" over a soft brand gradient plus the
+// wordmark. Deliberately carries no numbers, so it reads as branding, never as
+// a real dashboard with real data.
+function BrandPreview({ label }) {
+  return (
+    <div className="pc-brand" aria-hidden="true">
+      <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <linearGradient id="pcArea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="rgba(37,99,235,.28)" />
+            <stop offset="1" stopColor="rgba(37,99,235,0)" />
+          </linearGradient>
+        </defs>
+        {/* faint ledger grid */}
+        {[40, 80, 120, 160].map((y) => (
+          <line key={y} x1="0" y1={y} x2="320" y2={y} stroke="rgba(17,24,39,.05)" />
+        ))}
+        {/* area under the curve */}
+        <path
+          d="M0 150 C 50 140, 70 120, 110 118 S 180 96, 220 70 S 290 44, 320 30 L 320 200 L 0 200 Z"
+          fill="url(#pcArea)"
+        />
+        {/* the curve itself */}
+        <path
+          d="M0 150 C 50 140, 70 120, 110 118 S 180 96, 220 70 S 290 44, 320 30"
+          fill="none"
+          stroke="var(--accent, #2563EB)"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+        />
+      </svg>
+      <span className="pc-brand-mark">{label}</span>
+    </div>
+  );
+}
+
+// Plays a muted, looping clip once the card scrolls into view; otherwise shows
+// the still cover, or the branded preview when there's no image yet. Every
+// media area sits inside the same browser-window frame for consistency.
+function CardMedia({ src, video, alt, preview, label }) {
   const wrapRef = useRef(null);
   const videoRef = useRef(null);
   const [inView, setInView] = useState(false);
@@ -100,30 +140,22 @@ function BentoMedia({ src, video, alt }) {
   }, [inView]);
 
   return (
-    <div className="bento-media" ref={wrapRef}>
-      <div className="bento-browser-bar" aria-hidden="true">
-        <span className="bento-dot" />
-        <span className="bento-dot" />
-        <span className="bento-dot" />
+    <div className="pc-media" ref={wrapRef}>
+      <div className="pc-bar" aria-hidden="true">
+        <span className="pc-dot" />
+        <span className="pc-dot" />
+        <span className="pc-dot" />
       </div>
-      <div className="bento-media-inner">
+      <div className="pc-media-inner">
         {video ? (
-          <video
-            ref={videoRef}
-            src={video}
-            poster={src}
-            muted
-            loop
-            playsInline
-            preload="metadata"
-          />
+          <video ref={videoRef} src={video} poster={src} muted loop playsInline preload="metadata" />
         ) : src ? (
           <img src={src} alt={alt} loading="lazy" />
+        ) : preview ? (
+          <BrandPreview label={label} />
         ) : (
-          // No screenshot supplied yet — a neutral, clearly-labelled panel
-          // instead of a broken image, so nothing here is faked.
-          <div className="bento-media-placeholder" aria-hidden="true">
-            <span>Preview coming soon</span>
+          <div className="pc-brand" aria-hidden="true">
+            <span className="pc-brand-mark">Preview coming soon</span>
           </div>
         )}
       </div>
@@ -131,7 +163,7 @@ function BentoMedia({ src, video, alt }) {
   );
 }
 
-function BentoCard({ project, index, reduceMotion }) {
+function ProjectCard({ project, index, reduceMotion }) {
   const hasLink = Boolean(project.url);
   const Tag = hasLink ? motion.a : motion.div;
   const linkProps = hasLink
@@ -141,49 +173,53 @@ function BentoCard({ project, index, reduceMotion }) {
   return (
     <Tag
       {...linkProps}
-      className={`bento-card bento-card--${project.slot} ${hasLink ? "" : "is-static"}`}
-      initial={{ opacity: 0, y: reduceMotion ? 0 : 26 }}
+      className={`pc pc--${project.slot} ${hasLink ? "" : "is-static"}`}
+      initial={{ opacity: 0, y: reduceMotion ? 0 : 24 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.25 }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{
-        duration: reduceMotion ? 0 : 0.55,
-        delay: reduceMotion ? 0 : 0.08 * index,
+        duration: reduceMotion ? 0 : 0.5,
+        delay: reduceMotion ? 0 : 0.07 * index,
         ease: [0.16, 1, 0.3, 1],
       }}
     >
-      <BentoMedia src={project.cover} video={project.video} alt={project.title} />
+      <CardMedia
+        src={project.cover}
+        video={project.video}
+        alt={project.title}
+        preview={project.preview}
+        label={project.title}
+      />
 
-      <div className="bento-body">
-        <div className="bento-heading">
-          <h3 className="bento-title">{project.title}</h3>
+      <div className="pc-body">
+        <div className="pc-heading">
+          <h3 className="pc-title">{project.title}</h3>
           {hasLink ? (
-            <span className="bento-arrow" aria-hidden="true">
-              ↗
-            </span>
+            <span className="pc-arrow" aria-hidden="true">↗</span>
           ) : (
-            <span className="bento-static-pill">In progress</span>
+            <span className="pc-status">In progress</span>
           )}
         </div>
 
-        {project.tagline ? (
-          <span className="bento-metric">{project.tagline}</span>
-        ) : project.metric ? (
-          <span className="bento-metric">{project.metric}</span>
+        {project.tagline ? <span className="pc-metric">{project.tagline}</span> : null}
+        {!project.tagline && project.metric ? (
+          <span className="pc-metric">{project.metric}</span>
         ) : null}
 
-        {project.blurb && (project.tagline || !project.metric) ? (
-          <p className="bento-blurb">{project.blurb}</p>
-        ) : null}
+        <p className="pc-blurb">{project.blurb}</p>
 
-        {project.tags?.length ? (
-          <div className="bento-tags">
-            {project.tags.map((t) => (
-              <span key={t} className="bento-tag">
-                {t}
-              </span>
+        <div className="pc-foot">
+          <div className="pc-tags">
+            {project.tags?.map((t) => (
+              <span key={t} className="pc-tag">{t}</span>
             ))}
           </div>
-        ) : null}
+          {project.cta ? (
+            <span className="pc-cta">
+              {project.cta} <span aria-hidden="true">↗</span>
+            </span>
+          ) : null}
+        </div>
       </div>
     </Tag>
   );
@@ -191,232 +227,327 @@ function BentoCard({ project, index, reduceMotion }) {
 
 export default function ProjectRails() {
   const reduceMotion = useReducedMotion();
-  const hero = PROJECTS.find((p) => p.slot === "hero");
-  const large = PROJECTS.find((p) => p.slot === "large");
-  const stack = PROJECTS.filter((p) => p.slot === "stack");
-  const wide = PROJECTS.find((p) => p.slot === "wide");
+  const featured = PROJECTS.find((p) => p.slot === "featured");
+  const tall = PROJECTS.find((p) => p.slot === "tall");
+  const halves = PROJECTS.filter((p) => p.slot === "half");
+  const more = PROJECTS.filter((p) => p.slot === "more");
 
   return (
-    <div className="bento-grid">
-      {hero ? (
-        <BentoCard project={hero} index={0} reduceMotion={reduceMotion} />
-      ) : null}
-      <BentoCard project={large} index={hero ? 1 : 0} reduceMotion={reduceMotion} />
-      <div className="bento-stack">
-        {stack.map((p, i) => (
-          <BentoCard
-            key={p.id}
-            project={p}
-            index={(hero ? 2 : 1) + i}
-            reduceMotion={reduceMotion}
-          />
+    <div className="pj-shell">
+      <header className="pj-head">
+        <div>
+          <motion.p
+            className="pj-eyebrow"
+            initial={{ opacity: 0, y: reduceMotion ? 0 : 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: reduceMotion ? 0 : 0.5, ease: [0.16, 1, 0.3, 1] }}
+          >
+            Selected work
+          </motion.p>
+          <motion.h2
+            className="pj-title"
+            initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.6 }}
+            transition={{ duration: reduceMotion ? 0 : 0.6, delay: reduceMotion ? 0 : 0.06, ease: [0.16, 1, 0.3, 1] }}
+          >
+            Projects
+          </motion.h2>
+        </div>
+        <motion.p
+          className="pj-sub"
+          initial={{ opacity: 0, y: reduceMotion ? 0 : 12 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: reduceMotion ? 0 : 0.5, delay: reduceMotion ? 0 : 0.12, ease: [0.16, 1, 0.3, 1] }}
+        >
+          Products built across finance, machine learning, and full-stack engineering.
+        </motion.p>
+      </header>
+
+      <div className="pj-grid">
+        {featured ? <ProjectCard project={featured} index={0} reduceMotion={reduceMotion} /> : null}
+        {tall ? <ProjectCard project={tall} index={1} reduceMotion={reduceMotion} /> : null}
+        {halves.map((p, i) => (
+          <ProjectCard key={p.id} project={p} index={2 + i} reduceMotion={reduceMotion} />
         ))}
       </div>
-      <BentoCard project={wide} index={hero ? 4 : 3} reduceMotion={reduceMotion} />
+
+      {more.length ? (
+        <div className="pj-more">
+          <p className="pj-more-label">More experiments</p>
+          <div className="pj-more-grid">
+            {more.map((p, i) => (
+              <ProjectCard key={p.id} project={p} index={4 + i} reduceMotion={reduceMotion} />
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       <style>{`
-        /* Scoped to #projects only — .section__title's own margin is shared
-           by every other section on the page, so it's tightened here
-           rather than changed globally, closing up the gap between the
-           heading and the grid below it. */
-        #projects .section__title{ margin-bottom: 14px; }
-
-        .bento-grid{
-          display: grid;
-          grid-template-columns: 1.4fr 1fr;
-          gap: clamp(8px, 1vw, 12px);
+        /* The base .section rule caps every section at min(1100px, 92vw) and
+           centres it — that's the narrow column. Projects opts out so it can
+           run nearly full-width; the shell below supplies its own side padding. */
+        #projects.section{
+          width: 100%;
+          max-width: none;
+          margin-inline: 0;
         }
-        .bento-stack{
-          /* Explicit placement — without it, grid auto-placement drops this
-             into a single implicit row instead of spanning the same two
-             rows as the large card next to it, since nothing here tells it
-             to match that span on its own. Rows 2/3 because the full-width
-             hero card sits on row 1 above. */
-          grid-column: 2;
-          grid-row: 2 / span 2;
+
+        /* Full-width section — break out of the narrow shared container and use
+           responsive side padding instead, so the grid nearly fills the screen
+           rather than sitting in a column with big grey margins. */
+        #projects .pj-shell{
+          width: 100%;
+          box-sizing: border-box;
+          padding: clamp(6px, 1vw, 16px) clamp(20px, 4vw, 72px) clamp(16px, 2vw, 28px);
+        }
+
+        /* ---- Header: eyebrow + big title on the left, blurb on the right ---- */
+        #projects .pj-head{
           display: flex;
-          flex-direction: column;
-          gap: clamp(8px, 1vw, 12px);
-          min-height: 0;
+          align-items: flex-end;
+          justify-content: space-between;
+          gap: 24px;
+          margin-bottom: clamp(20px, 2.6vw, 34px);
+        }
+        #projects .pj-eyebrow{
+          margin: 0 0 10px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+          font-size: 12px; font-weight: 600;
+          letter-spacing: .22em; text-transform: uppercase;
+          color: var(--accent, #2563EB);
+        }
+        #projects .pj-title{
+          margin: 0;
+          font-weight: 800;
+          font-size: clamp(40px, 6vw, 78px);
+          line-height: .98;
+          letter-spacing: -.02em;
+          color: var(--text-1, #111827);
+        }
+        #projects .pj-sub{
+          margin: 0 0 6px;
+          max-width: 34ch;
+          text-align: right;
+          color: var(--text-2, #5F6672);
+          line-height: 1.5;
         }
 
-        .bento-card{
+        /* ---- 12-column grid ---- */
+        #projects .pj-grid{
+          display: grid;
+          grid-template-columns: repeat(12, 1fr);
+          gap: clamp(14px, 1.5vw, 22px);
+        }
+        #projects .pc--featured{ grid-column: span 8; grid-row: 1; }
+        #projects .pc--tall{ grid-column: span 4; grid-row: 1 / span 2; }
+        #projects .pc--half{ grid-column: span 4; grid-row: 2; }
+
+        /* ---- Card shell — one consistent, polished treatment ---- */
+        #projects .pc{
           position: relative;
           display: flex;
           flex-direction: column;
-          border-radius: 18px;
-          border: 1px solid var(--line, #DDDAD3);
+          min-height: 0;
+          border-radius: 24px;
+          border: 1px solid rgba(17,24,39,.08);
           background: var(--panel, #fff);
+          box-shadow: 0 12px 40px rgba(15,23,42,.05);
           overflow: hidden;
           text-decoration: none;
           color: inherit;
           cursor: pointer;
-          transition: border-color .25s ease, box-shadow .25s ease, transform .25s ease;
+          transition: transform .3s cubic-bezier(.16,1,.3,1),
+                      border-color .3s ease, box-shadow .3s ease;
         }
-        .bento-card.is-static{ cursor: default; }
-        .bento-card:hover{
-          border-color: var(--accent, #2563EB);
-          box-shadow: 0 20px 44px rgba(17,24,39,.09);
+        #projects .pc.is-static{ cursor: default; }
+        #projects .pc:hover{
+          transform: translateY(-6px);
+          /* softened blue, not a hard accent line */
+          border-color: rgba(37,99,235,.38);
+          box-shadow: 0 22px 60px rgba(15,23,42,.12);
         }
+        #projects .pc--featured{ flex-direction: row; min-height: clamp(300px, 23vw, 360px); }
+        #projects .pc--featured .pc-media{ flex: 0 0 47%; }
+        #projects .pc--featured .pc-body{ flex: 1; justify-content: center; }
 
-        /* Flagship: full-width banner across the top of the grid. */
-        .bento-card--hero{
-          grid-column: 1 / -1;
-          grid-row: 1;
-          flex-direction: row;
-        }
-        .bento-card--hero .bento-media{ flex: 0 0 52%; aspect-ratio: auto; }
-        .bento-card--hero .bento-media-inner{ min-height: 260px; }
-        .bento-card--hero .bento-body{
-          flex: 1;
-          justify-content: center;
-          gap: 8px;
-          padding: clamp(18px, 2.4vw, 32px);
-        }
-        .bento-card--hero .bento-title{ font-size: clamp(22px, 2.6vw, 32px); }
-        .bento-card--hero .bento-metric{ font-size: clamp(15px, 1.5vw, 18px); }
-        .bento-card--hero .bento-blurb{ font-size: 15px; max-width: 46ch; }
-
-        .bento-card--large{ grid-column: 1; grid-row: 2 / span 2; }
-        /* Kept short on purpose — with two stacked cards on the right,
-           whichever column is taller stretches the other to match (CSS
-           Grid's default row-fill behaviour), so both sides need to be
-           deliberately compact for the whole grid to fit near one screen
-           alongside the heading, as requested. */
-        .bento-card--large .bento-media{ aspect-ratio: 16 / 10; }
-        .bento-stack .bento-card--stack .bento-media{ aspect-ratio: 3 / 1; }
-        .bento-card--wide{
-          grid-column: 1 / span 2;
-          flex-direction: row;
-        }
-        .bento-card--wide .bento-media{ flex: 0 0 44%; aspect-ratio: auto; }
-        .bento-card--wide .bento-body{ flex: 1; justify-content: center; }
-        @media (max-width: 780px){
-          .bento-grid{ grid-template-columns: 1fr; }
-          .bento-card--hero{ grid-column: 1; grid-row: auto; flex-direction: column; }
-          .bento-card--hero .bento-media{ flex: none; aspect-ratio: 16 / 10; }
-          .bento-card--large{ grid-column: 1; grid-row: auto; }
-          .bento-stack{ grid-column: 1; grid-row: auto; }
-          .bento-card--wide{ grid-column: 1; flex-direction: column; }
-          .bento-card--wide .bento-media{ flex: none; aspect-ratio: 16 / 10; }
-        }
-
-        /* Consistent "browser window" frame around every media area,
-           rather than differently styled raw images. */
-        .bento-media{ position: relative; background: var(--bg-1, #F6F4EF); overflow: hidden; }
-        .bento-browser-bar{
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          padding: 9px 12px;
-          background: rgba(17,24,39,.04);
-          border-bottom: 1px solid var(--line, #DDDAD3);
-        }
-        .bento-dot{ width: 7px; height: 7px; border-radius: 50%; background: rgba(17,24,39,.16); }
-        .bento-dot:last-child{ background: var(--accent, #2563EB); opacity: .55; }
-        .bento-media-inner{ position: relative; width: 100%; height: 100%; overflow: hidden; }
-        .bento-media-placeholder{
-          position: absolute; inset: 0;
-          display: flex; align-items: center; justify-content: center;
-          background:
-            radial-gradient(120% 120% at 30% 20%, rgba(37,99,235,.10), transparent 60%),
-            var(--bg-1, #F6F4EF);
-          color: var(--text-3, #8A8F98);
-          font-size: 12px; font-weight: 600;
-          letter-spacing: .06em; text-transform: uppercase;
-        }
-        .bento-card--wide .bento-media-inner{ min-height: 132px; }
-        .bento-media-inner img, .bento-media-inner video{
-          position: absolute; inset: 0;
-          width: 100%; height: 100%;
-          object-fit: cover;
-          display: block;
-          transition: transform .5s cubic-bezier(.16,1,.3,1);
-        }
-        .bento-card:hover .bento-media-inner img,
-        .bento-card:hover .bento-media-inner video{ transform: scale(1.025); }
-
-        .bento-body{
+        /* ---- Media: consistent browser frame + image ratios ---- */
+        #projects .pc-media{
+          position: relative;
           display: flex;
           flex-direction: column;
-          gap: 5px;
-          padding: clamp(12px, 1.5vw, 16px);
+          background: var(--bg-1, #F6F4EF);
+          min-height: 0;
         }
-        .bento-heading{ display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
-        .bento-title{
-          margin: 0;
-          font-weight: 800;
-          font-size: clamp(16px, 1.7vw, 21px);
-          letter-spacing: -.01em;
+        #projects .pc-bar{
+          display: flex; align-items: center; gap: 6px;
+          padding: 9px 12px;
+          background: rgba(17,24,39,.03);
+          border-bottom: 1px solid rgba(17,24,39,.06);
+        }
+        #projects .pc-dot{ width: 7px; height: 7px; border-radius: 50%; background: rgba(17,24,39,.14); }
+        #projects .pc-dot:last-child{ background: var(--accent, #2563EB); opacity: .5; }
+        #projects .pc-media-inner{ position: relative; flex: 1; min-height: 0; overflow: hidden; }
+        /* The two secondary cards share one image ratio so the row reads as a
+           set. Row-layout cards (featured, more) let the media fill height
+           instead — an aspect-ratio there would force the whole card tall. */
+        #projects .pc--half .pc-media-inner{ aspect-ratio: 16 / 10; }
+        #projects .pc-media-inner img,
+        #projects .pc-media-inner video{
+          position: absolute; inset: 0;
+          width: 100%; height: 100%;
+          object-fit: cover; display: block;
+          transition: transform .5s cubic-bezier(.16,1,.3,1);
+        }
+        #projects .pc:hover .pc-media-inner img,
+        #projects .pc:hover .pc-media-inner video{ transform: scale(1.045); }
+
+        /* branded preview panel (Draftfolio) */
+        #projects .pc-brand{
+          position: absolute; inset: 0;
+          display: flex; align-items: flex-end;
+          background:
+            radial-gradient(130% 100% at 15% 0%, rgba(37,99,235,.12), transparent 55%),
+            linear-gradient(140deg, #eef1fb, #f6f5f1);
+        }
+        #projects .pc-brand svg{ position: absolute; inset: 0; width: 100%; height: 100%; }
+        #projects .pc-brand-mark{
+          position: relative;
+          margin: 16px 18px;
+          font-weight: 800; letter-spacing: -.01em;
+          font-size: clamp(15px, 1.5vw, 19px);
+          color: var(--text-1, #111827);
+        }
+
+        /* ---- Body: title / metric / blurb / footer in consistent slots ---- */
+        #projects .pc-body{
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          padding: clamp(16px, 1.6vw, 24px);
+        }
+        #projects .pc-heading{ display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+        #projects .pc-title{
+          margin: 0; font-weight: 800; letter-spacing: -.01em;
+          font-size: clamp(17px, 1.5vw, 20px);
           color: var(--text-1, #111827);
           transition: transform .25s ease;
         }
-        .bento-card:hover .bento-title{ transform: translateY(-4px); }
-        .bento-arrow{
-          flex: 0 0 auto;
-          color: var(--accent, #2563EB);
-          font-size: 18px;
+        #projects .pc--featured .pc-title{ font-size: clamp(24px, 2.4vw, 34px); }
+        #projects .pc:hover .pc-title{ transform: translateY(-2px); }
+        #projects .pc-arrow{
+          flex: 0 0 auto; color: var(--accent, #2563EB); font-size: 18px;
           transition: transform .25s ease;
         }
-        .bento-card:hover .bento-arrow{ transform: translate(4px, -4px); }
-        .bento-static-pill{
-          flex: 0 0 auto;
-          font-size: 11px;
-          font-weight: 700;
-          letter-spacing: .04em;
-          text-transform: uppercase;
+        #projects .pc:hover .pc-arrow{ transform: translate(4px, -4px); }
+        #projects .pc-status{
+          flex: 0 0 auto; font-size: 11px; font-weight: 700;
+          letter-spacing: .04em; text-transform: uppercase;
           color: var(--text-3, #8A8F98);
         }
-
-        .bento-metric{
-          font-size: clamp(14px, 1.3vw, 16px);
-          font-weight: 700;
+        #projects .pc-metric{
+          font-size: clamp(14px, 1.2vw, 16px); font-weight: 700;
           color: var(--accent, #2563EB);
         }
-        .bento-blurb{
-          margin: 0;
-          font-size: 13.5px;
-          line-height: 1.55;
-          color: var(--text-2, #5F6672);
+        #projects .pc--featured .pc-metric{ font-size: clamp(15px, 1.4vw, 18px); }
+        #projects .pc-blurb{
+          margin: 0; font-size: 14px; line-height: 1.55;
+          color: var(--text-2, #5F6672); max-width: 52ch;
         }
-        .bento-card--large .bento-blurb{ font-size: 14.5px; }
+        #projects .pc--featured .pc-blurb{ font-size: 15px; }
 
-        .bento-tags{
-          display: flex;
-          flex-wrap: wrap;
-          gap: 6px;
-          margin-top: 2px;
-          opacity: 0;
-          transform: translateY(6px);
-          transition: opacity .2s ease, transform .2s ease;
+        /* footer pinned to the bottom so tags + CTA sit in the same place on
+           every card, giving the equal-height cards a consistent baseline. */
+        #projects .pc-foot{
+          margin-top: auto;
+          padding-top: 4px;
+          display: flex; align-items: center; justify-content: space-between;
+          gap: 12px; flex-wrap: wrap;
         }
-        .bento-card:hover .bento-tags{ opacity: 1; transform: translateY(0); }
-        .bento-tag{
-          font-size: 11px;
-          font-weight: 600;
-          padding: 3px 8px;
-          border-radius: 999px;
-          background: rgba(17,24,39,.05);
-          color: var(--text-2, #5F6672);
+        #projects .pc-tags{ display: flex; flex-wrap: wrap; gap: 6px; }
+        #projects .pc-tag{
+          font-size: 11px; font-weight: 600;
+          padding: 3px 8px; border-radius: 999px;
+          background: rgba(17,24,39,.05); color: var(--text-2, #5F6672);
+        }
+        #projects .pc-cta{
+          flex: 0 0 auto;
+          display: inline-flex; align-items: center; gap: 5px;
+          font-size: 12.5px; font-weight: 700;
+          color: var(--accent, #2563EB);
+          transition: gap .2s ease;
+        }
+        #projects .pc:hover .pc-cta{ gap: 9px; }
+
+        /* ---- "More experiments" row ---- */
+        #projects .pj-more{ margin-top: clamp(16px, 1.8vw, 26px); }
+        #projects .pj-more-label{
+          margin: 0 0 10px;
+          font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+          font-size: 11.5px; font-weight: 600;
+          letter-spacing: .18em; text-transform: uppercase;
+          color: var(--text-3, #8A8F98);
+        }
+        #projects .pj-more-grid{
+          display: grid;
+          /* one card fills the row; more experiments wrap into columns later */
+          grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+          gap: clamp(14px, 1.5vw, 22px);
+        }
+        #projects .pc--more{ flex-direction: row; min-height: clamp(150px, 13vw, 186px); }
+        #projects .pc--more .pc-media{ flex: 0 0 clamp(220px, 26%, 320px); }
+        #projects .pc--more .pc-body{ flex: 1; justify-content: center; }
+
+        /* ---- Tablet ---- */
+        @media (max-width: 1023px){
+          #projects .pc--featured{ grid-column: 1 / -1; grid-row: auto; }
+          #projects .pc--tall{ grid-column: 1 / -1; grid-row: auto; flex-direction: row; }
+          #projects .pc--tall .pc-media{ flex: 0 0 47%; }
+          #projects .pc--tall .pc-body{ flex: 1; justify-content: center; }
+          #projects .pc--tall .pc-media-inner{ aspect-ratio: 16 / 10; }
+          #projects .pc--half{ grid-column: span 6; grid-row: auto; }
+          #projects .pj-more-grid{ grid-template-columns: 1fr; }
+        }
+
+        /* ---- Mobile ---- */
+        @media (max-width: 640px){
+          #projects .pj-head{ flex-direction: column; align-items: flex-start; }
+          #projects .pj-sub{ display: none; }
+          #projects .pj-grid{ grid-template-columns: 1fr; }
+          #projects .pc--featured,
+          #projects .pc--tall,
+          #projects .pc--half{ grid-column: 1 / -1; grid-row: auto; flex-direction: column; }
+          #projects .pc--featured .pc-media,
+          #projects .pc--tall .pc-media,
+          #projects .pc--more .pc-media{ flex: none; }
+          #projects .pc--featured .pc-media-inner,
+          #projects .pc--tall .pc-media-inner{ aspect-ratio: 16 / 10; }
+          #projects .pc--more{ flex-direction: column; }
         }
 
         @media (hover: none){
-          /* No hover on touch — keep the tech stack visible instead of
-             permanently hidden behind an interaction that can't happen. */
-          .bento-tags{ opacity: 1; transform: none; }
+          #projects .pc:hover{ transform: none; }
         }
         @media (prefers-reduced-motion: reduce){
-          .bento-card, .bento-title, .bento-arrow, .bento-tags,
-          .bento-media-inner img, .bento-media-inner video{ transition: none; }
+          #projects .pc,
+          #projects .pc-title,
+          #projects .pc-arrow,
+          #projects .pc-cta,
+          #projects .pc-media-inner img,
+          #projects .pc-media-inner video{ transition: none; }
+          #projects .pc:hover{ transform: none; }
+          #projects .pc:hover .pc-media-inner img,
+          #projects .pc:hover .pc-media-inner video{ transform: none; }
         }
       `}</style>
     </div>
   );
 }
 
-/* To turn on the autoplay demo clips: drop 5–8s, muted-friendly .mp4 files
-   (ideally already silent/no audio track) into src/components/assets/, import
-   them the same way the cover images are imported above, and set the
-   corresponding project's `video` field to that import. BentoMedia already
-   handles play-on-enter/pause-on-leave and falls back to the still cover
-   whenever `video` is left undefined, so nothing else needs to change. */
+/* To turn on the autoplay demo clips: drop 5–8s, muted .mp4 files into
+   src/components/assets/, import them like the cover images above, and set the
+   project's `video` field. CardMedia handles play-on-enter/pause-on-leave and
+   falls back to the still cover (or the branded preview) when `video` is unset.
+   To give Draftfolio a real screenshot, set its `cover` and drop `preview`. */

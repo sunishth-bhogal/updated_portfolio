@@ -257,16 +257,9 @@ function HomePage() {
           </div>
         </section>
 
-        {/* Projects */}
+        {/* Projects — full-width; ProjectRails renders its own header + grid */}
         <section id="projects" className="section section-dark anchor-offset">
-          <div className="section__container">
-            <Reveal as="h2" className="section__title" data-underline="true" y={16}>
-              Projects
-            </Reveal>
-            <Reveal className="section__content" delay={0.12}>
-              <ProjectRails />
-            </Reveal>
-          </div>
+          <ProjectRails />
         </section>
 
         {/* Create */}
