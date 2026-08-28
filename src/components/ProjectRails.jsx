@@ -12,6 +12,21 @@ import UWStudySpots from "../components/assets/UWStudySpots.jpg";
 // image, which is why none of these show `video: "..."` yet.
 const PROJECTS = [
   {
+    id: "draftfolio",
+    slot: "hero",
+    title: "Draftfolio",
+    // Real thesis from the project — a virtual brokerage ledger that
+    // enforces its own invariants, so this line is accurate, not a claim.
+    tagline: "A ledger you can't lose or invent money in.",
+    blurb:
+      "Risk-aware fantasy investing built on an append-only, property-tested brokerage ledger — with live scoring, a leaderboard, and a deterministic “why did my portfolio move?” explainer.",
+    metric: null,
+    cover: undefined, // no screenshot yet — BentoMedia shows a placeholder
+    video: undefined,
+    tags: ["FastAPI", "Postgres", "Next.js", "Hypothesis"],
+    url: "https://github.com/sunishth-bhogal/Draftfolio",
+  },
+  {
     id: "uw-study-spots",
     slot: "large",
     title: "UW Study Spots",
@@ -102,8 +117,14 @@ function BentoMedia({ src, video, alt }) {
             playsInline
             preload="metadata"
           />
-        ) : (
+        ) : src ? (
           <img src={src} alt={alt} loading="lazy" />
+        ) : (
+          // No screenshot supplied yet — a neutral, clearly-labelled panel
+          // instead of a broken image, so nothing here is faked.
+          <div className="bento-media-placeholder" aria-hidden="true">
+            <span>Preview coming soon</span>
+          </div>
         )}
       </div>
     </div>
@@ -144,11 +165,15 @@ function BentoCard({ project, index, reduceMotion }) {
           )}
         </div>
 
-        {project.metric ? (
+        {project.tagline ? (
+          <span className="bento-metric">{project.tagline}</span>
+        ) : project.metric ? (
           <span className="bento-metric">{project.metric}</span>
-        ) : (
+        ) : null}
+
+        {project.blurb && (project.tagline || !project.metric) ? (
           <p className="bento-blurb">{project.blurb}</p>
-        )}
+        ) : null}
 
         {project.tags?.length ? (
           <div className="bento-tags">
@@ -166,19 +191,28 @@ function BentoCard({ project, index, reduceMotion }) {
 
 export default function ProjectRails() {
   const reduceMotion = useReducedMotion();
+  const hero = PROJECTS.find((p) => p.slot === "hero");
   const large = PROJECTS.find((p) => p.slot === "large");
   const stack = PROJECTS.filter((p) => p.slot === "stack");
   const wide = PROJECTS.find((p) => p.slot === "wide");
 
   return (
     <div className="bento-grid">
-      <BentoCard project={large} index={0} reduceMotion={reduceMotion} />
+      {hero ? (
+        <BentoCard project={hero} index={0} reduceMotion={reduceMotion} />
+      ) : null}
+      <BentoCard project={large} index={hero ? 1 : 0} reduceMotion={reduceMotion} />
       <div className="bento-stack">
         {stack.map((p, i) => (
-          <BentoCard key={p.id} project={p} index={i + 1} reduceMotion={reduceMotion} />
+          <BentoCard
+            key={p.id}
+            project={p}
+            index={(hero ? 2 : 1) + i}
+            reduceMotion={reduceMotion}
+          />
         ))}
       </div>
-      <BentoCard project={wide} index={3} reduceMotion={reduceMotion} />
+      <BentoCard project={wide} index={hero ? 4 : 3} reduceMotion={reduceMotion} />
 
       <style>{`
         /* Scoped to #projects only — .section__title's own margin is shared
@@ -196,9 +230,10 @@ export default function ProjectRails() {
           /* Explicit placement — without it, grid auto-placement drops this
              into a single implicit row instead of spanning the same two
              rows as the large card next to it, since nothing here tells it
-             to match that span on its own. */
+             to match that span on its own. Rows 2/3 because the full-width
+             hero card sits on row 1 above. */
           grid-column: 2;
-          grid-row: 1 / span 2;
+          grid-row: 2 / span 2;
           display: flex;
           flex-direction: column;
           gap: clamp(8px, 1vw, 12px);
@@ -224,7 +259,25 @@ export default function ProjectRails() {
           box-shadow: 0 20px 44px rgba(17,24,39,.09);
         }
 
-        .bento-card--large{ grid-column: 1; grid-row: 1 / span 2; }
+        /* Flagship: full-width banner across the top of the grid. */
+        .bento-card--hero{
+          grid-column: 1 / -1;
+          grid-row: 1;
+          flex-direction: row;
+        }
+        .bento-card--hero .bento-media{ flex: 0 0 52%; aspect-ratio: auto; }
+        .bento-card--hero .bento-media-inner{ min-height: 260px; }
+        .bento-card--hero .bento-body{
+          flex: 1;
+          justify-content: center;
+          gap: 8px;
+          padding: clamp(18px, 2.4vw, 32px);
+        }
+        .bento-card--hero .bento-title{ font-size: clamp(22px, 2.6vw, 32px); }
+        .bento-card--hero .bento-metric{ font-size: clamp(15px, 1.5vw, 18px); }
+        .bento-card--hero .bento-blurb{ font-size: 15px; max-width: 46ch; }
+
+        .bento-card--large{ grid-column: 1; grid-row: 2 / span 2; }
         /* Kept short on purpose — with two stacked cards on the right,
            whichever column is taller stretches the other to match (CSS
            Grid's default row-fill behaviour), so both sides need to be
@@ -240,6 +293,8 @@ export default function ProjectRails() {
         .bento-card--wide .bento-body{ flex: 1; justify-content: center; }
         @media (max-width: 780px){
           .bento-grid{ grid-template-columns: 1fr; }
+          .bento-card--hero{ grid-column: 1; grid-row: auto; flex-direction: column; }
+          .bento-card--hero .bento-media{ flex: none; aspect-ratio: 16 / 10; }
           .bento-card--large{ grid-column: 1; grid-row: auto; }
           .bento-stack{ grid-column: 1; grid-row: auto; }
           .bento-card--wide{ grid-column: 1; flex-direction: column; }
@@ -260,6 +315,16 @@ export default function ProjectRails() {
         .bento-dot{ width: 7px; height: 7px; border-radius: 50%; background: rgba(17,24,39,.16); }
         .bento-dot:last-child{ background: var(--accent, #2563EB); opacity: .55; }
         .bento-media-inner{ position: relative; width: 100%; height: 100%; overflow: hidden; }
+        .bento-media-placeholder{
+          position: absolute; inset: 0;
+          display: flex; align-items: center; justify-content: center;
+          background:
+            radial-gradient(120% 120% at 30% 20%, rgba(37,99,235,.10), transparent 60%),
+            var(--bg-1, #F6F4EF);
+          color: var(--text-3, #8A8F98);
+          font-size: 12px; font-weight: 600;
+          letter-spacing: .06em; text-transform: uppercase;
+        }
         .bento-card--wide .bento-media-inner{ min-height: 132px; }
         .bento-media-inner img, .bento-media-inner video{
           position: absolute; inset: 0;
