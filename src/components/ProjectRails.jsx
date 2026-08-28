@@ -7,8 +7,12 @@ import Portfolio from "../components/assets/Portfolio.jpg";
 import UWStudySpots from "../components/assets/UWStudySpots.jpg";
 
 // `video` stays undefined until real screen-recording clips exist — see the
-// note at the bottom of this file. Draftfolio has no screenshot yet, so it
-// renders a branded preview (preview: "draftfolio") instead of a raw image.
+// note at the bottom of this file. Projects with no screenshot yet render a
+// branded preview panel (preview: "chart" | "plain") instead of a raw image.
+//
+// Layout slots: featured = 8-col hero; side = the two stacked cards in the
+// 4-col right column; bottomA/bottomB = the 5- and 7-col cards on the row
+// below; more = the "More experiments" strip.
 const PROJECTS = [
   {
     id: "draftfolio",
@@ -21,27 +25,42 @@ const PROJECTS = [
     metric: null,
     cover: undefined,
     video: undefined,
-    preview: "draftfolio",
+    preview: "chart",
     tags: ["FastAPI", "Postgres", "Next.js", "Hypothesis"],
     url: "https://github.com/sunishth-bhogal/Draftfolio",
     cta: "View on GitHub",
   },
   {
     id: "uw-study-spots",
-    slot: "tall",
+    slot: "side",
     title: "UW Study Spots",
-    blurb:
-      "Live study-space finder for University of Waterloo students — occupancy data, campus maps, and student-submitted reports.",
+    // Compact card — lead with the outcome instead of a long blurb.
     metric: "1,000+ users in 5 days",
+    blurb: "Live study-space finder for UW students.",
     cover: UWStudySpots,
     video: undefined,
-    tags: ["Next.js", "TypeScript", "Supabase", "UX"],
+    tags: ["Next.js", "TypeScript", "Supabase"],
     url: "https://uw-study-spots.vercel.app/",
     cta: "Visit site",
   },
   {
+    id: "founder-ai",
+    slot: "side",
+    title: "Founder AI Assistant",
+    tagline: "Turn scattered startup context into clear next steps.",
+    blurb:
+      "An AI workspace that organizes founder notes, analyzes customer feedback, and generates context-aware product and business recommendations.",
+    metric: null,
+    cover: undefined,
+    video: undefined,
+    preview: "plain",
+    tags: ["Next.js", "TypeScript", "OpenAI", "Postgres"],
+    url: null, // In Progress — no live destination yet
+    cta: null,
+  },
+  {
     id: "xg",
-    slot: "half",
+    slot: "bottomA",
     title: "NHL Predictions",
     blurb: "A model that predicts outcomes for the rest of the NHL season.",
     metric: null,
@@ -53,8 +72,8 @@ const PROJECTS = [
   },
   {
     id: "stock",
-    slot: "half",
-    title: "New Stock Movers",
+    slot: "bottomB",
+    title: "Stock News Impact",
     blurb: "A market-tracking project currently in progress.",
     metric: null,
     cover: Stock,
@@ -78,37 +97,39 @@ const PROJECTS = [
 ];
 
 // A tasteful, clearly-decorative brand panel for projects with no screenshot
-// yet — an abstract rising "equity curve" over a soft brand gradient plus the
-// wordmark. Deliberately carries no numbers, so it reads as branding, never as
-// a real dashboard with real data.
-function BrandPreview({ label }) {
+// yet. Deliberately carries no numbers/data, so it reads as branding, never as
+// a real dashboard. "chart" draws an abstract rising equity curve (finance
+// projects); "plain" is just the soft brand gradient + wordmark.
+function BrandPreview({ label, variant = "plain" }) {
   return (
-    <div className="pc-brand" aria-hidden="true">
-      <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
-        <defs>
-          <linearGradient id="pcArea" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor="rgba(37,99,235,.28)" />
-            <stop offset="1" stopColor="rgba(37,99,235,0)" />
-          </linearGradient>
-        </defs>
-        {/* faint ledger grid */}
-        {[40, 80, 120, 160].map((y) => (
-          <line key={y} x1="0" y1={y} x2="320" y2={y} stroke="rgba(17,24,39,.05)" />
-        ))}
-        {/* area under the curve */}
-        <path
-          d="M0 150 C 50 140, 70 120, 110 118 S 180 96, 220 70 S 290 44, 320 30 L 320 200 L 0 200 Z"
-          fill="url(#pcArea)"
-        />
-        {/* the curve itself */}
-        <path
-          d="M0 150 C 50 140, 70 120, 110 118 S 180 96, 220 70 S 290 44, 320 30"
-          fill="none"
-          stroke="var(--accent, #2563EB)"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        />
-      </svg>
+    <div className={`pc-brand pc-brand--${variant}`} aria-hidden="true">
+      {variant === "chart" ? (
+        <svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice">
+          <defs>
+            <linearGradient id="pcArea" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stopColor="rgba(37,99,235,.28)" />
+              <stop offset="1" stopColor="rgba(37,99,235,0)" />
+            </linearGradient>
+          </defs>
+          {/* faint ledger grid */}
+          {[40, 80, 120, 160].map((y) => (
+            <line key={y} x1="0" y1={y} x2="320" y2={y} stroke="rgba(17,24,39,.05)" />
+          ))}
+          {/* area under the curve */}
+          <path
+            d="M0 150 C 50 140, 70 120, 110 118 S 180 96, 220 70 S 290 44, 320 30 L 320 200 L 0 200 Z"
+            fill="url(#pcArea)"
+          />
+          {/* the curve itself */}
+          <path
+            d="M0 150 C 50 140, 70 120, 110 118 S 180 96, 220 70 S 290 44, 320 30"
+            fill="none"
+            stroke="var(--accent, #2563EB)"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+          />
+        </svg>
+      ) : null}
       <span className="pc-brand-mark">{label}</span>
     </div>
   );
@@ -152,7 +173,7 @@ function CardMedia({ src, video, alt, preview, label }) {
         ) : src ? (
           <img src={src} alt={alt} loading="lazy" />
         ) : preview ? (
-          <BrandPreview label={label} />
+          <BrandPreview label={label} variant={preview} />
         ) : (
           <div className="pc-brand" aria-hidden="true">
             <span className="pc-brand-mark">Preview coming soon</span>
@@ -228,8 +249,9 @@ function ProjectCard({ project, index, reduceMotion }) {
 export default function ProjectRails() {
   const reduceMotion = useReducedMotion();
   const featured = PROJECTS.find((p) => p.slot === "featured");
-  const tall = PROJECTS.find((p) => p.slot === "tall");
-  const halves = PROJECTS.filter((p) => p.slot === "half");
+  const side = PROJECTS.filter((p) => p.slot === "side");
+  const bottomA = PROJECTS.find((p) => p.slot === "bottomA");
+  const bottomB = PROJECTS.find((p) => p.slot === "bottomB");
   const more = PROJECTS.filter((p) => p.slot === "more");
 
   return (
@@ -268,10 +290,13 @@ export default function ProjectRails() {
 
       <div className="pj-grid">
         {featured ? <ProjectCard project={featured} index={0} reduceMotion={reduceMotion} /> : null}
-        {tall ? <ProjectCard project={tall} index={1} reduceMotion={reduceMotion} /> : null}
-        {halves.map((p, i) => (
-          <ProjectCard key={p.id} project={p} index={2 + i} reduceMotion={reduceMotion} />
-        ))}
+        <div className="pj-side">
+          {side.map((p, i) => (
+            <ProjectCard key={p.id} project={p} index={1 + i} reduceMotion={reduceMotion} />
+          ))}
+        </div>
+        {bottomA ? <ProjectCard project={bottomA} index={3} reduceMotion={reduceMotion} /> : null}
+        {bottomB ? <ProjectCard project={bottomB} index={4} reduceMotion={reduceMotion} /> : null}
       </div>
 
       {more.length ? (
@@ -342,15 +367,26 @@ export default function ProjectRails() {
           gap: clamp(14px, 1.5vw, 22px);
         }
         #projects .pc--featured{ grid-column: span 8; grid-row: 1; }
-        #projects .pc--tall{ grid-column: span 4; grid-row: 1 / span 2; }
-        #projects .pc--half{ grid-column: span 4; grid-row: 2; }
+        /* Right column of row 1: two equal compact cards, so the tall card no
+           longer stretches to Draftfolio's full height with little content. */
+        #projects .pj-side{
+          grid-column: span 4;
+          grid-row: 1;
+          display: flex;
+          flex-direction: column;
+          gap: clamp(14px, 1.5vw, 22px);
+          min-height: clamp(440px, 34vw, 500px);
+        }
+        #projects .pj-side .pc{ flex: 1 1 0; min-height: 0; }
+        /* Row 2: 5- and 7-column cards, equal height. */
+        #projects .pc--bottomA{ grid-column: span 5; grid-row: 2; min-height: clamp(260px, 21vw, 300px); }
+        #projects .pc--bottomB{ grid-column: span 7; grid-row: 2; min-height: clamp(260px, 21vw, 300px); }
 
         /* ---- Card shell — one consistent, polished treatment ---- */
         #projects .pc{
           position: relative;
           display: flex;
           flex-direction: column;
-          min-height: 0;
           border-radius: 24px;
           border: 1px solid rgba(17,24,39,.08);
           background: var(--panel, #fff);
@@ -369,15 +405,19 @@ export default function ProjectRails() {
           border-color: rgba(37,99,235,.38);
           box-shadow: 0 22px 60px rgba(15,23,42,.12);
         }
-        #projects .pc--featured{ flex-direction: row; min-height: clamp(300px, 23vw, 360px); }
+        /* Featured is a row; it stretches to match the side column's height. */
+        #projects .pc--featured{ flex-direction: row; }
         #projects .pc--featured .pc-media{ flex: 0 0 47%; }
         #projects .pc--featured .pc-body{ flex: 1; justify-content: center; }
 
-        /* ---- Media: consistent browser frame + image ratios ---- */
+        /* ---- Media: consistent browser frame ---- */
         #projects .pc-media{
           position: relative;
           display: flex;
           flex-direction: column;
+          /* fills the space above the body on column cards; row cards
+             (featured, more) override this with a fixed width instead. */
+          flex: 1 1 auto;
           background: var(--bg-1, #F6F4EF);
           min-height: 0;
         }
@@ -390,10 +430,6 @@ export default function ProjectRails() {
         #projects .pc-dot{ width: 7px; height: 7px; border-radius: 50%; background: rgba(17,24,39,.14); }
         #projects .pc-dot:last-child{ background: var(--accent, #2563EB); opacity: .5; }
         #projects .pc-media-inner{ position: relative; flex: 1; min-height: 0; overflow: hidden; }
-        /* The two secondary cards share one image ratio so the row reads as a
-           set. Row-layout cards (featured, more) let the media fill height
-           instead — an aspect-ratio there would force the whole card tall. */
-        #projects .pc--half .pc-media-inner{ aspect-ratio: 16 / 10; }
         #projects .pc-media-inner img,
         #projects .pc-media-inner video{
           position: absolute; inset: 0;
@@ -404,13 +440,20 @@ export default function ProjectRails() {
         #projects .pc:hover .pc-media-inner img,
         #projects .pc:hover .pc-media-inner video{ transform: scale(1.045); }
 
-        /* branded preview panel (Draftfolio) */
+        /* branded preview panel (projects without a screenshot yet) */
         #projects .pc-brand{
           position: absolute; inset: 0;
           display: flex; align-items: flex-end;
           background:
             radial-gradient(130% 100% at 15% 0%, rgba(37,99,235,.12), transparent 55%),
             linear-gradient(140deg, #eef1fb, #f6f5f1);
+        }
+        /* the "plain" (no-chart) variant leans a touch warmer so it reads as a
+           distinct project rather than a copy of the chart panel. */
+        #projects .pc-brand--plain{
+          background:
+            radial-gradient(120% 100% at 85% 0%, rgba(37,99,235,.10), transparent 55%),
+            linear-gradient(140deg, #f1eefb, #f6f5f1);
         }
         #projects .pc-brand svg{ position: absolute; inset: 0; width: 100%; height: 100%; }
         #projects .pc-brand-mark{
@@ -457,6 +500,15 @@ export default function ProjectRails() {
           color: var(--text-2, #5F6672); max-width: 52ch;
         }
         #projects .pc--featured .pc-blurb{ font-size: 15px; }
+        /* Side cards are compact — clamp the blurb so it can't blow up height. */
+        #projects .pj-side .pc-blurb{
+          font-size: 13px;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        #projects .pj-side .pc-body{ gap: 6px; padding: clamp(14px, 1.3vw, 18px); }
 
         /* footer pinned to the bottom so tags + CTA sit in the same place on
            every card, giving the equal-height cards a consistent baseline. */
@@ -503,11 +555,19 @@ export default function ProjectRails() {
         /* ---- Tablet ---- */
         @media (max-width: 1023px){
           #projects .pc--featured{ grid-column: 1 / -1; grid-row: auto; }
-          #projects .pc--tall{ grid-column: 1 / -1; grid-row: auto; flex-direction: row; }
-          #projects .pc--tall .pc-media{ flex: 0 0 47%; }
-          #projects .pc--tall .pc-body{ flex: 1; justify-content: center; }
-          #projects .pc--tall .pc-media-inner{ aspect-ratio: 16 / 10; }
-          #projects .pc--half{ grid-column: span 6; grid-row: auto; }
+          /* Side column becomes two cards side by side. They go horizontal
+             (media = a left thumbnail) so the media never collapses to a
+             sliver the way a short vertical card would. */
+          #projects .pj-side{
+            grid-column: 1 / -1; grid-row: auto;
+            flex-direction: row; min-height: 0;
+          }
+          #projects .pj-side .pc{ flex: 1 1 0; }
+          #projects .pc--side{ flex-direction: row; min-height: 168px; }
+          #projects .pc--side .pc-media{ flex: 0 0 40%; }
+          #projects .pc--side .pc-body{ flex: 1; justify-content: center; }
+          #projects .pc--bottomA{ grid-column: 1 / 7; grid-row: auto; }
+          #projects .pc--bottomB{ grid-column: 7 / -1; grid-row: auto; }
           #projects .pj-more-grid{ grid-template-columns: 1fr; }
         }
 
@@ -516,15 +576,22 @@ export default function ProjectRails() {
           #projects .pj-head{ flex-direction: column; align-items: flex-start; }
           #projects .pj-sub{ display: none; }
           #projects .pj-grid{ grid-template-columns: 1fr; }
-          #projects .pc--featured,
-          #projects .pc--tall,
-          #projects .pc--half{ grid-column: 1 / -1; grid-row: auto; flex-direction: column; }
-          #projects .pc--featured .pc-media,
-          #projects .pc--tall .pc-media,
-          #projects .pc--more .pc-media{ flex: none; }
-          #projects .pc--featured .pc-media-inner,
-          #projects .pc--tall .pc-media-inner{ aspect-ratio: 16 / 10; }
+          #projects .pc--featured{ grid-column: 1 / -1; grid-row: auto; flex-direction: column; }
+          #projects .pj-side{ grid-column: 1 / -1; grid-row: auto; flex-direction: column; }
+          #projects .pc--bottomA,
+          #projects .pc--bottomB{ grid-column: 1 / -1; grid-row: auto; min-height: 0; }
           #projects .pc--more{ flex-direction: column; }
+          /* Vertical cards get a fixed media ratio so media doesn't collapse... */
+          #projects .pc-media{ flex: none; }
+          #projects .pc-media-inner{ aspect-ratio: 16 / 10; }
+          /* ...but side cards stay horizontal (thumbnail left). Override the
+             desktop flex:1 1 0 (which would collapse them to 0 in this column
+             stack) at matching specificity so min-height actually holds. */
+          #projects .pj-side .pc{ flex: none; min-height: 150px; }
+          #projects .pc--side{ flex-direction: row; }
+          #projects .pc--side .pc-media{ flex: 0 0 38%; }
+          #projects .pc--side .pc-body{ flex: 1; justify-content: center; }
+          #projects .pc--side .pc-media-inner{ aspect-ratio: auto; }
         }
 
         @media (hover: none){
