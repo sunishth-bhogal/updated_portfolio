@@ -101,7 +101,7 @@ export default function MilestonesSection({
           <div className="lip__chapter-body">
             <span className="lip__chapter-kicker">PHYSICAL</span>
             <h2 className="lip__chapter-headline">
-              Stronger than last year. <span className="lip__accent">Stronger next year.</span>
+              1% stronger <span className="lip__accent">every day.</span>
             </h2>
             <p className="lip__note">
               Training taught me that progress is usually invisible until suddenly it isn't.
