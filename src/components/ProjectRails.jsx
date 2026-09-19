@@ -35,7 +35,7 @@ const PROJECTS = [
     slot: "side",
     title: "UW Study Spots",
     // Compact card — lead with the outcome instead of a long blurb.
-    metric: "1,000+ users in 5 days",
+    metric: "200+ active users",
     blurb: "Live study-space finder for UW students.",
     cover: UWStudySpots,
     video: undefined,
