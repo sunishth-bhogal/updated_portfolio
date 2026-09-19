@@ -186,7 +186,12 @@ export default function PhotoWall() {
                 aria-label={`${p.location} — ${p.memory}`}
               >
                 <span className="pj-num">{String(i + 1).padStart(2, "0")}</span>
-                <img src={p.src} alt={`${p.location} — ${p.memory}`} loading="lazy" />
+                <img
+                  src={p.src}
+                  alt={`${p.location} — ${p.memory}`}
+                  loading="lazy"
+                  decoding="async"
+                />
                 <span className="pj-hover">
                   <span className="pj-hover-loc">{p.location.toUpperCase()}</span>
                   <span className="pj-hover-memory">{p.memory}</span>
