@@ -178,7 +178,7 @@ function HomePage() {
             <span className="hero__feature-text">
               <span className="hero__feature-kicker">Featured project</span>
               <span className="hero__feature-title">
-                UW Study Spots · 1000+ monthly users <span aria-hidden>↗</span>
+                UW Study Spots · 200+ users <span aria-hidden>↗</span>
               </span>
             </span>
           </motion.a>
