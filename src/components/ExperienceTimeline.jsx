@@ -21,7 +21,10 @@ const EXPERIENCES = [
     logo: TDLogo,
     color: "#0F8A3C",
     motif: "grid",
-    highlights: [],
+    highlights: [
+      "Building fintech pricing & rate-management systems on Spring Boot, .NET Core, and Node.js across Kubernetes",
+      "Wiring up Azure DevOps ETL pipelines feeding Snowflake on the Pricing Product team",
+    ],
   },
   {
     id: "shipd",
@@ -48,9 +51,9 @@ const EXPERIENCES = [
     color: "#6C5CE7",
     motif: "redacted",
     highlights: [
-      "Built 4 backend services and 6 data pipelines for a product taken from zero to launch",
-      "Reduced MTTR by 35% across 15+ production incidents",
-      "Collaborated directly with the founding team across the stack",
+      "Lifted LLM tool-call success under production load with open-source MCP interfaces on Node.js/gRPC",
+      "Sharpened top-k retrieval precision with a hybrid search layer on Azure AI Search",
+      "Cut agent latency by moving workloads to AWS Lambda, decoupled through SQS/SNS",
     ],
   },
   {
@@ -65,9 +68,9 @@ const EXPERIENCES = [
     color: "#003DA5",
     motif: "map",
     highlights: [
-      "Built and optimized real-estate web experiences for property listings",
-      "Improved property discovery through performance and UX work",
-      "Simplified listing management workflows for agents",
+      "Built an internal MySQL-backed listing-analysis tool from ambiguous agent requirements, cutting manual analysis time",
+      "Freed up hours of analyst time each week with Python ETL pipelines validating 500+ listings",
+      "Drove down data-entry errors with schema-level checks and MySQL constraint enforcement",
     ],
   },
   {
