@@ -5,7 +5,7 @@ import JayShetty from "../components/assets/JayShetty.jpg";
 import AtomicHabits from "../components/assets/AtomicHabits.jpg";
 import Masters from "../components/assets/Masters.jpg";
 import Jung from "../components/assets/JUNG.jpg";
-import Morrie from "../components/assets/Morrie.png";
+import Morrie from "../components/assets/Morrie.jpg";
 import MilanoFlowers from "../components/assets/MilanoFlowers.jpg";
 
 // Full country names only from here on — the old badge showed raw codes
