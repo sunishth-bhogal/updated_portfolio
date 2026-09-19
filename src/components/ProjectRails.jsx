@@ -256,7 +256,9 @@ export default function ProjectRails() {
 
   return (
     <div className="pj-shell">
-      <header className="pj-head">
+      {/* plain div, not <header> — a global `.site-nav, header` rule makes any
+          <header> position:sticky, which stuck this over the scrolling grid. */}
+      <div className="pj-head">
         <div>
           <motion.p
             className="pj-eyebrow"
@@ -286,7 +288,7 @@ export default function ProjectRails() {
         >
           Products built across finance, machine learning, and full-stack engineering.
         </motion.p>
-      </header>
+      </div>
 
       <div className="pj-grid">
         {featured ? <ProjectCard project={featured} index={0} reduceMotion={reduceMotion} /> : null}
