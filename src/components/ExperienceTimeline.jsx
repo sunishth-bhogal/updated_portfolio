@@ -13,10 +13,10 @@ const EXPERIENCES = [
   {
     id: "td",
     company: "TD Bank",
-    status: "Incoming",
+    status: "Present",
     role: "Software Engineer Intern",
     location: "Toronto, Canada",
-    dates: "Sep – Dec 2026",
+    dates: "Sep 2026 – Dec 2026",
     year: "2026",
     logo: TDLogo,
     color: "#0F8A3C",

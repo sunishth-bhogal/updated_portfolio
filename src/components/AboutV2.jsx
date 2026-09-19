@@ -28,7 +28,7 @@ export default function AboutV2() {
               ideas turns into something people actually use.
             </p>
 
-            <p className="aboutv2-p">Currently: Incoming Software Engineer @ TD.</p>
+            <p className="aboutv2-p">Currently: Software Engineer @ TD.</p>
 
             <p className="aboutv2-p">
               Growing up, I was always drawn to building things—from robots to solutions for everyday problems. 

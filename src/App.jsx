@@ -139,7 +139,7 @@ function HomePage() {
               each land a beat after the name has already landed. */}
           <motion.span className="hero__badge" {...fadeUp(0.34, reduceMotion)}>
             <span className="hero__badge-dot" aria-hidden="true" />
-            Incoming Software Engineer @ TD
+            Software Engineer @ TD
           </motion.span>
 
           <motion.span className="hero__eyebrow" {...fadeUp(0.4, reduceMotion)}>
