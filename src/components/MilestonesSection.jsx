@@ -5,6 +5,7 @@ import JayShetty from "../components/assets/JayShetty.jpg";
 import AtomicHabits from "../components/assets/AtomicHabits.jpg";
 import Masters from "../components/assets/Masters.jpg";
 import Jung from "../components/assets/JUNG.jpg";
+import Morrie from "../components/assets/Morrie.png";
 import MilanoFlowers from "../components/assets/MilanoFlowers.jpg";
 
 // Full country names only from here on — the old badge showed raw codes
@@ -60,6 +61,7 @@ export default function MilestonesSection({
       { type: "Book", title: "Many Lives, Many Masters", by: "Dr. Brian L. Weiss", cover: Masters, progress: 0.35 },
       { type: "Book", title: "Atomic Habits", by: "James Clear", cover: AtomicHabits, progress: 0.15 },
       { type: "Book", title: "Man and His Symbols", by: "C. G. Jung", cover: Jung, progress: 1 },
+      { type: "Book", title: "Tuesdays with Morrie", by: "Mitch Albom", cover: Morrie, progress: 1 },
     ],
   },
   title = "Life in Progress",
