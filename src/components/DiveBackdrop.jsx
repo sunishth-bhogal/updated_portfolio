@@ -64,14 +64,14 @@ export default function DiveBackdrop() {
       // the content. The light→dark drop sits in the padding between
       // Projects and Create, so no text ever lands on a mid-tone.
       const rel = (y) => Math.max(0, Math.round(y - bandTop));
-      band.style.backgroundImage = `linear-gradient(180deg,
+      band.style.setProperty("--dive-gradient", `linear-gradient(180deg,
         #F6F4EF 0px,
         #ECF3F1 ${rel(t.experiences)}px,
         #DDEEF0 ${rel(t.projects)}px,
         #C9E4EA ${rel(t.create - 70)}px,
         #23527A ${rel(t.create + 60)}px,
         #10304F ${rel(t.contact)}px,
-        #081627 ${rel(bandBottom)}px)`;
+        #081627 ${rel(bandBottom)}px)`);
       if (fishes.length === 0) buildFish();
     };
 
@@ -138,7 +138,7 @@ export default function DiveBackdrop() {
       ctx.translate(x, y);
       ctx.scale(dir, 1);
       ctx.globalAlpha = f.a;
-      ctx.fillStyle = f.deep ? "rgba(196,226,255,0.16)" : "rgba(24,78,102,0.13)";
+      ctx.fillStyle = f.deep ? "rgba(196,226,255,0.2)" : "rgba(24,78,102,0.17)";
       ctx.beginPath();
       ctx.ellipse(0, 0, f.len / 2, f.len / 5.2, 0, 0, Math.PI * 2);
       ctx.fill();
@@ -179,7 +179,7 @@ export default function DiveBackdrop() {
       if (L) {
         const max = Math.max(1, L.docH - H);
         const p = Math.min(1, Math.max(0, sy / max));
-        const d = Math.max(0, depthAt(sy + H * p));
+        const d = p > 0.995 ? DEPTHS.end : Math.max(0, depthAt(sy + H * p));
         const visible = sy + H * 0.5 > L.about;
         if (gaugeRef.current) {
           gaugeRef.current.classList.toggle("is-on", visible);
@@ -202,7 +202,7 @@ export default function DiveBackdrop() {
             for (let k = 0; k < 5; k++) {
               const x = W * (0.08 + k * 0.21) + Math.sin(t * 0.35 + k * 1.7) * 30;
               const g = ctx.createLinearGradient(0, surf, 0, rayEnd);
-              g.addColorStop(0, "rgba(255,255,255,0.55)");
+              g.addColorStop(0, "rgba(255,255,255,0.34)");
               g.addColorStop(1, "rgba(255,255,255,0)");
               ctx.fillStyle = g;
               ctx.beginPath();
@@ -289,7 +289,7 @@ export default function DiveBackdrop() {
       window.removeEventListener("resize", measure);
       window.removeEventListener("resize", size);
       band.classList.remove("dive");
-      band.style.backgroundImage = "";
+      band.style.removeProperty("--dive-gradient");
       els.forEach((el) => el && el.classList.remove("dive-deep"));
     };
   }, [reduceMotion]);

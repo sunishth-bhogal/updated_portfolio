@@ -6775,7 +6775,12 @@ img.hero-img[style] { height: auto !important; width: auto !important; }
    DIVE — home page scrolls from the surface to the deep
    (see components/DiveBackdrop.jsx)
    ======================================================= */
-.main-band.dive{ background-color: #F6F4EF; background-repeat: no-repeat; }
+.main-band.dive{
+  /* beats the global `.main-band{background:transparent !important}` */
+  background: var(--dive-gradient, #F6F4EF) !important;
+}
+/* the old fixed gray vignette would dull the water, so drop it in dive mode */
+.main-band.dive::before{ display: none; }
 .main-band.dive > .section-dark{ background: transparent; z-index: 1; }
 .dive-canvas{
   position: fixed; inset: 0; width: 100vw; height: 100vh;
