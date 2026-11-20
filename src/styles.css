@@ -6771,3 +6771,49 @@ img.hero-img[style] { height: auto !important; width: auto !important; }
 @media (max-width: 700px){
   .swinger{ display: none; }
 }
+/* =======================================================
+   DIVE — home page scrolls from the surface to the deep
+   (see components/DiveBackdrop.jsx)
+   ======================================================= */
+.main-band.dive{ background-color: #F6F4EF; background-repeat: no-repeat; }
+.main-band.dive > .section-dark{ background: transparent; z-index: 1; }
+.dive-canvas{
+  position: fixed; inset: 0; width: 100vw; height: 100vh;
+  z-index: 0; pointer-events: none; display: block;
+}
+/* Light text once the water turns dark; cards keep their own light palette */
+.dive-deep{
+  --text-1: #EEF5FB;
+  --text-2: #B4C8DA;
+  --text-3: #7F98B0;
+  --accent: #7CB3FF;
+}
+.dive-deep .tabs-card-link{
+  --text-1: #111827;
+  --text-2: #5F6672;
+  --text-3: #8A8F98;
+  --accent: #2563EB;
+}
+.dive-gauge{
+  position: fixed; left: 20px; bottom: 20px; z-index: 45;
+  display: grid; grid-template-columns: auto auto; align-items: baseline; column-gap: 10px;
+  padding: 8px 14px 10px; border-radius: 12px;
+  background: rgba(255,255,255,.86); border: 1px solid var(--line);
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-1);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: #111827; pointer-events: none;
+  opacity: 0; transform: translateY(8px);
+  transition: opacity .35s ease, transform .35s ease, background-color .5s ease, color .5s ease, border-color .5s ease;
+}
+.dive-gauge.is-on{ opacity: 1; transform: none; }
+.dive-gauge.is-deep{ background: rgba(8,22,39,.72); border-color: rgba(124,179,255,.28); color: #EEF5FB; }
+.dive-gauge__depth{ font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dive-gauge__zone{ font-size: 11px; letter-spacing: .08em; text-transform: uppercase; opacity: .7; white-space: nowrap; }
+.dive-gauge__track{ grid-column: 1 / -1; height: 2px; margin-top: 7px; border-radius: 2px; background: currentColor; opacity: .18; position: relative; overflow: visible; }
+.dive-gauge__bar{ position: absolute; inset: 0; background: #2563EB; transform-origin: left; transform: scaleX(0); opacity: 1; }
+.dive-gauge.is-deep .dive-gauge__bar{ background: #7CB3FF; }
+@media (max-width: 600px){
+  .dive-gauge{ left: 12px; bottom: 12px; padding: 6px 10px 8px; }
+  .dive-gauge__zone{ display: none; }
+}
