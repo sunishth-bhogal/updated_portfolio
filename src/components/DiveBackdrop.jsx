@@ -1,8 +1,7 @@
 // src/components/DiveBackdrop.jsx
 // The home page as a slow dive: the page background deepens from the hero's
 // cream into dark water by the Contact section, a few fish drift behind the
-// content, and a small gauge counts the depth. The red SwingingFigure leaves
-// bubbles once it is "underwater".
+// content, and a small gauge counts the depth.
 //
 // Everything here is decorative: the canvas and gauge are aria-hidden and
 // pointer-events:none, and under prefers-reduced-motion only the static
@@ -87,7 +86,6 @@ export default function DiveBackdrop() {
     // ---- creatures ----
     let fishes = [];
     let snow = [];
-    let bubbles = [];
     const buildFish = () => {
       if (!L) return;
       const R = rng(11);
@@ -165,15 +163,10 @@ export default function DiveBackdrop() {
     };
 
     let raf = 0;
-    let lastY = window.scrollY;
-    let vel = 0;
-    const swinger = () => document.querySelector(".swinger");
 
     const frame = (now) => {
       const t = now / 1000;
       const sy = window.scrollY;
-      vel += (sy - lastY - vel) * 0.2;
-      lastY = sy;
 
       // gauge
       if (L) {
@@ -259,24 +252,6 @@ export default function DiveBackdrop() {
             }
           }
 
-          // bubbles from the red figure once it is below the surface
-          const fig = swinger();
-          if (fig && Math.abs(vel) > 1.2 && Math.random() < 0.5) {
-            const r = fig.getBoundingClientRect();
-            const hx = r.left + r.width / 2, hy = r.top + 24;
-            if (r.width > 0 && hy > surf) bubbles.push({ x: hx + (Math.random() - 0.5) * 8, y: hy + sy, v: 22 + Math.random() * 30, r: 1.5 + Math.random() * 2.5, life: 0 });
-          }
-          bubbles = bubbles.filter((b) => b.life < 3.5 && b.y > L.bandTop + 4);
-          for (const b of bubbles) {
-            b.life += 1 / 60;
-            b.y -= b.v / 60;
-            const deep = b.y > L.create;
-            ctx.strokeStyle = deep ? `rgba(205,235,255,${0.6 - b.life / 7})` : `rgba(30,100,130,${0.4 - b.life / 10})`;
-            ctx.lineWidth = 1.2;
-            ctx.beginPath();
-            ctx.arc(b.x + Math.sin(b.life * 5) * 2, b.y - sy, b.r, 0, Math.PI * 2);
-            ctx.stroke();
-          }
         }
       }
       raf = requestAnimationFrame(frame);

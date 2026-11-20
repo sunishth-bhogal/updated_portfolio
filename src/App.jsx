@@ -5,7 +5,6 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 
 import Navbar from "./components/Navbar";
 import CustomCursor from "./components/CustomCursor";
-import SwingingFigure from "./components/SwingingFigure";
 import DiveBackdrop from "./components/DiveBackdrop";
 import LanyardBadge from "./components/LanyardBadge";
 import CodingSetupAnimated from "./components/CodingSetupAnimated";
@@ -84,7 +83,6 @@ export default function App() {
   return (
     <NavInteractionProvider>
       <CustomCursor />
-      {isHome && <SwingingFigure />}
       {isHome && <DiveBackdrop />}
       <ScrollRestoration />
       <Navbar />

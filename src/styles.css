@@ -6757,20 +6757,6 @@ img.hero-img[style] { height: auto !important; width: auto !important; }
   color: var(--text-3);
 }
 
-/* ===== Swinging figure ===== */
-.swinger{
-  position: fixed;
-  left: 0;
-  top: 26vh;
-  z-index: 40;
-  pointer-events: none;
-  will-change: transform;
-  transform-origin: top center;
-}
-.swinger svg{ display: block; }
-@media (max-width: 700px){
-  .swinger{ display: none; }
-}
 /* =======================================================
    DIVE — home page scrolls from the surface to the deep
    (see components/DiveBackdrop.jsx)
