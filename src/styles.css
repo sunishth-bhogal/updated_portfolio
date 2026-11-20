@@ -6759,7 +6759,8 @@ img.hero-img[style] { height: auto !important; width: auto !important; }
 
 /* =======================================================
    DIVE — home page scrolls from the surface to the deep
-   (see components/DiveBackdrop.jsx)
+   (see components/DiveBackdrop.jsx). Only transform/opacity
+   animate, so the browser composites it without repainting.
    ======================================================= */
 .main-band.dive{
   /* beats the global `.main-band{background:transparent !important}` */
@@ -6768,10 +6769,7 @@ img.hero-img[style] { height: auto !important; width: auto !important; }
 /* the old fixed gray vignette would dull the water, so drop it in dive mode */
 .main-band.dive::before{ display: none; }
 .main-band.dive > .section-dark{ background: transparent; z-index: 1; }
-.dive-canvas{
-  position: fixed; inset: 0; width: 100vw; height: 100vh;
-  z-index: 0; pointer-events: none; display: block;
-}
+
 /* Light text once the water turns dark; cards keep their own light palette */
 .dive-deep{
   --text-1: #EEF5FB;
@@ -6785,12 +6783,81 @@ img.hero-img[style] { height: auto !important; width: auto !important; }
   --text-3: #8A8F98;
   --accent: #2563EB;
 }
+
+/* decorative layer behind each section's content */
+.dive-layer{
+  position: absolute; inset: 0; z-index: -1;
+  overflow: hidden; pointer-events: none;
+  contain: strict;
+}
+
+/* sun rays at the top of the water */
+.dive-rays{
+  position: absolute; inset: 0 -10% 30% -10%;
+  background: repeating-linear-gradient(115deg,
+    rgba(255,255,255,0) 0 90px,
+    rgba(255,255,255,.42) 90px 130px,
+    rgba(255,255,255,0) 130px 260px);
+  -webkit-mask-image: linear-gradient(to bottom, #000, transparent);
+          mask-image: linear-gradient(to bottom, #000, transparent);
+  animation: dive-rays 9s ease-in-out infinite alternate;
+}
+@keyframes dive-rays{ from{ opacity: .55; } to{ opacity: 1; } }
+
+/* drifting specks in the dark water */
+.dive-snow{
+  position: absolute; left: 0; right: 0; top: -240px; height: calc(100% + 240px);
+  background-image:
+    radial-gradient(1.4px 1.4px at 20px 30px, rgba(220,236,255,.45), transparent),
+    radial-gradient(1px 1px at 140px 90px, rgba(220,236,255,.35), transparent),
+    radial-gradient(1.6px 1.6px at 230px 170px, rgba(220,236,255,.4), transparent),
+    radial-gradient(1px 1px at 80px 200px, rgba(220,236,255,.3), transparent);
+  background-size: 260px 240px;
+  will-change: transform;
+  animation: dive-snow 26s linear infinite;
+}
+@keyframes dive-snow{ to{ transform: translate3d(0,240px,0); } }
+
+/* fish */
+.dive-fish{
+  position: absolute; left: 0;
+  width: var(--len, 30px); height: calc(var(--len, 30px) * .4);
+  fill: rgba(24,78,102,.18);
+  will-change: transform;
+  animation-name: dive-swim; animation-timing-function: linear; animation-iteration-count: infinite;
+}
+.dive-fish svg{ display: block; overflow: visible; }
+.dive-fish--left{ animation-direction: reverse; }
+.dive-fish--left svg{ transform: scaleX(-1); }
+.dive-fish--deep{ fill: rgba(196,226,255,.2); }
+.dive-fish__lure{ fill: #c8fff0; filter: drop-shadow(0 0 3px #8cffde) drop-shadow(0 0 6px #8cffde); }
+@keyframes dive-swim{
+  from{ transform: translate3d(-80px,0,0); }
+  to  { transform: translate3d(calc(100vw + 40px),0,0); }
+}
+
+/* seafloor + kelp at the bottom of Contact */
+.dive-floor{ position: absolute; left: 0; right: 0; bottom: 0; height: 110px; }
+.dive-floor svg{ position: absolute; inset: 0; }
+.dive-floor__sand{ fill: rgba(4,12,24,.6); }
+.dive-kelp{
+  position: absolute; bottom: 26px; width: 3px; border-radius: 3px;
+  background: linear-gradient(to top, rgba(60,140,120,.55), rgba(60,140,120,.15));
+  transform-origin: bottom center;
+  animation: dive-kelp 5s ease-in-out infinite alternate;
+}
+@keyframes dive-kelp{ from{ transform: rotate(-5deg); } to{ transform: rotate(5deg); } }
+
+@media (prefers-reduced-motion: reduce){
+  .dive-rays, .dive-snow, .dive-fish, .dive-kelp{ animation: none; }
+}
+
+/* depth gauge */
 .dive-gauge{
   position: fixed; left: 20px; bottom: 20px; z-index: 45;
   display: grid; grid-template-columns: auto auto; align-items: baseline; column-gap: 10px;
   padding: 8px 14px 10px; border-radius: 12px;
-  background: rgba(255,255,255,.86); border: 1px solid var(--line);
-  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,.94); border: 1px solid var(--line);
   box-shadow: var(--shadow-1);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   color: #111827; pointer-events: none;
@@ -6798,11 +6865,11 @@ img.hero-img[style] { height: auto !important; width: auto !important; }
   transition: opacity .35s ease, transform .35s ease, background-color .5s ease, color .5s ease, border-color .5s ease;
 }
 .dive-gauge.is-on{ opacity: 1; transform: none; }
-.dive-gauge.is-deep{ background: rgba(8,22,39,.72); border-color: rgba(124,179,255,.28); color: #EEF5FB; }
+.dive-gauge.is-deep{ background: rgba(8,22,39,.9); border-color: rgba(124,179,255,.28); color: #EEF5FB; }
 .dive-gauge__depth{ font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .dive-gauge__zone{ font-size: 11px; letter-spacing: .08em; text-transform: uppercase; opacity: .7; white-space: nowrap; }
-.dive-gauge__track{ grid-column: 1 / -1; height: 2px; margin-top: 7px; border-radius: 2px; background: currentColor; opacity: .18; position: relative; overflow: visible; }
-.dive-gauge__bar{ position: absolute; inset: 0; background: #2563EB; transform-origin: left; transform: scaleX(0); opacity: 1; }
+.dive-gauge__track{ grid-column: 1 / -1; height: 2px; margin-top: 7px; border-radius: 2px; background: rgba(127,140,160,.25); position: relative; overflow: hidden; }
+.dive-gauge__bar{ position: absolute; inset: 0; background: #2563EB; transform-origin: left; transform: scaleX(0); }
 .dive-gauge.is-deep .dive-gauge__bar{ background: #7CB3FF; }
 @media (max-width: 600px){
   .dive-gauge{ left: 12px; bottom: 12px; padding: 6px 10px 8px; }
