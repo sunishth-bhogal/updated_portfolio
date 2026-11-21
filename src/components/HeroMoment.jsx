@@ -11,6 +11,7 @@
 // - MotionConfig reducedMotion="user" turns the expand/collapse into an
 //   instant swap for visitors who prefer reduced motion.
 import React from "react";
+import { createPortal } from "react-dom";
 import { motion, AnimatePresence, MotionConfig } from "framer-motion";
 
 const VIDEO_ID = "PNBV5WZKKiE";
@@ -108,55 +109,59 @@ export default function HeroMoment() {
         </button>
       </motion.div>
 
-      <AnimatePresence
-        onExitComplete={() => cardRef.current && cardRef.current.focus()}
-      >
-        {open ? (
-          <motion.div
-            key="hm-modal"
-            className="hm-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-label="George Springer's go-ahead home run, ALCS Game 7, October 20, 2025"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="hm-backdrop" onClick={close} aria-hidden="true" />
-            <div className="hm-stage">
-              <motion.div
-                layoutId="hm-frame"
-                className="hm-frame hm-frame--open"
-                onLayoutAnimationComplete={() => setReady(true)}
-              >
-                {ready ? (
-                  <iframe
-                    src={src}
-                    title="George Springer's go-ahead home run, ALCS Game 7 (YouTube)"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    allowFullScreen
-                  />
-                ) : (
-                  <>
-                    <Still />
-                    <span className="hm-grade" aria-hidden="true" />
-                  </>
-                )}
-              </motion.div>
-              <div className="hm-bar">
-                <p className="hm-bar-caption">
-                  I was there · October 20, 2025 · Toronto
-                </p>
-                <button ref={closeRef} type="button" className="hm-close" onClick={close}>
-                  Close <span aria-hidden="true">×</span>
-                </button>
+      {/* Rendered into <body> so hero styles (overflow, `.hero p`) can't touch it */}
+      {createPortal(
+        <AnimatePresence
+          onExitComplete={() => cardRef.current && cardRef.current.focus()}
+        >
+          {open ? (
+            <motion.div
+              key="hm-modal"
+              className="hm-modal"
+              role="dialog"
+              aria-modal="true"
+              aria-label="George Springer's go-ahead home run, ALCS Game 7, October 20, 2025"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="hm-backdrop" onClick={close} aria-hidden="true" />
+              <div className="hm-stage">
+                <motion.div
+                  layoutId="hm-frame"
+                  className="hm-frame hm-frame--open"
+                  onLayoutAnimationComplete={() => setReady(true)}
+                >
+                  {ready ? (
+                    <iframe
+                      src={src}
+                      title="George Springer's go-ahead home run, ALCS Game 7 (YouTube)"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      allowFullScreen
+                    />
+                  ) : (
+                    <>
+                      <Still />
+                      <span className="hm-grade" aria-hidden="true" />
+                    </>
+                  )}
+                </motion.div>
+                <div className="hm-bar">
+                  <p className="hm-bar-caption">
+                    I was there · October 20, 2025 · Toronto
+                  </p>
+                  <button ref={closeRef} type="button" className="hm-close" onClick={close}>
+                    Close <span aria-hidden="true">×</span>
+                  </button>
+                </div>
               </div>
-            </div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>,
+        document.body
+      )}
     </MotionConfig>
   );
 }

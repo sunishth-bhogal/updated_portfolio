@@ -358,20 +358,22 @@
 @media (max-width: 1200px){
   .hero__moment{ justify-self: start; width: min(100%, 620px); margin: 8px 0 72px; }
   .hm-card{ aspect-ratio: 16 / 10; }
-  .hm-still{ object-position: 70% 35%; }
+  /* landscape card: crop into Springer, past the broadcast graphic */
+  .hm-still{ object-position: 100% 35%; transform: scale(1.5); transform-origin: 88% 38%; }
+  .hm-card:hover .hm-still{ transform: scale(1.55); }
 }
 @media (max-width: 600px){
   .hm-card{ aspect-ratio: 4 / 3.4; border-radius: 20px; }
+  .hm-still{ transform: scale(1.35); transform-origin: 92% 38%; }
+  .hm-caption{ font-size: 10.5px; letter-spacing: .12em; }
   .hm-frame{ border-radius: 20px; }
   .hm-headline{ font-size: 30px; }
   .hm-bar-caption{ font-size: 10.5px; letter-spacing: .12em; }
 }
 @media (hover: none){
   .hm-card:hover, .hero__projects-cta:hover{ transform: none; }
-  .hm-card:hover .hm-still{ transform: scale(1.05); }
 }
 @media (prefers-reduced-motion: reduce){
   .hm-card, .hm-still, .hero__projects-cta{ transition: none; }
   .hm-card:hover, .hero__projects-cta:hover{ transform: none; }
-  .hm-card:hover .hm-still{ transform: scale(1.05); }
 }
