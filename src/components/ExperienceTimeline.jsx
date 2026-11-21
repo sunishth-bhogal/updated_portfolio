@@ -94,7 +94,6 @@ const EXPERIENCES = [
 
 export default function ExperienceTimeline() {
   const reduceMotion = useReducedMotion();
-  const [pinned, setPinned] = React.useState(null);
   const listRef = React.useRef(null);
   const { scrollYProgress } = useScroll({
     target: listRef,
@@ -105,6 +104,7 @@ export default function ExperienceTimeline() {
   return (
     <div className="xp2">
       <div className="xp2-list" ref={listRef}>
+        <span className="xp2-rail-end xp2-rail-end--top" aria-hidden="true">Toronto · now</span>
         <span className="xp2-rail-track" aria-hidden="true" />
         <motion.span
           className="xp2-rail"
@@ -113,28 +113,18 @@ export default function ExperienceTimeline() {
         />
 
         {EXPERIENCES.map((e, i) => {
-          const isPinned = pinned === e.id;
           return (
             <motion.article
               key={e.id}
-              className={["xp2-card", `xp2-card--${e.motif}`, isPinned ? "is-pinned" : ""]
+              className={["xp2-card", `xp2-card--${e.motif}`]
                 .filter(Boolean)
                 .join(" ")}
               style={{ "--brand": e.color }}
-              initial={{ opacity: 0, y: 40 }}
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 24 }}
               whileInView={{ opacity: 1, y: 0 }}
-              whileHover={reduceMotion ? undefined : { y: -6, rotate: i % 2 === 0 ? -0.4 : 0.4 }}
-              transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: reduceMotion ? 0 : 0.45, ease: [0.16, 1, 0.3, 1] }}
               viewport={{ once: true, amount: 0.3 }}
-              onClick={() => setPinned((cur) => (cur === e.id ? null : e.id))}
-              tabIndex={0}
-              role="button"
-              aria-expanded={isPinned}
             >
-              <span className="xp2-year" aria-hidden="true">
-                {e.year}
-              </span>
-
               <div className="xp2-side">
                 <span className="xp2-marker" aria-hidden="true">
                   {String(i + 1).padStart(2, "0")}
@@ -171,15 +161,24 @@ export default function ExperienceTimeline() {
             </motion.article>
           );
         })}
+        <span className="xp2-rail-end xp2-rail-end--bottom" aria-hidden="true">Where it started · 2022</span>
       </div>
 
       <style>{`
         .xp2{ width: 100%; }
 
         /* ---- list / rail ---- */
-        .xp2-list{ position: relative; padding-left: clamp(28px, 4vw, 40px); }
+        .xp2-list{ position: relative; padding: 30px 0 30px clamp(28px, 4vw, 40px); }
+        .xp2-rail-end{
+          position: absolute; left: 0;
+          font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+          font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+          color: var(--text-3);
+        }
+        .xp2-rail-end--top{ top: 0; }
+        .xp2-rail-end--bottom{ bottom: 0; }
         .xp2-rail-track, .xp2-rail{
-          position: absolute; left: 0; top: 6px; bottom: 6px; width: 2px;
+          position: absolute; left: 0; top: 26px; bottom: 26px; width: 2px;
           border-radius: 2px;
         }
         .xp2-rail-track{ background: var(--line); }
@@ -200,35 +199,18 @@ export default function ExperienceTimeline() {
           background: var(--panel);
           border: 1px solid var(--line);
           box-shadow: 0 4px 14px rgba(17,24,39,.05);
-          cursor: pointer;
           overflow: hidden;
           transition: border-color .25s ease, box-shadow .25s ease, background .35s ease, opacity .25s ease;
         }
         .xp2-card:nth-child(odd){ margin-left: 0; }
         .xp2-card:nth-child(even){ margin-left: clamp(0px, 4vw, 46px); }
 
-        .xp2-card:hover,
-        .xp2-card.is-pinned{
+        .xp2-card:hover{
           border-color: color-mix(in srgb, var(--brand) 55%, var(--line));
           box-shadow: 0 16px 34px rgba(17,24,39,.09);
           background:
             linear-gradient(135deg, color-mix(in srgb, var(--brand) 7%, var(--panel)), var(--panel) 60%);
         }
-        .xp2-year{
-          position: absolute;
-          right: clamp(6px, 1.5vw, 18px);
-          top: 50%;
-          transform: translateY(-50%);
-          font-size: clamp(64px, 9vw, 128px);
-          font-weight: 900;
-          line-height: 1;
-          color: color-mix(in srgb, var(--brand) 60%, var(--text-1));
-          opacity: .05;
-          z-index: 0;
-          pointer-events: none;
-          user-select: none;
-        }
-
         .xp2-side{
           grid-row: 1 / span 3;
           display: flex;
@@ -245,8 +227,7 @@ export default function ExperienceTimeline() {
           font-size: 13px;
           color: var(--text-2);
         }
-        .xp2-card:hover .xp2-marker,
-        .xp2-card.is-pinned .xp2-marker{ color: var(--accent); }
+        .xp2-card:hover .xp2-marker{ color: var(--accent); }
 
         .xp2-logo{
           width: 34px; height: 34px;
@@ -278,32 +259,15 @@ export default function ExperienceTimeline() {
         .xp2-role{ margin-top: 3px; font-weight: 700; font-size: 14px; color: var(--text-2); }
         .xp2-meta{ margin-top: 4px; font-size: 12.5px; color: var(--text-3); }
 
-        .xp2-highlights{
-          list-style: none; margin: 0; padding: 0;
-          max-height: 0;
-          opacity: 0;
-          overflow: hidden;
-          transition: max-height .4s ease, opacity .3s ease, margin-top .4s ease;
-        }
-        .xp2-card:hover .xp2-highlights,
-        .xp2-card.is-pinned .xp2-highlights{
-          max-height: 240px; opacity: 1; margin-top: 14px;
-        }
+        .xp2-highlights{ list-style: none; margin: 12px 0 0; padding: 0; }
         .xp2-highlights li{
           position: relative;
           padding-left: 16px;
-          margin-bottom: 7px;
-          font-size: 13.5px;
+          margin-bottom: 6px;
+          font-size: 14px;
           line-height: 1.5;
           color: var(--text-2);
-          opacity: 0;
-          transform: translateY(6px);
-          transition: opacity .35s ease, transform .35s ease;
-          transition-delay: calc(var(--i) * 70ms);
-        }
-        .xp2-card:hover .xp2-highlights li,
-        .xp2-card.is-pinned .xp2-highlights li{
-          opacity: 1; transform: translateY(0);
+          max-width: 70ch;
         }
         .xp2-highlights li::before{
           content: ""; position: absolute; left: 0; top: 7px;
@@ -342,7 +306,6 @@ export default function ExperienceTimeline() {
 
         @media (max-width: 640px){
           .xp2-card:nth-child(even){ margin-left: 0; }
-          .xp2-year{ font-size: clamp(48px, 18vw, 80px); }
         }
 
         @media (prefers-reduced-motion: reduce){

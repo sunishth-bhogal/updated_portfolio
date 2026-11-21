@@ -1,15 +1,11 @@
 // src/App.jsx
 import React from "react";
 import { Routes, Route, Link, useLocation } from "react-router-dom";
-import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion";
 
 import Navbar from "./components/Navbar";
 import CustomCursor from "./components/CustomCursor";
-import SwingingFigure from "./components/SwingingFigure";
-import LanyardBadge from "./components/LanyardBadge";
-import CodingSetupAnimated from "./components/CodingSetupAnimated";
-import HikingAnimated from "./components/HikingAnimated";
-import PickleballAnimated from "./components/PickleballAnimated";
+import HeroStudio from "./components/HeroStudio";
+import IWasThere from "./components/IWasThere";
 import CurrentActivity from "./components/CurrentActivity";
 
 import AboutV2 from "./components/AboutV2";
@@ -28,23 +24,7 @@ import { NavInteractionProvider } from "./context/NavInteractionContext";
 import { Analytics } from "@vercel/analytics/react";
 
 import "./styles.css";
-
-const fadeUp = (delay = 0, reduceMotion = false) => ({
-  initial: { opacity: 0, y: reduceMotion ? 0 : 22 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: reduceMotion ? 0 : 0.7, delay: reduceMotion ? 0 : delay, ease: [0.16, 1, 0.3, 1] },
-});
-
-// The name leads the hero now — a springier, more physical "pop" (slight
-// scale + rise) instead of the plain fade the rest of the hero uses, so it
-// reads as the first, most alive thing on the page.
-const namePop = (delay = 0, reduceMotion = false) => ({
-  initial: { opacity: 0, y: reduceMotion ? 0 : 46, scale: reduceMotion ? 1 : 0.9 },
-  animate: { opacity: 1, y: 0, scale: 1 },
-  transition: reduceMotion
-    ? { duration: 0, delay: 0 }
-    : { type: "spring", stiffness: 260, damping: 20, delay },
-});
+import "./studio.css";
 
 /* ---------- Scroll to hash targets (keeps SPA smooth) ---------- */
 function ScrollManager() {
@@ -77,13 +57,9 @@ function ScrollManager() {
 /* ---------------------------------------------------------------- */
 
 export default function App() {
-  const location = useLocation();
-  const isHome = location.pathname === "/";
-
   return (
     <NavInteractionProvider>
       <CustomCursor />
-      {isHome && <SwingingFigure />}
       <ScrollRestoration />
       <Navbar />
       <ScrollManager />
@@ -102,139 +78,14 @@ export default function App() {
   );
 }
 
-/* -------------------- HOME (now inline) -------------------- */
+/* -------------------- HOME -------------------- */
 function HomePage() {
-  const heroRef = React.useRef(null);
-  const reduceMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end start"],
-  });
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.85], [1, 0]);
-
-  const scrollToId = (id) => {
-    const el = document.getElementById(id);
-    if (!el) return;
-    const header = document.querySelector(".nav-header");
-    const headerH = header ? header.getBoundingClientRect().height : 0;
-    // About's own top padding leaves a gap when landing right at the section
-    // edge, so nudge it a bit further down — mirrors the same offset in Navbar.
-    const extraOffset = id === "about" ? 80 : 0;
-    const y = el.getBoundingClientRect().top + window.pageYOffset - headerH - 6 + extraOffset;
-    window.scrollTo({ top: y, behavior: "smooth" });
-  };
-
   return (
     <>
-      {/* HERO */}
-      <section id="home" className="hero hero--with-stack" ref={heroRef}>
-        <LanyardBadge />
+      <HeroStudio />
 
-        {/* NOTE: only `opacity` is animated here via framer — `.hero__content--left`
-            controls its own `transform` in CSS, and framer-motion's `style.y` would
-            silently overwrite that transform if it were animated here too. */}
-        <motion.div className="hero__content hero__content--left" style={{ opacity: heroOpacity }}>
-          {/* Name pops in first (delay 0, spring) — badge/eyebrow/tagline
-              below keep their normal top-to-bottom visual order, they just
-              each land a beat after the name has already landed. */}
-          <motion.span className="hero__badge" {...fadeUp(0.34, reduceMotion)}>
-            <span className="hero__badge-dot" aria-hidden="true" />
-            Software Engineer @ TD
-          </motion.span>
-
-          <motion.span className="hero__eyebrow" {...fadeUp(0.4, reduceMotion)}>
-            Learner · Coder · Lifter
-          </motion.span>
-
-          <h1 className="hero__bigname">
-            <motion.span className="hero__bigname-line" {...namePop(0, reduceMotion)}>
-              Sunishth
-            </motion.span>
-            <motion.span className="hero__bigname-line" {...namePop(0.09, reduceMotion)}>
-              Bhogal
-            </motion.span>
-          </h1>
-
-          <motion.p className="hero__tagline" {...fadeUp(0.46, reduceMotion)}>
-            Always looking to build and learn.
-          </motion.p>
-
-          {/* align-self:stretch here too — this wrapper exists only to carry
-              the fade-in animation, but being an unstyled block it would
-              otherwise shrink-to-fit around CurrentActivity's own natural
-              content width and silently cap it below the intended 580px. */}
-          <motion.div style={{ alignSelf: "stretch" }} {...fadeUp(0.56, reduceMotion)}>
-            <CurrentActivity />
-          </motion.div>
-
-          <motion.a
-            className="hero__feature"
-            href="https://uwstudyspots.vercel.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            {...fadeUp(0.48, reduceMotion)}
-          >
-            <img src="/uwstudyspots.png" alt="" className="hero__feature-thumb" />
-            <span className="hero__feature-text">
-              <span className="hero__feature-kicker">Featured project</span>
-              <span className="hero__feature-title">
-                UW Study Spots · 200+ users <span aria-hidden>↗</span>
-              </span>
-            </span>
-          </motion.a>
-        </motion.div>
-
-        {/* One contained composition instead of scenes scattered across the whole
-            section — arranged along a loose diagonal, hiking as the visual anchor. */}
-        <div className="hero__visual">
-          {/* Each scene's OWN position class controls its CSS `transform`
-              (the hike one needs translate(-50%,-50%) to center itself) — 
-              so the framer fade-in lives on a plain inner child instead of
-              the positioned element, and the two `transform`s never fight. */}
-          <div className="hero__scene hero__scene--code">
-            <motion.div
-              aria-hidden="true"
-              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reduceMotion ? 0 : 0.8, delay: reduceMotion ? 0 : 0.4, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <CodingSetupAnimated width={130} height={118} />
-            </motion.div>
-          </div>
-
-          <div className="hero__scene hero__scene--hike">
-            <motion.div
-              aria-hidden="true"
-              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reduceMotion ? 0 : 0.8, delay: reduceMotion ? 0 : 0.52, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <HikingAnimated width={170} height={154} />
-            </motion.div>
-          </div>
-
-          <div className="hero__scene hero__scene--pickleball">
-            <motion.div
-              aria-hidden="true"
-              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reduceMotion ? 0 : 0.8, delay: reduceMotion ? 0 : 0.64, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <PickleballAnimated width={115} height={104} />
-            </motion.div>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className="hero__scroll-indicator"
-          aria-label="Scroll to About section"
-          onClick={() => scrollToId("about")}
-        >
-          <span>Scroll</span>
-          <span className="hero__scroll-chevron" aria-hidden="true" />
-        </button>
-      </section>
+      {/* A short personal chapter before the work */}
+      <IWasThere />
 
       {/* MAIN */}
       <div className="main-band">
@@ -243,6 +94,11 @@ function HomePage() {
           <Reveal className="section__content">
             <AboutV2 />
           </Reveal>
+        </section>
+
+        {/* Projects come straight after About so the work stays prominent */}
+        <section id="projects" className="section section-dark anchor-offset">
+          <ProjectRails />
         </section>
 
         {/* Professional Experience */}
@@ -257,12 +113,7 @@ function HomePage() {
           </div>
         </section>
 
-        {/* Projects — full-width; ProjectRails renders its own header + grid */}
-        <section id="projects" className="section section-dark anchor-offset">
-          <ProjectRails />
-        </section>
-
-        {/* Create */}
+        {/* Lab */}
         <section id="create" className="section section-dark anchor-offset">
           <div className="section__container">
             <Reveal as="h2" className="section__title" data-underline="true" y={16}>
@@ -274,6 +125,11 @@ function HomePage() {
             <Reveal className="section__content" delay={0.12}>
               <CreateShowcase />
             </Reveal>
+
+            <div className="elsewhere">
+              <p className="elsewhere-label">Elsewhere, right now</p>
+              <CurrentActivity />
+            </div>
           </div>
         </section>
 
