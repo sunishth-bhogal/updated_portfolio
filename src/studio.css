@@ -340,3 +340,58 @@
   .iwt-poster:hover img{ transform: none; }
   .iwt-poster:hover .iwt-play{ transform: translate(-50%, -50%); }
 }
+
+/* ======================= INTRO CLIP (on arrival) ======================= */
+.intro{
+  position: fixed; inset: 0; z-index: 3000;
+  background: var(--stadium);
+  overflow: hidden;
+}
+/* 16:9 player scaled to cover the screen */
+.intro-video{ position: absolute; inset: 0; pointer-events: none; }
+.intro-video iframe{
+  position: absolute; left: 50%; top: 50%;
+  width: max(100vw, 177.78vh); height: max(100vh, 56.25vw);
+  transform: translate(-50%, -50%);
+  border: 0;
+}
+.intro-shade{
+  position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, rgba(6,18,44,.75), rgba(6,18,44,0) 40%),
+              linear-gradient(to bottom, rgba(6,18,44,.45), rgba(6,18,44,0) 22%);
+}
+.intro-ui{
+  position: absolute; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  padding: clamp(18px, 4vw, 44px);
+  padding-bottom: max(clamp(22px, 4vw, 48px), env(safe-area-inset-bottom));
+}
+.intro-date{
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px; letter-spacing: .16em; text-transform: uppercase;
+  color: #EAF1FF;
+}
+.intro-actions{ display: flex; gap: 10px; }
+.intro-btn{
+  min-height: 44px; padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(234,241,255,.45);
+  background: rgba(6,18,44,.35);
+  color: #fff;
+  font: inherit; font-size: 14px; font-weight: 700;
+  cursor: pointer;
+  transition: background-color .2s ease;
+}
+.intro-btn:hover{ background: rgba(6,18,44,.6); }
+.intro-btn--solid{ background: #fff; color: var(--stadium); border-color: #fff; }
+.intro-btn--solid:hover{ background: #DCE7FF; }
+.intro-btn:focus-visible{ outline: 3px solid #7EA6FF; outline-offset: 3px; }
+.intro-progress{ position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255,255,255,.15); }
+.intro-progress span{ display: block; height: 100%; background: #7EA6FF; transform-origin: left; transform: scaleX(0); }
+.intro-progress span.is-running{ animation: intro-progress linear forwards; }
+@keyframes intro-progress{ to{ transform: scaleX(1); } }
+@media (max-width: 600px){
+  .intro-ui{ flex-direction: column; align-items: stretch; }
+  .intro-actions .intro-btn{ flex: 1; }
+}

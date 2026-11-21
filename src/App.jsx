@@ -11,6 +11,7 @@ import HikingAnimated from "./components/HikingAnimated";
 import PickleballAnimated from "./components/PickleballAnimated";
 import CurrentActivity from "./components/CurrentActivity";
 import IWasThere from "./components/IWasThere";
+import IntroClip from "./components/IntroClip";
 
 import AboutV2 from "./components/AboutV2";
 import ExperienceTimeline from "./components/ExperienceTimeline";
@@ -78,10 +79,12 @@ function ScrollManager() {
 /* ---------------------------------------------------------------- */
 
 export default function App() {
+  const { pathname } = useLocation();
 
   return (
     <NavInteractionProvider>
       <CustomCursor />
+      {pathname === "/" && <IntroClip />}
       <ScrollRestoration />
       <Navbar />
       <ScrollManager />
