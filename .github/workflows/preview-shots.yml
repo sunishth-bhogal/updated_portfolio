@@ -20,11 +20,13 @@ jobs:
         env:
           CI: true
       - run: npm i --no-save playwright@1.48.2 serve@14 && npx playwright install --with-deps chromium
-      - run: |
+      - continue-on-error: true
+        run: |
           npx serve -s build -l 5050 > /dev/null 2>&1 &
           sleep 3
           node .github/shots.mjs
       - name: Push screenshots to studio-shots branch
+        if: always()
         run: |
           cd shots
           git init -q -b studio-shots

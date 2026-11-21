@@ -8,11 +8,12 @@ const browser = await chromium.launch();
 for (const [dev, w, h] of [["wide", 1680, 945], ["desktop", 1440, 900], ["tablet", 820, 1180], ["mobile", 390, 844]]) {
   const ctx = await browser.newContext({ viewport: { width: w, height: h } });
   const page = await ctx.newPage();
+  try {
   await page.goto(URL, { waitUntil: "networkidle" });
   await page.waitForTimeout(2200);
   await page.screenshot({ path: `shots/${dev}-1-hero.png` });
   if (dev === "mobile" || dev === "tablet") {
-    await page.screenshot({ path: `shots/${dev}-1b-hero-full.png`, fullPage: false, clip: { x: 0, y: 0, width: w, height: Math.min(2200, await page.evaluate(() => document.getElementById("about").offsetTop)) } });
+    await page.screenshot({ path: `shots/${dev}-1b-hero-full.png`, fullPage: true, clip: { x: 0, y: 0, width: w, height: Math.min(2200, await page.evaluate(() => document.getElementById("about").offsetTop)) } });
   }
   const card = page.locator(".hm-card");
   const box = await card.boundingBox();
@@ -28,6 +29,8 @@ for (const [dev, w, h] of [["wide", 1680, 945], ["desktop", 1440, 900], ["tablet
   await page.keyboard.press("Escape");
   await page.waitForTimeout(900);
   log.push(`[${dev}] after Escape: modal=${await page.locator(".hm-modal").count()} focusIsCard=${await page.evaluate(() => document.activeElement && document.activeElement.classList.contains("hm-card"))}`);
+  } catch (e) { log.push(`[${dev}] ERROR: ${e.message.split("\n").slice(0, 4).join(" | ")}`); await page.screenshot({ path: `shots/${dev}-error.png` }).catch(() => {}); }
+  fs.writeFileSync("shots/log.txt", log.join("\n") + "\n");
   await ctx.close();
 }
 const c3 = await browser.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: "reduce" });
