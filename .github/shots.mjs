@@ -13,7 +13,7 @@ for (const [dev, w, h] of [["wide", 1680, 945], ["desktop", 1440, 900], ["tablet
   await page.waitForTimeout(2200);
   await page.screenshot({ path: `shots/${dev}-1-hero.png` });
   if (dev === "mobile" || dev === "tablet") {
-    await page.screenshot({ path: `shots/${dev}-1b-hero-full.png`, fullPage: true, clip: { x: 0, y: 0, width: w, height: Math.min(2200, await page.evaluate(() => document.getElementById("about").offsetTop)) } });
+    await page.screenshot({ path: `shots/${dev}-1b-full.png`, fullPage: true });
   }
   const card = page.locator(".hm-card");
   const box = await card.boundingBox();
