@@ -18,12 +18,6 @@ for (const [name, w, h] of sizes) {
   await page.goto(URL, { waitUntil: "networkidle" });
   await page.waitForTimeout(1800);
   await page.screenshot({ path: `shots/${name}-01-hero.png` });
-  // tabs
-  for (const t of ["Draftfolio", "NHL Predictions"]) {
-    await page.getByRole("tab", { name: t }).click();
-    await page.waitForTimeout(700);
-    await page.locator(".sh-preview").screenshot({ path: `shots/${name}-02-tab-${t.split(" ")[0].toLowerCase()}.png` });
-  }
   // scroll through the page in viewport steps so whileInView reveals fire
   const total = await page.evaluate(() => document.documentElement.scrollHeight);
   for (let y = 0; y < total; y += Math.round(h * 0.6)) {
@@ -41,6 +35,11 @@ for (const [name, w, h] of sizes) {
   await page.getByRole("button", { name: "How I built it" }).first().click();
   await page.waitForTimeout(800);
   await page.locator(".pjl").first().screenshot({ path: `shots/${name}-04-expanded.png` });
+  for (const [k, n] of [["draftfolio", 1], ["nhl", 2]]) {
+    await page.locator(".pjl").nth(n).scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+    await page.locator(".pjl").nth(n).screenshot({ path: `shots/${name}-04-${k}.png` });
+  }
   // overflow check
   const ov = await page.evaluate(() => {
     const W = document.documentElement.clientWidth;

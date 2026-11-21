@@ -56,8 +56,8 @@ export default function Navbar() {
     () => [
       { id: "home", label: "Home" },
       { id: "about", label: "About" },
-      { id: "projects", label: "Projects" },
       { id: "experiences", label: "Experience" },
+      { id: "projects", label: "Projects" },
       { id: "create", label: "Lab" },
       { id: "contact", label: "Contact" },
     ],
