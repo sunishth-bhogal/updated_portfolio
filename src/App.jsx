@@ -10,7 +10,6 @@ import CodingSetupAnimated from "./components/CodingSetupAnimated";
 import HikingAnimated from "./components/HikingAnimated";
 import PickleballAnimated from "./components/PickleballAnimated";
 import CurrentActivity from "./components/CurrentActivity";
-import IWasThere from "./components/IWasThere";
 import IntroClip from "./components/IntroClip";
 
 import AboutV2 from "./components/AboutV2";
@@ -236,9 +235,6 @@ function HomePage() {
           <span className="hero__scroll-chevron" aria-hidden="true" />
         </button>
       </section>
-
-      {/* A short personal chapter before the work */}
-      <IWasThere />
 
       {/* MAIN */}
       <div className="main-band">
