@@ -5,11 +5,8 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 
 import Navbar from "./components/Navbar";
 import CustomCursor from "./components/CustomCursor";
-import SwingingFigure from "./components/SwingingFigure";
 import LanyardBadge from "./components/LanyardBadge";
-import CodingSetupAnimated from "./components/CodingSetupAnimated";
-import HikingAnimated from "./components/HikingAnimated";
-import PickleballAnimated from "./components/PickleballAnimated";
+import HeroMoment from "./components/HeroMoment";
 import CurrentActivity from "./components/CurrentActivity";
 
 import AboutV2 from "./components/AboutV2";
@@ -28,6 +25,7 @@ import { NavInteractionProvider } from "./context/NavInteractionContext";
 import { Analytics } from "@vercel/analytics/react";
 
 import "./styles.css";
+import "./studio.css";
 
 const fadeUp = (delay = 0, reduceMotion = false) => ({
   initial: { opacity: 0, y: reduceMotion ? 0 : 22 },
@@ -77,13 +75,9 @@ function ScrollManager() {
 /* ---------------------------------------------------------------- */
 
 export default function App() {
-  const location = useLocation();
-  const isHome = location.pathname === "/";
-
   return (
     <NavInteractionProvider>
       <CustomCursor />
-      {isHome && <SwingingFigure />}
       <ScrollRestoration />
       <Navbar />
       <ScrollManager />
@@ -182,48 +176,22 @@ function HomePage() {
               </span>
             </span>
           </motion.a>
+
+          <motion.a
+            className="hero__projects-cta"
+            href="#projects"
+            onClick={(e) => {
+              e.preventDefault();
+              scrollToId("projects");
+            }}
+            {...fadeUp(0.62, reduceMotion)}
+          >
+            See my projects <span aria-hidden="true">↓</span>
+          </motion.a>
         </motion.div>
 
-        {/* One contained composition instead of scenes scattered across the whole
-            section — arranged along a loose diagonal, hiking as the visual anchor. */}
-        <div className="hero__visual">
-          {/* Each scene's OWN position class controls its CSS `transform`
-              (the hike one needs translate(-50%,-50%) to center itself) — 
-              so the framer fade-in lives on a plain inner child instead of
-              the positioned element, and the two `transform`s never fight. */}
-          <div className="hero__scene hero__scene--code">
-            <motion.div
-              aria-hidden="true"
-              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reduceMotion ? 0 : 0.8, delay: reduceMotion ? 0 : 0.4, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <CodingSetupAnimated width={130} height={118} />
-            </motion.div>
-          </div>
-
-          <div className="hero__scene hero__scene--hike">
-            <motion.div
-              aria-hidden="true"
-              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reduceMotion ? 0 : 0.8, delay: reduceMotion ? 0 : 0.52, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <HikingAnimated width={170} height={154} />
-            </motion.div>
-          </div>
-
-          <div className="hero__scene hero__scene--pickleball">
-            <motion.div
-              aria-hidden="true"
-              initial={{ opacity: 0, y: reduceMotion ? 0 : 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: reduceMotion ? 0 : 0.8, delay: reduceMotion ? 0 : 0.64, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <PickleballAnimated width={115} height={104} />
-            </motion.div>
-          </div>
-        </div>
+        {/* One cinematic moment on the right */}
+        <HeroMoment />
 
         <button
           type="button"
