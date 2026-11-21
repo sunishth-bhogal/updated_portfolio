@@ -1,0 +1,13 @@
+[wide] card={"x":1120,"y":205,"width":440,"height":550} lanyard={"x":742,"y":62,"width":168,"height":438} docWidth=1680
+[wide] open: iframe=1 src=https://www.youtube-nocookie.com/embed/PNBV5WZKKiE?autoplay=1&mute=1&start=45&rel=0&modestbranding=1&playsinline=1 focus="Close ×"
+[wide] after Escape: modal=0 focusIsCard=true
+[desktop] card={"x":914,"y":182,"width":440,"height":550} lanyard=null docWidth=1440
+[desktop] open: iframe=1 src=https://www.youtube-nocookie.com/embed/PNBV5WZKKiE?autoplay=1&mute=1&start=45&rel=0&modestbranding=1&playsinline=1 focus="Close ×"
+[desktop] after Escape: modal=0 focusIsCard=true
+[tablet] card={"x":49,"y":721,"width":620,"height":388} lanyard=null docWidth=820
+[tablet] open: iframe=1 src=https://www.youtube-nocookie.com/embed/PNBV5WZKKiE?autoplay=1&mute=1&start=45&rel=0&modestbranding=1&playsinline=1 focus="Close ×"
+[tablet] after Escape: modal=0 focusIsCard=true
+[mobile] card={"x":23,"y":699,"width":343,"height":292} lanyard=null docWidth=390
+[mobile] open: iframe=1 src=https://www.youtube-nocookie.com/embed/PNBV5WZKKiE?autoplay=1&mute=1&start=45&rel=0&modestbranding=1&playsinline=1 focus="Close ×"
+[mobile] after Escape: modal=0 focusIsCard=true
+reduced motion: iframe=1
