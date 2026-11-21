@@ -1,0 +1,35 @@
+# TEMPORARY: renders the redesign at three widths for review. Remove before merging.
+name: preview-shots
+on:
+  push:
+    branches: [studio-redesign]
+permissions:
+  contents: write
+jobs:
+  shots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+        env:
+          CI: true
+      - run: npm i --no-save playwright@1.48.2 serve@14 && npx playwright install --with-deps chromium
+      - run: |
+          npx serve -s build -l 5050 > /dev/null 2>&1 &
+          sleep 3
+          node .github/shots.mjs
+      - name: Push screenshots to studio-shots branch
+        run: |
+          cd shots
+          git init -q -b studio-shots
+          git config user.name "shots-bot"
+          git config user.email "shots-bot@users.noreply.github.com"
+          git add -A
+          git commit -q -m "shots for ${GITHUB_SHA}"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git" studio-shots
